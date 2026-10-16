@@ -2,7 +2,7 @@
 
 ## Current state
 
-Tasks 1–2 are done. The plugin validates and loads (4 stub skills, 3 stub agents). Real preferences are written: `model-usage`, `testing`, `naming` (general, 43 lines total) and `android-ui` (path-scoped to `**/*.kt`). Next: Task 3, the phase templates and the CLAUDE.md block.
+Tasks 1–3 are done. The plugin validates and loads; preferences are written (general 43 lines, `android-ui` path-scoped); phase templates and the CLAUDE.md block (~208 tokens) are in place. Next: Task 4, real agent prompts for implementer, reviewer, and scout, with model checks.
 
 ## How to verify
 
@@ -26,6 +26,11 @@ Tasks 1–2 are done. The plugin validates and loads (4 stub skills, 3 stub agen
 - `preferences/android-ui.md` (`paths: ["**/*.kt"]`): Compose only; previews mandatory, at the bottom, covering theme / font scale / screen size / `@PreviewParameter`; hoisted state; MVI components take only the fields they need
 - `android-ui.md` revised: preview wrappers in `:core:ui` (component: theme + Surface + padding; screen: theme + full-size Surface, no padding, mirroring the nav host; scene wrappers for Navigation 3 dialogs/sheets/panes), per-project grouped multipreview annotations, and wrappers + annotations as the first `:core:ui` task
 - General files (no `paths`) total 43 lines, under the 100-line cap
+
+### Task 3: Templates
+- `skills/phase-new/templates/`: `overview.md` (intent only), `design.md` (Decision / Why / Tradeoff), `spec.md` (R-numbered with a Check each, NFRs), `tasks.md` (Serves / Files / Skill header per task, steps written for a Haiku implementer, Check and Commit lines), `walkthrough.md` (four sections)
+- Guidance lives in HTML comments so it doesn't render, and the agent removes it when filling a template
+- `templates/claude-block.md`: marked block, ~208 tokens (833 chars / 4)
 
 ## Deviations from spec
 

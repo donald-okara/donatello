@@ -36,13 +36,13 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 - [x] Commit: `feat: add initial preferences`
 
 ### Task 3: Templates
-- [ ] `skills/phase-new/templates/overview.md`: Goal / Delivers / Out of scope / Success criteria
-- [ ] `skills/phase-new/templates/design.md`: Decision / Why / Tradeoff entries only
-- [ ] `skills/phase-new/templates/spec.md`: R1… with scope and a check each; NFRs
-- [ ] `skills/phase-new/templates/tasks.md`: dependency sketch + `- [ ]` checklist, commit line per task
-- [ ] `skills/phase-new/templates/walkthrough.md`: Current state / How to verify / Changes by task / Deviations from spec, with one-line guidance each
-- [ ] `templates/claude-block.md`: marked block per ARCHITECTURE.md, including model routing and walkthrough upkeep; confirm < 300 tokens
-- [ ] Commit: `feat: add phase and CLAUDE.md templates`
+- [x] `skills/phase-new/templates/overview.md`: Goal / Delivers / Out of scope / Success criteria
+- [x] `skills/phase-new/templates/design.md`: Decision / Why / Tradeoff entries only
+- [x] `skills/phase-new/templates/spec.md`: R1… with scope and a check each; NFRs
+- [x] `skills/phase-new/templates/tasks.md`: dependency sketch + `- [x]` checklist, commit line per task
+- [x] `skills/phase-new/templates/walkthrough.md`: Current state / How to verify / Changes by task / Deviations from spec, with one-line guidance each
+- [x] `templates/claude-block.md`: marked block per ARCHITECTURE.md, including model routing and walkthrough upkeep; confirm < 300 tokens (~208)
+- [x] Commit: `feat: add phase and CLAUDE.md templates`
 
 ### Task 4: Agents
 - [ ] `agents/implementer.md`: `model: haiku`, all tools except Agent, `maxTurns: 40`; one task only; quiet builds/tests; ≤ 15-line report; no ticking, `.spec/` edits, or commits
