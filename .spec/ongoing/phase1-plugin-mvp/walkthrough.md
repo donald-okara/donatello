@@ -2,7 +2,7 @@
 
 ## Current state
 
-Tasks 1–6 are done. `/donatello:onboard` works on empty and existing projects: scout-first survey, preferences split into `docs/` and `.claude/rules/`, phase 1 via phase-new, and the CLAUDE.md block appended without touching existing content. Resume mode doesn't duplicate anything. Untested (needs an interactive session): the diff/approval paths and plugin pruning inside onboard, so carry them to Task 9. Next: Task 7, `phase-run`.
+Tasks 1–7 are done. `/donatello:phase-run` runs the full loop (implementer on Haiku → reviewer on Sonnet → tick, walkthrough, commit), and the main session stays light. Not yet exercised: the fix round and escalation (Haiku never failed review in tests) and onboard's approval and pruning paths; both carried to Task 9. Next: Task 8, `phase-archive`.
 
 ## How to verify
 
@@ -60,6 +60,15 @@ Tasks 1–6 are done. `/donatello:onboard` works on empty and existing projects:
 - Verified separately: `claude plugin disable <id> --scope local` writes `.claude/settings.local.json` and disables a synced plugin for that project only
 - Fixed after testing: no placeholder `docs/requirements.md` for new projects; block heading renamed to "Spec workflow (Donatello plugin)" because a Haiku session mistook the project for "Donatello"
 - Housekeeping: test fixtures are now uninstalled (`claude plugin uninstall --scope project`) before deletion; 4 stale entries from earlier tests were cleaned up
+
+### Task 7: `phase-run` skill
+- `skills/phase-run/SKILL.md`: coordinator only (no source reads, diffs, builds); requires a clean tree; picks the next ready task; implementer → reviewer → fix round → re-dispatch on Sonnet via the Agent tool's `model` → stop; environment failures and missing decisions go to the user; on PASS, tick, update walkthrough (create from template), commit with the task's line; `--all` loops
+- Verified in a Python fixture (Sonnet main session):
+  - `--all` on 2 tasks: Haiku implemented, Sonnet reviewed, 2 commits with the right messages, all boxes ticked, walkthrough created with all four sections; main session made no source reads or diffs (largest tool result 1,203 chars); $0.29 total
+  - Reviewer NOTE surfaced a real spec gap (`format_amount(-5)` → `"$-1.95"`), carried into Current state
+  - Trap tasks (requirement missing from task text; task text contradicting requirement): Haiku followed the requirements both times, so the fix round never ran (~$0.20)
+  - Without phase-run, the CLAUDE.md block alone got Claude to implement, tick, update the walkthrough, and commit, and it flagged that review was skipped (~$0.18)
+- Tightened: implementer follows requirements over conflicting task text and notes it; walkthrough "Deviations from spec" holds only real spec deviations
 
 ## Deviations from spec
 

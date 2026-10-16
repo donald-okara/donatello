@@ -77,14 +77,14 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 - [x] Commit: `feat: implement onboard skill`
 
 ### Task 7: `phase-run` skill
-- [ ] Write SKILL.md: pick task → implementer → reviewer → one fix round → escalate to Sonnet → stop and ask; on PASS commit, tick, update walkthrough
-- [ ] Pass paths and requirement IDs to agents, not file contents
-- [ ] `--all` continues until done or a step needs the user
-- [ ] Verify: a simple task completes end-to-end; `walkthrough.md` created with all four sections
-- [ ] Verify: a deliberately underspecified task triggers the fix round, then escalation
-- [ ] Verify: main-session context after one task holds agent reports only (check `/context`)
-- [ ] Verify: working without phase-run, the CLAUDE.md block alone still gets the agent to tick tasks and update the walkthrough
-- [ ] Commit: `feat: implement phase-run skill`
+- [x] Write SKILL.md: pick task → implementer → reviewer → one fix round → escalate to Sonnet → stop and ask; on PASS commit, tick, update walkthrough
+- [x] Pass paths and requirement IDs to agents, not file contents
+- [x] `--all` continues until done or a step needs the user
+- [x] Verify: a simple task completes end-to-end; `walkthrough.md` created with all four sections
+- [ ] Verify: a deliberately underspecified task triggers the fix round, then escalation (two traps tried; Haiku avoided both by reading the requirements, so the ladder never ran; carried to Task 9)
+- [x] Verify: main-session context after one task holds agent reports only (checked via the stream: no source reads, no diffs, largest tool result 1,203 chars)
+- [x] Verify: working without phase-run, the CLAUDE.md block alone still gets the agent to tick tasks and update the walkthrough
+- [x] Commit: `feat: implement phase-run skill`
 
 ### Task 8: `phase-archive` skill
 - [ ] Write SKILL.md: pick phase → handle unchecked tasks → finalize walkthrough → promote decisions and requirements (diff + approval) → `git mv` to dated archive dir

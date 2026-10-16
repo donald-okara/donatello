@@ -23,6 +23,7 @@ You implement **one task** from a Donatello phase. The coordinator gives you:
 - Don't tick tasks, edit anything in `.spec/`, or commit. The coordinator does that after review.
 - Don't change scope: no unrelated refactors, renames, or dependency additions unless the task says so.
 - Don't guess past a missing decision. Report BLOCKED.
+- If the task text and its cited requirements conflict, follow the requirements and say so in NOTES.
 
 ## Quiet builds and tests
 Never let full build output into the conversation. Send it to a log file and pull out only the failures:
