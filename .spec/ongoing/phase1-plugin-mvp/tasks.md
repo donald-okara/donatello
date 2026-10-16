@@ -45,13 +45,13 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 - [x] Commit: `feat: add phase and CLAUDE.md templates`
 
 ### Task 4: Agents
-- [ ] `agents/implementer.md`: `model: haiku`, all tools except Agent, `maxTurns: 40`; one task only; quiet builds/tests; ≤ 15-line report; no ticking, `.spec/` edits, or commits
-- [ ] `agents/reviewer.md`: `model: sonnet`, `effort: medium`, Read/Grep/Glob/Bash, `maxTurns: 20`; `PASS` or ≤ 10 `file:line` issues against task, spec, and preferences
-- [ ] `agents/scout.md`: `model: haiku`, Read/Grep/Glob/Bash (read-only commands), `maxTurns: 25`; ≤ 60-line repo summary
-- [ ] Descriptions short (each loads into every session's agent listing)
-- [ ] Verify: each agent runs on its intended model (check the model shown in the agent's transcript)
-- [ ] Verify: implementer on a failing Gradle build reports only the errors, not the full log
-- [ ] Commit: `feat: add implementer, reviewer, and scout agents`
+- [x] `agents/implementer.md`: `model: haiku`, all tools except Agent, `maxTurns: 40`; one task only; quiet builds/tests; ≤ 15-line report; no ticking, `.spec/` edits, or commits
+- [x] `agents/reviewer.md`: `model: sonnet`, `effort: medium`, Read/Grep/Glob/Bash, `maxTurns: 20`; `PASS` or ≤ 10 `file:line` issues against task, spec, and preferences
+- [x] `agents/scout.md`: `model: haiku`, Read/Grep/Glob/Bash (read-only commands), `maxTurns: 25`; ≤ 60-line repo summary
+- [x] Descriptions short (each loads into every session's agent listing)
+- [x] Verify: each agent runs on its intended model (check the model shown in the agent's transcript)
+- [x] Verify: implementer on a failing Gradle build reports only the errors, not the full log
+- [x] Commit: `feat: add implementer, reviewer, and scout agents`
 
 ### Task 5: `phase-new` skill
 - [ ] Write SKILL.md: read context → compute N and slug → clarify scope → fill templates → show for review

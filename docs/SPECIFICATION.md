@@ -122,7 +122,7 @@ The main session (Opus) coordinates; it doesn't write the code or read full diff
 
 1. Pick the next unchecked task (or the one named).
 2. Dispatch `donatello:implementer` (Haiku) with the task, the relevant spec requirements, and the phase path. It implements, runs quiet builds/tests, and returns a short report: files changed, test result, anything blocked.
-3. Dispatch `donatello:reviewer` (Sonnet) with the task, spec requirements, and the commit range. It returns PASS or a short list of issues with file:line.
+3. Dispatch `donatello:reviewer` (Sonnet) with the task and spec requirements. It reviews the uncommitted changes (`git diff HEAD` plus untracked files) and returns PASS or a short list of issues with file:line.
 4. On issues: send them back to the implementer once. If review fails again, or the implementer reports it's blocked, re-dispatch the implementer on Sonnet. If that fails too, stop and bring it to you.
 5. On PASS: commit (using the task's commit line), tick the task, append to the walkthrough's "Changes by task" (creating `walkthrough.md` on the first task), refresh "Current state".
 6. Stop after one task, or continue through the list with `--all` until done or a step needs you.

@@ -181,7 +181,7 @@ Shared rules in each agent's prompt:
 | Archiving with unchecked tasks | List them; archive anyway, carry over, or stop |
 | Archiving with no `walkthrough.md` | Build one from `tasks.md` and git history since the phase started; ask about "How to verify" |
 | No `docs/requirements.md` yet | Create it on this archive |
-| Not a git repo | Use plain moves; mention that history won't be tracked. `phase-run` skips commits, and the reviewer gets a list of changed files instead of a commit range |
+| Not a git repo | Use plain moves; mention that history won't be tracked. `phase-run` skips commits, and the reviewer gets a list of changed files instead of `git diff` |
 | Implementer blocked or review fails twice | Re-dispatch the implementer on Sonnet; if it still fails, stop and present the issues in the main session |
 | `docs/preferences.md` over 100 lines after merge | Onboard points out the longest sections and proposes moving file-specific ones into `.claude/rules/` |
 | Project already has `.claude/settings.local.json` | Merge the plugin entries only; leave other keys alone |

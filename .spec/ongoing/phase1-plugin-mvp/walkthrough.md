@@ -2,12 +2,13 @@
 
 ## Current state
 
-Tasks 1–3 are done. The plugin validates and loads; preferences are written (general 43 lines, `android-ui` path-scoped); phase templates and the CLAUDE.md block (~208 tokens) are in place. Next: Task 4, real agent prompts for implementer, reviewer, and scout, with model checks.
+Tasks 1–4 are done. The plugin loads with real agent prompts: implementer (Haiku), reviewer (Sonnet), and scout (Haiku) each run on their declared model and keep build logs out of the conversation. Next: Task 5, the `phase-new` skill. It must strip template HTML comments and write tasks precise enough for Haiku, including test steps.
 
 ## How to verify
 
 - `claude plugin validate .` and `claude plugin validate .claude-plugin/plugin.json` both pass
 - In a scratch git repo: `claude plugin marketplace add <path-to-donatello> --scope project`, then `claude plugin install donatello@donatello --scope project`, then `claude plugin details donatello@donatello`
+- Agent models: in a scratch repo with the plugin installed, run `echo "Use the donatello:scout agent ..." | claude -p --model sonnet --output-format stream-json --verbose` and check that subagent messages (non-null `parent_tool_use_id`) report `claude-haiku-*`; for the reviewer, use `--model haiku` as the main model and expect `claude-sonnet-*`
 - Typing `/donatello:` shows onboard, phase-new, phase-run, phase-archive (stubs reply that they aren't implemented)
 
 ## Changes by task
@@ -32,6 +33,14 @@ Tasks 1–3 are done. The plugin validates and loads; preferences are written (g
 - Guidance lives in HTML comments so it doesn't render, and the agent removes it when filling a template
 - `templates/claude-block.md`: marked block, ~208 tokens (833 chars / 4)
 
+### Task 4: Agents
+- `agents/implementer.md`: one task only; reads task, cited requirements, preferences; quiet builds (log to `$TMPDIR`, grep failures); never ticks, edits `.spec/`, or commits; fixed STATUS/FILES/CHECKS/NOTES/BLOCKER report
+- `agents/reviewer.md`: read-only; reviews uncommitted changes (`git diff HEAD` plus untracked files); judges task, requirement Checks, preferences, correctness; PASS or ISSUES list; non-blocking points only as NOTE; flags environment failures without asking for code changes
+- `agents/scout.md`: read-only survey that samples code rather than reading it all; fixed 8-heading report, 60 lines at most
+- Verified in a fixture with a fake `gradlew` (400 noise lines plus an error): implementer ran on Haiku and returned BLOCKED with errors only (largest tool result 684 chars, about $0.12); reviewer ran on Sonnet, stayed read-only, and returned ISSUES (about $0.05, then $0.03 after tightening); scout ran on Haiku with a 55-line report (about $0.12)
+- Tightened after the first run: paths relative to the repo root; non-blocking points moved to NOTE; environment-failure rule
+- Docs fixed: the reviewer gets uncommitted changes, not a commit range (phase-run commits only after PASS)
+
 ## Deviations from spec
 
-- None yet.
+- `tasks.md` template adds a Serves / Files / Skill header per task (Task 3); not in the original template description, added so agents need less context.
