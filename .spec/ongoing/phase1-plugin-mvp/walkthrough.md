@@ -2,7 +2,7 @@
 
 ## Current state
 
-Tasks 1–8 are done: all four skills and three agents are implemented and verified in fixtures. Carried to Task 9 (real projects, interactive): the fix round and Sonnet escalation in phase-run, onboard's approval and plugin-pruning paths, one continuous new → run → archive → new loop, the relative-path check after a GitHub install, and re-measuring always-on token cost. Next: Task 9, which needs Donald: push to GitHub and pick a real Android project.
+Tasks 1–8 are done: all four skills and three agents are implemented and verified in fixtures. Carried to Task 9 (real projects, interactive): the fix round and Sonnet escalation in phase-run, onboard's approval and plugin-pruning paths, one continuous new → run → archive → new loop, Next: Task 9, which needs Donald to onboard a real Android project. The relative-path check and token cost were measured after the GitHub push: the cached copy holds `preferences/` and `templates/`, and always-on cost is ~391 tokens (on-invoke: onboard ~2.1k, phase-new ~1.5k, phase-run ~1.3k, phase-archive ~1.2k, agents ~0.5–0.8k).
 
 ## How to verify
 

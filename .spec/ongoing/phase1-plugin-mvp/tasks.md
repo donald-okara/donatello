@@ -94,7 +94,7 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 - [x] Commit: `feat: implement phase-archive skill`
 
 ### Task 9: Real-project trial and README
-- [ ] Push to GitHub; install via `/plugin marketplace add donald-okara/donatello` and `/plugin install donatello@donatello`
+- [x] Push to GitHub; install via `/plugin marketplace add donald-okara/donatello` and `/plugin install donatello@donatello` (project-scope test install: the cache copies the whole plugin root, so relative paths hold; always-on cost is ~391 tokens)
 - [ ] Onboard one real Android project and one real web project; run at least two tasks in each with `/donatello:phase-run`
 - [ ] Log issues in this phase's `walkthrough.md`, including where Haiku needed escalation
 - [ ] Fix skill and agent text for each issue found
