@@ -2,17 +2,20 @@
 
 ## Goal
 
-Ship an installable `donatello` Claude Code plugin whose three workflow skills (`onboard`, `phase-new`, `phase-archive`) take a project from nothing to a working spec-driven structure and keep it consistent across phases.
+Ship an installable `donatello` Claude Code plugin whose four workflow skills (`onboard`, `phase-new`, `phase-run`, `phase-archive`) take a project from nothing to a working spec-driven structure, run its tasks with model routing (Opus plans, Haiku implements, Sonnet reviews), and keep it consistent across phases.
 
 ## What This Phase Delivers
 
 - Plugin and marketplace manifests; installable from GitHub
 - `/donatello:onboard`: inspect, interview (skippable), propose, write `docs/`, phase 1, and the CLAUDE.md block
 - `/donatello:phase-new`: next-numbered phase from templates, with tasks shaped by preferences
+- `/donatello:phase-run`: implementer (Haiku) → reviewer (Sonnet) → commit, tick, walkthrough; escalates to Sonnet when Haiku can't finish
+- Agents: `implementer`, `reviewer`, `scout`
 - `/donatello:phase-archive`: close out, finalize the walkthrough, promote decisions and requirements to `docs/`, move to the archive
 - Walkthrough upkeep during a phase, driven by the CLAUDE.md block
 - Phase templates (including `walkthrough.md`) and the CLAUDE.md block template
-- A starter set of real preferences (at least testing and naming, plus one stack-specific file)
+- A starter set of real preferences: `model-usage`, testing, naming, plus one path-scoped stack file
+- Token discipline: path-scoped rules, capped always-loaded context, plugin pruning during onboard
 
 ## Out of Scope
 
@@ -27,7 +30,8 @@ Ship an installable `donatello` Claude Code plugin whose three workflow skills (
 - Onboarding a real **new** project and a real **existing** project (one Android, one web) produces correct files with nothing overwritten
 - A fresh session in an onboarded project states the active phase and key preferences when asked "what are we working on?"
 - Running phase-new → phase-archive → phase-new yields `phase2-*` in ongoing, a dated `phase1-*` in the archive with a finalized walkthrough, and `docs/requirements.md` containing phase 1's lasting requirements
-- The CLAUDE.md block is under 300 tokens
+- `/donatello:phase-run` completes a real task with Haiku implementing and Sonnet reviewing, and the main session holds only agent reports
+- The CLAUDE.md block is under 300 tokens; `docs/preferences.md` is ≤ 100 lines
 
 ## Related Docs
 

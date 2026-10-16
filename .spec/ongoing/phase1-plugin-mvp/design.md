@@ -18,8 +18,8 @@
 **Tradeoff:** `onboard` depends on a sibling skill's path (`../phase-new/`); verified in Task 1.
 
 ### Workflow skills are explicit-only
-**Decision:** `disable-model-invocation: true` on onboard, phase-new, phase-archive.
-**Why:** They write many files; they should run only when asked.
+**Decision:** `disable-model-invocation: true` on onboard, phase-new, phase-run, phase-archive.
+**Why:** They write many files; they should run only when asked. It also means their descriptions cost nothing in the skill listing.
 
 ### Preferences: copied, filtered by `applies-to`
 **Decision:** Copy matching preference files into `docs/preferences.md` and import it from the CLAUDE.md block.
@@ -39,6 +39,21 @@
 **Decision:** On archive, merge lasting requirements into `docs/requirements.md` as prose, with a diff for approval.
 **Why:** Current behavior shouldn't require reading the archive. Borrowed from OpenSpec's `specs/`, without its delta syntax.
 **Tradeoff:** Merges are judgment calls; the approval diff catches bad ones.
+
+### Model routing through agents
+**Decision:** Opus in the main session for brainstorming and coordination; `implementer` on Haiku, `reviewer` on Sonnet, `scout` on Haiku. `phase-run` escalates the implementer to Sonnet after a failed fix round.
+**Why:** A skill's `model:` lasts one turn, while an agent's holds for its whole run. Agents also keep verbose work (diffs, Gradle logs, repo reads) out of the Opus context.
+**Tradeoff:** Haiku misses on vague tasks. Mitigated by precise tasks from phase-new, a mandatory review, and escalation.
+
+### `phase-run` in phase 1
+**Decision:** Include it now rather than in phase 2.
+**Why:** Model routing is the main token saver and needs a command to drive it; the agents would sit unused otherwise.
+**Tradeoff:** Phase 1 grows by two tasks (agents, phase-run).
+
+### Path-scoped rules and plugin pruning
+**Decision:** Preferences with `paths` go to `.claude/rules/`; onboard offers to disable irrelevant plugins in `.claude/settings.local.json`.
+**Why:** Imports and plugin skill listings cost tokens on every turn. Confirmed in the docs: path-scoped rules load only when Claude touches a matching file.
+**Tradeoff:** Preferences live in two places per project.
 
 ## Verification Approach
 
