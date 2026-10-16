@@ -2,7 +2,7 @@
 
 ## Current state
 
-Task 1 is done: the plugin validates, installs at project scope, and loads 4 stub skills and 3 stub agents (~405 always-on tokens). Relative paths from skills to `preferences/` work. Next: Task 2, writing real preferences (`model-usage`, testing, naming, one path-scoped stack file). This needs Donald's input, since they encode real practice.
+Tasks 1–2 are done. The plugin validates and loads (4 stub skills, 3 stub agents). Real preferences are written: `model-usage`, `testing`, `naming` (general, 43 lines total) and `android-ui` (path-scoped to `**/*.kt`). Next: Task 3, the phase templates and the CLAUDE.md block.
 
 ## How to verify
 
@@ -18,6 +18,13 @@ Task 1 is done: the plugin validates, installs at project scope, and loads 4 stu
 - Added stub agents: `implementer` (haiku, `disallowedTools: Agent`, maxTurns 40), `reviewer` (sonnet, effort medium, Read/Grep/Glob/Bash, maxTurns 20), `scout` (haiku, Read/Grep/Glob/Bash, maxTurns 25)
 - Path probe: a temporary skill read `../../preferences/probe.md` under `--plugin-dir` and under a project-scope install; both worked (probe removed)
 - Prompts for `claude -p` with `--plugin-dir` must go through stdin; the flag swallows a trailing positional argument
+
+### Task 2: Preferences
+- `preferences/model-usage.md`: Opus / Haiku / Sonnet roles, escalation rule, cost habits
+- `preferences/testing.md`: test results not implementation; JUnit, Mockito, Robolectric; Compose Preview Screenshot Testing; previews count as tests
+- `preferences/naming.md`: Route + Content for screens, `[Title][Type]` for components
+- `preferences/android-ui.md` (`paths: ["**/*.kt"]`): Compose only; previews mandatory, at the bottom, covering theme / font scale / screen size / `@PreviewParameter`; hoisted state; MVI components take only the fields they need
+- General files (no `paths`) total 43 lines, under the 100-line cap
 
 ## Deviations from spec
 

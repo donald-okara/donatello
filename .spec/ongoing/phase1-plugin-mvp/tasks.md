@@ -27,13 +27,13 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 - [x] Commit: `feat: add plugin manifests, skill and agent stubs`
 
 ### Task 2: Preferences
-- [ ] Write `preferences/model-usage.md`: Opus / Sonnet / Haiku roles and the escalation rule (no `paths`; always loaded)
-- [ ] Write `preferences/testing.md` from your actual practice
-- [ ] Write `preferences/naming.md`
-- [ ] Write one stack-specific file with `paths` (e.g. `preferences/android-ui.md`, `applies-to: [android]`, `paths: ["**/*.kt"]`)
-- [ ] Each has `category`, `summary`, optional `applies-to` / `paths` frontmatter
-- [ ] The general files (no `paths`) total ≤ 100 lines
-- [ ] Commit: `feat: add initial preferences`
+- [x] Write `preferences/model-usage.md`: Opus / Sonnet / Haiku roles and the escalation rule (no `paths`; always loaded)
+- [x] Write `preferences/testing.md` from your actual practice
+- [x] Write `preferences/naming.md`
+- [x] Write one stack-specific file with `paths` (e.g. `preferences/android-ui.md`, `applies-to: [android]`, `paths: ["**/*.kt"]`)
+- [x] Each has `category`, `summary`, optional `applies-to` / `paths` frontmatter
+- [x] The general files (no `paths`) total ≤ 100 lines
+- [x] Commit: `feat: add initial preferences`
 
 ### Task 3: Templates
 - [ ] `skills/phase-new/templates/overview.md`: Goal / Delivers / Out of scope / Success criteria
