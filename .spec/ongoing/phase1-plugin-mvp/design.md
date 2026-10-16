@@ -64,7 +64,8 @@ There is no code to unit-test. Each skill is verified by running it:
 
 ## Open Questions
 
-- Does a skill's relative path to `../../preferences/` resolve in the installed plugin cache as it does with `--plugin-dir`? Verify in Task 1; if not, move preferences under `skills/onboard/`.
+- ~~Does `../../preferences/` resolve from a skill?~~ Yes, both under `--plugin-dir` and in a project-scope install from a local directory marketplace (Task 1). Directory marketplaces aren't copied to the plugin cache, so confirm again after the GitHub install in Task 9; the cache copies the whole plugin root, so it should hold.
+- Explicit-only skills still show ~50 always-on tokens each in `claude plugin details` (about 405 for the whole stubbed plugin). Re-measure once the skills are written, keep descriptions short, and check whether the estimate counts the `/` menu or the model's listing.
 
 ## Later Phases (one-liners)
 

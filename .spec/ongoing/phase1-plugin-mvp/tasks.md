@@ -17,14 +17,14 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 ---
 
 ### Task 1: Plugin manifests and skeleton
-- [ ] Create `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`
-- [ ] Create stub `skills/{onboard,phase-new,phase-run,phase-archive}/SKILL.md` with frontmatter (`name`, `description`, `disable-model-invocation: true`, `argument-hint`)
-- [ ] Create stub `agents/{implementer,reviewer,scout}.md` with frontmatter (`name`, `description`, `model`, `tools`, `maxTurns`)
-- [ ] Add `preferences/.gitkeep`, `templates/.gitkeep`
-- [ ] `claude plugin validate .` passes
-- [ ] `claude --plugin-dir .` shows all four `/donatello:*` commands and the three `donatello:*` agents
-- [ ] Settle the open question: a stub skill reads `../../preferences/` under both `--plugin-dir` and an installed copy
-- [ ] Commit: `feat: add plugin manifests, skill and agent stubs`
+- [x] Create `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`
+- [x] Create stub `skills/{onboard,phase-new,phase-run,phase-archive}/SKILL.md` with frontmatter (`name`, `description`, `disable-model-invocation: true`, `argument-hint`)
+- [x] Create stub `agents/{implementer,reviewer,scout}.md` with frontmatter (`name`, `description`, `model`, `tools`, `maxTurns`)
+- [x] Add `preferences/.gitkeep`, `templates/.gitkeep`
+- [x] `claude plugin validate .` passes (marketplace and plugin manifests)
+- [x] Plugin loads: `claude plugin details` lists 4 skills and 3 agents
+- [x] Settle the open question: a stub skill reads `../../preferences/` under both `--plugin-dir` and an installed copy (see design.md)
+- [x] Commit: `feat: add plugin manifests, skill and agent stubs`
 
 ### Task 2: Preferences
 - [ ] Write `preferences/model-usage.md`: Opus / Sonnet / Haiku roles and the escalation rule (no `paths`; always loaded)

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "donatello",
+  "description": "Donald Okara's AI workflows for Claude Code.",
+  "owner": {
+    "name": "Donald Okara"
+  },
+  "plugins": [
+    {
+      "name": "donatello",
+      "source": "./",
+      "description": "Spec-driven project workflow: onboard a project, plan phases, run tasks with Opus/Sonnet/Haiku routing, and archive with a walkthrough.",
+      "category": "productivity"
+    }
+  ]
+}
