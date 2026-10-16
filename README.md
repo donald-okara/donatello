@@ -6,6 +6,7 @@ A Claude Code plugin with my favorite AI workflows: onboarding an agent to a new
 
 - `/donatello:onboard`: interview, propose phases, scaffold `docs/`, `.spec/`, and a CLAUDE.md block
 - `/donatello:phase-new [scope]`: start the next phase from templates
+- `/donatello:phase-run [task | --all]`: run tasks with Haiku implementing and Sonnet reviewing, while Opus coordinates
 - `/donatello:phase-archive [phase]`: close out a phase and move it to the archive
 
 ## Install
