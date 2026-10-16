@@ -24,6 +24,7 @@ Tasks 1–2 are done. The plugin validates and loads (4 stub skills, 3 stub agen
 - `preferences/testing.md`: test results not implementation; JUnit, Mockito, Robolectric; Compose Preview Screenshot Testing; previews count as tests
 - `preferences/naming.md`: Route + Content for screens, `[Title][Type]` for components
 - `preferences/android-ui.md` (`paths: ["**/*.kt"]`): Compose only; previews mandatory, at the bottom, covering theme / font scale / screen size / `@PreviewParameter`; hoisted state; MVI components take only the fields they need
+- `android-ui.md` revised: preview wrappers in `:core:ui` (component: theme + Surface + padding; screen: theme + full-size Surface, no padding, mirroring the nav host; scene wrappers for Navigation 3 dialogs/sheets/panes), per-project grouped multipreview annotations, and wrappers + annotations as the first `:core:ui` task
 - General files (no `paths`) total 43 lines, under the 100-line cap
 
 ## Deviations from spec
