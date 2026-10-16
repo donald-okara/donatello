@@ -87,11 +87,11 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 - [x] Commit: `feat: implement phase-run skill`
 
 ### Task 8: `phase-archive` skill
-- [ ] Write SKILL.md: pick phase → handle unchecked tasks → finalize walkthrough → promote decisions and requirements (diff + approval) → `git mv` to dated archive dir
-- [ ] Verify: full loop phase-new → phase-run → phase-archive → phase-new in a fixture; `docs/requirements.md` created on first archive and updated, not duplicated, on the second
-- [ ] Verify: unchecked tasks prompt the three choices
-- [ ] Verify: archiving a phase with no walkthrough builds one from tasks and git history
-- [ ] Commit: `feat: implement phase-archive skill`
+- [x] Write SKILL.md: pick phase → handle unchecked tasks → finalize walkthrough → promote decisions and requirements (diff + approval) → `git mv` to dated archive dir
+- [x] Verify: full loop phase-new → phase-run → phase-archive → phase-new (verified piece by piece across Tasks 5, 7, 8; one continuous run happens in Task 9); `docs/requirements.md` created on first archive and updated, not duplicated, on the second
+- [x] Verify: unchecked tasks prompt the three choices
+- [x] Verify: archiving a phase with no walkthrough builds one from tasks and git history
+- [x] Commit: `feat: implement phase-archive skill`
 
 ### Task 9: Real-project trial and README
 - [ ] Push to GitHub; install via `/plugin marketplace add donald-okara/donatello` and `/plugin install donatello@donatello`

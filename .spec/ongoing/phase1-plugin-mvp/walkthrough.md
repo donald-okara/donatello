@@ -2,7 +2,7 @@
 
 ## Current state
 
-Tasks 1–7 are done. `/donatello:phase-run` runs the full loop (implementer on Haiku → reviewer on Sonnet → tick, walkthrough, commit), and the main session stays light. Not yet exercised: the fix round and escalation (Haiku never failed review in tests) and onboard's approval and pruning paths; both carried to Task 9. Next: Task 8, `phase-archive`.
+Tasks 1–8 are done: all four skills and three agents are implemented and verified in fixtures. Carried to Task 9 (real projects, interactive): the fix round and Sonnet escalation in phase-run, onboard's approval and plugin-pruning paths, one continuous new → run → archive → new loop, the relative-path check after a GitHub install, and re-measuring always-on token cost. Next: Task 9, which needs Donald: push to GitHub and pick a real Android project.
 
 ## How to verify
 
@@ -69,6 +69,14 @@ Tasks 1–7 are done. `/donatello:phase-run` runs the full loop (implementer on 
   - Trap tasks (requirement missing from task text; task text contradicting requirement): Haiku followed the requirements both times, so the fix round never ran (~$0.20)
   - Without phase-run, the CLAUDE.md block alone got Claude to implement, tick, update the walkthrough, and commit, and it flagged that review was skipped (~$0.18)
 - Tightened: implementer follows requirements over conflicting task text and notes it; walkthrough "Deviations from spec" holds only real spec deviations
+
+### Task 8: `phase-archive` skill
+- `skills/phase-archive/SKILL.md`: pick phase → unticked tasks (archive anyway / carry over / stop) → finalize walkthrough (closing Current state with a `Carried over:` list that phase-new reads), or build it from tasks + git log/stat when missing → promote lasting decisions to `docs/architecture.md` `## Decisions` and lasting requirements (adjusted for deviations, superseded entries replaced) to `docs/requirements.md`, as one diff for approval → `git mv` with literal paths to `.spec/archive/<date>-<dir>` → offer commit
+- Verified (Sonnet main session, ~$0.12–0.15 per run):
+  - finished phase: promoted only the cross-phase decision (int cents), skipped the phase-local one (regex); created requirements.md with the padding deviation applied; skipped the one-off setup requirement; archived and committed
+  - second phase changing format_amount: the existing requirement entry was **replaced** (merged), not duplicated
+  - unticked tasks: listed them, offered the three choices, moved nothing
+  - missing walkthrough: rebuilt from tasks and git history, and flagged a real gap (the phase added no tests)
 
 ## Deviations from spec
 
