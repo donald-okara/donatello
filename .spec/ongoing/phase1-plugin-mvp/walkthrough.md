@@ -2,7 +2,7 @@
 
 ## Current state
 
-Tasks 1–5 are done. Agents are verified on their models; `/donatello:phase-new` writes correctly numbered phases whose tasks follow the preferences, including path-scoped rules (e.g. `:core:ui` preview wrappers first). Next: Task 6, the `onboard` skill (scout → interview → propose → write, with the preferences split, plugin pruning, and the CLAUDE.md block).
+Tasks 1–6 are done. `/donatello:onboard` works on empty and existing projects: scout-first survey, preferences split into `docs/` and `.claude/rules/`, phase 1 via phase-new, and the CLAUDE.md block appended without touching existing content. Resume mode doesn't duplicate anything. Untested (needs an interactive session): the diff/approval paths and plugin pruning inside onboard, so carry them to Task 9. Next: Task 7, `phase-run`.
 
 ## How to verify
 
@@ -47,6 +47,19 @@ Tasks 1–5 are done. Agents are verified on their models; `/donatello:phase-new
 - Found while testing: path-scoped rules don't load during planning (no `.kt` file is touched), so phase-new now reads `.claude/rules/` explicitly
 - Verified in two fixtures with the real preferences (Sonnet main session, ~$0.21 each): an archived `phase1-*` gave `phase2-habit-list-screen`; a project with no `.spec/` gave `phase1-project-setup`; no walkthrough created; no HTML comments left; preview wrappers ordered first; result-based test steps; Route/Content split; real installed skills named (`android-cli`, `navigation-3`)
 - Tightened: omit the Skill line instead of writing "none"
+
+### Task 6: `onboard` skill
+- `skills/onboard/SKILL.md`: check existing state (resume mode, AGENTS.md case) → scout (main session doesn't read the code) → pick preferences by `applies-to` and sort general vs `paths` → short interview → one proposal → write (preferences with date header, rules with `paths`-only frontmatter, architecture under 80 lines with exact build/test commands, requirements only when behavior is clear, phase 1 via phase-new, CLAUDE.md block, plugin pruning via `claude plugin disable <id> --scope local`) → wrap up and offer a commit
+- `--defaults` writes new files without approval but never changes existing content, never replaces a block, and skips pruning
+- Verified (Sonnet main session, ~$0.21–0.24 per onboard):
+  - empty repo: scout skipped, phase1-project-foundation, CLAUDE.md created
+  - existing Compose repo with its own CLAUDE.md: scout on Haiku, **zero** main-session file reads, original CLAUDE.md intact byte-for-byte with one block appended, its team rules carried into phase 1 tasks
+  - re-run: resume mode, nothing changed (~$0.13)
+  - fresh Haiku session with read tools names the active phase and its scope (~$0.007)
+  - path-scoped rule: present after reading a `.kt` file, absent (NONE) after reading README.md
+- Verified separately: `claude plugin disable <id> --scope local` writes `.claude/settings.local.json` and disables a synced plugin for that project only
+- Fixed after testing: no placeholder `docs/requirements.md` for new projects; block heading renamed to "Spec workflow (Donatello plugin)" because a Haiku session mistook the project for "Donatello"
+- Housekeeping: test fixtures are now uninstalled (`claude plugin uninstall --scope project`) before deletion; 4 stale entries from earlier tests were cleaned up
 
 ## Deviations from spec
 

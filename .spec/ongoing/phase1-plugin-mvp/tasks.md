@@ -61,20 +61,20 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 - [x] Commit: `feat: implement phase-new skill`
 
 ### Task 6: `onboard` skill
-- [ ] Write SKILL.md: scout → interview (skip on `--defaults`) → propose → write on approval
-- [ ] Preferences split: general → `docs/preferences.md`; `paths` files → `.claude/rules/`; flag if general total exceeds 100 lines
-- [ ] Plugin pruning: list enabled plugins, propose ones to disable for this stack, write chosen ones to `.claude/settings.local.json` (merge, don't replace)
-- [ ] `docs/architecture.md` from the scout report (existing) or the interview (new)
-- [ ] Phase 1 by following `../phase-new/SKILL.md` and its templates
-- [ ] CLAUDE.md block: append, or replace between markers with a diff
-- [ ] Cover every edge-case row in ARCHITECTURE.md
-- [ ] Verify: empty fixture with `--defaults`
-- [ ] Verify: existing fixture with its own README + CLAUDE.md; original content intact outside markers
-- [ ] Verify: the main session's transcript shows the scout report, not raw repo file reads
-- [ ] Verify: re-run on an onboarded fixture → resumes, doesn't duplicate
-- [ ] Verify: fresh session in the fixture answers "what are we working on?" correctly
-- [ ] Verify: a Kotlin-file edit loads the path-scoped rule; a README edit doesn't
-- [ ] Commit: `feat: implement onboard skill`
+- [x] Write SKILL.md: scout → interview (skip on `--defaults`) → propose → write on approval
+- [x] Preferences split: general → `docs/preferences.md`; `paths` files → `.claude/rules/`; flag if general total exceeds 100 lines
+- [x] Plugin pruning: list enabled plugins, propose ones to disable for this stack, write chosen ones to `.claude/settings.local.json` (merge, don't replace)
+- [x] `docs/architecture.md` from the scout report (existing) or the interview (new)
+- [x] Phase 1 by following `../phase-new/SKILL.md` and its templates
+- [x] CLAUDE.md block: append, or replace between markers with a diff
+- [x] Cover every edge-case row in ARCHITECTURE.md (written; diff/approval paths can't run non-interactively, so they're exercised in Task 9)
+- [x] Verify: empty fixture with `--defaults`
+- [x] Verify: existing fixture with its own README + CLAUDE.md; original content intact outside markers
+- [x] Verify: the main session's transcript shows the scout report, not raw repo file reads
+- [x] Verify: re-run on an onboarded fixture → resumes, doesn't duplicate
+- [x] Verify: fresh session in the fixture answers "what are we working on?" correctly
+- [x] Verify: a Kotlin-file edit loads the path-scoped rule; a README edit doesn't
+- [x] Commit: `feat: implement onboard skill`
 
 ### Task 7: `phase-run` skill
 - [ ] Write SKILL.md: pick task → implementer → reviewer → one fix round → escalate to Sonnet → stop and ask; on PASS commit, tick, update walkthrough

@@ -102,7 +102,7 @@ Shared rules in each agent's prompt:
 ### CLAUDE.md block (shape)
 ```markdown
 <!-- donatello:start -->
-## Project workflow (Donatello)
+## Spec workflow (Donatello plugin)
 - Preferences: @docs/preferences.md (file-specific rules live in .claude/rules/)
 - Models: plan and discuss in the main session; implement via donatello:implementer, review via donatello:reviewer, survey via donatello:scout
 - Orientation: docs/architecture.md, docs/requirements.md (read when needed)
