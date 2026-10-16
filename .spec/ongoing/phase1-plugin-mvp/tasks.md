@@ -54,11 +54,11 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 - [x] Commit: `feat: add implementer, reviewer, and scout agents`
 
 ### Task 5: `phase-new` skill
-- [ ] Write SKILL.md: read context → compute N and slug → clarify scope → fill templates → show for review
-- [ ] Task shaping: follow `docs/preferences.md`; tasks precise enough for Haiku (files, expected behavior, how to check); name skills where relevant
-- [ ] Verify in a fixture with `phase1-*` archived → creates `phase2-<slug>/`
-- [ ] Verify in an empty fixture → creates `phase1-<slug>/`
-- [ ] Commit: `feat: implement phase-new skill`
+- [x] Write SKILL.md: read context → compute N and slug → clarify scope → fill templates → show for review
+- [x] Task shaping: follow `docs/preferences.md`; tasks precise enough for Haiku (files, expected behavior, how to check); name skills where relevant
+- [x] Verify in a fixture with `phase1-*` archived → creates `phase2-<slug>/`
+- [x] Verify in an empty fixture → creates `phase1-<slug>/`
+- [x] Commit: `feat: implement phase-new skill`
 
 ### Task 6: `onboard` skill
 - [ ] Write SKILL.md: scout → interview (skip on `--defaults`) → propose → write on approval

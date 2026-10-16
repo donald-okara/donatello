@@ -2,7 +2,7 @@
 
 ## Current state
 
-Tasks 1–4 are done. The plugin loads with real agent prompts: implementer (Haiku), reviewer (Sonnet), and scout (Haiku) each run on their declared model and keep build logs out of the conversation. Next: Task 5, the `phase-new` skill. It must strip template HTML comments and write tasks precise enough for Haiku, including test steps.
+Tasks 1–5 are done. Agents are verified on their models; `/donatello:phase-new` writes correctly numbered phases whose tasks follow the preferences, including path-scoped rules (e.g. `:core:ui` preview wrappers first). Next: Task 6, the `onboard` skill (scout → interview → propose → write, with the preferences split, plugin pruning, and the CLAUDE.md block).
 
 ## How to verify
 
@@ -40,6 +40,13 @@ Tasks 1–4 are done. The plugin loads with real agent prompts: implementer (Hai
 - Verified in a fixture with a fake `gradlew` (400 noise lines plus an error): implementer ran on Haiku and returned BLOCKED with errors only (largest tool result 684 chars, about $0.12); reviewer ran on Sonnet, stayed read-only, and returned ISSUES (about $0.05, then $0.03 after tightening); scout ran on Haiku with a 55-line report (about $0.12)
 - Tightened after the first run: paths relative to the repo root; non-blocking points moved to NOTE; environment-failure rule
 - Docs fixed: the reviewer gets uncommitted changes, not a commit range (phase-run commits only after PASS)
+
+### Task 5: `phase-new` skill
+- `skills/phase-new/SKILL.md`: gather context cheaply (preferences, architecture, requirements, **all `.claude/rules/*.md`**, directory names only, plus the latest archived walkthrough's Current state) → compute N and slug → settle scope (no interview when the argument is specific) → fill templates and strip HTML comments → summary review → offer to commit
+- Task-writing rules for a Haiku implementer: Serves/Files/Skill header, 3–6 steps, named functions and results, explicit test steps per preferences, UI per rules, exact Check, conventional commit, dependency ordering
+- Found while testing: path-scoped rules don't load during planning (no `.kt` file is touched), so phase-new now reads `.claude/rules/` explicitly
+- Verified in two fixtures with the real preferences (Sonnet main session, ~$0.21 each): an archived `phase1-*` gave `phase2-habit-list-screen`; a project with no `.spec/` gave `phase1-project-setup`; no walkthrough created; no HTML comments left; preview wrappers ordered first; result-based test steps; Route/Content split; real installed skills named (`android-cli`, `navigation-3`)
+- Tightened: omit the Skill line instead of writing "none"
 
 ## Deviations from spec
 
