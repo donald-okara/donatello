@@ -30,20 +30,26 @@
 **Decision:** Task 2 (preferences) comes before the skills.
 **Why:** The skills' main job is to carry your preferences into projects; without real content there's nothing to judge the output against.
 
+### Walkthrough replaces Outcome and handoff notes
+**Decision:** Add `walkthrough.md` (Current state / How to verify / Changes by task / Deviations from spec), created after the first finished task.
+**Why:** It keeps intent, reasoning, and the record of what happened separate, gives reviewers a verification path, and gives the agent a cheap resume point. Modeled on Antigravity's walkthrough artifact.
+**Tradeoff:** One more file; read only "Current state" on resume to keep cost down.
+
+### Living requirements in `docs/requirements.md`
+**Decision:** On archive, merge lasting requirements into `docs/requirements.md` as prose, with a diff for approval.
+**Why:** Current behavior shouldn't require reading the archive. Borrowed from OpenSpec's `specs/`, without its delta syntax.
+**Tradeoff:** Merges are judgment calls; the approval diff catches bad ones.
+
 ## Verification Approach
 
 There is no code to unit-test. Each skill is verified by running it:
 - Load locally with `claude --plugin-dir /Users/donaldisoe/AI-Mployees/donatello` in throwaway fixture projects (empty dir; small existing repo with its own CLAUDE.md)
 - Then on one real Android and one real web project
-- Record issues found in "Handoff notes" below and fix in the skill text
+- Record issues found in this phase's `walkthrough.md` and fix them in the skill text
 
 ## Open Questions
 
 - Does a skill's relative path to `../../preferences/` resolve in the installed plugin cache as it does with `--plugin-dir`? Verify in Task 1; if not, move preferences under `skills/onboard/`.
-
-## Handoff Notes
-
-_Add notes at the end of each session: what was done, what's next, anything surprising._
 
 ## Later Phases (one-liners)
 

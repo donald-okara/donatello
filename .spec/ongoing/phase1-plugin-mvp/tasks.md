@@ -31,11 +31,12 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 - [ ] Commit: `feat: add initial preferences`
 
 ### Task 3: Templates
-- [ ] `skills/phase-new/templates/overview.md`: Goal / Delivers / Out of scope / Success criteria / Outcome
-- [ ] `skills/phase-new/templates/design.md`: Decision / Why / Tradeoff entries; Handoff notes
+- [ ] `skills/phase-new/templates/overview.md`: Goal / Delivers / Out of scope / Success criteria
+- [ ] `skills/phase-new/templates/design.md`: Decision / Why / Tradeoff entries only
 - [ ] `skills/phase-new/templates/spec.md`: R1… with scope and a check each; NFRs
 - [ ] `skills/phase-new/templates/tasks.md`: dependency sketch + `- [ ]` checklist, commit line per task
-- [ ] `templates/claude-block.md`: marked block per ARCHITECTURE.md; confirm < 300 tokens
+- [ ] `skills/phase-new/templates/walkthrough.md`: Current state / How to verify / Changes by task / Deviations from spec, with one-line guidance each
+- [ ] `templates/claude-block.md`: marked block per ARCHITECTURE.md, including walkthrough upkeep rules; confirm < 300 tokens
 - [ ] Commit: `feat: add phase and CLAUDE.md templates`
 
 ### Task 4: `phase-new` skill
@@ -59,14 +60,16 @@ Each task ends with a commit. Verification means running the skill, not unit tes
 - [ ] Commit: `feat: implement onboard skill`
 
 ### Task 6: `phase-archive` skill
-- [ ] Write SKILL.md: pick phase → handle unchecked tasks → write Outcome → promote decisions → `git mv` to dated archive dir
-- [ ] Verify: full loop phase-new → phase-archive → phase-new in a fixture
+- [ ] Write SKILL.md: pick phase → handle unchecked tasks → finalize walkthrough → promote decisions and requirements (diff + approval) → `git mv` to dated archive dir
+- [ ] Verify: finishing a task in a fixture creates `walkthrough.md` via the CLAUDE.md block alone (R6a)
+- [ ] Verify: full loop phase-new → phase-archive → phase-new in a fixture; `docs/requirements.md` created on first archive and updated, not duplicated, on the second
 - [ ] Verify: unchecked tasks prompt the three choices
+- [ ] Verify: archiving a phase with no walkthrough builds one from tasks and git history
 - [ ] Commit: `feat: implement phase-archive skill`
 
 ### Task 7: Real-project trial and README
 - [ ] Push to GitHub; install via `/plugin marketplace add donald-okara/donatello` and `/plugin install donatello@donatello`
-- [ ] Onboard one real Android project and one real web project; log issues in design.md handoff notes
+- [ ] Onboard one real Android project and one real web project; log issues in this phase's `walkthrough.md`
 - [ ] Fix skill text for each issue found
 - [ ] Update README: what it is, install, the three commands, the files it creates
 - [ ] Commit: `docs: README and fixes from real-project trial`

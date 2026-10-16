@@ -21,7 +21,7 @@ Claude is the engine: it reads the target project, runs the interview, and fills
 skills/
   onboard/SKILL.md
   phase-new/SKILL.md
-  phase-new/templates/{overview,design,spec,tasks}.md
+  phase-new/templates/{overview,design,spec,tasks,walkthrough}.md
   phase-archive/SKILL.md
 preferences/*.md
 templates/claude-block.md
@@ -44,7 +44,7 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 ### `onboard` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[--defaults]"`
 - **Reads:** target repo (README, manifests, CLAUDE.md, docs/, .spec/, `git log`), `preferences/`
-- **Writes:** `docs/preferences.md`, `docs/architecture.md`, phase 1 (via phase-new steps), the CLAUDE.md block
+- **Writes:** `docs/preferences.md`, `docs/architecture.md`, `docs/requirements.md` (existing projects, only when behavior is clear from the code), phase 1 (via phase-new steps), the CLAUDE.md block
 - **Guardrails:** propose before writing; never overwrite; resume if `.spec/` already exists; ask rather than guess when the project type is ambiguous (monorepos)
 
 ### `phase-new` skill
@@ -55,16 +55,21 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 
 ### `phase-archive` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[phase]"`
-- **Reads:** the phase's `tasks.md`, `design.md`
-- **Writes:** Outcome section in `overview.md`, promoted decisions in `docs/architecture.md`, then moves the directory to `.spec/archive/<date>-phase<N>-<slug>/`
+- **Reads:** the phase's `tasks.md`, `design.md`, `spec.md`, `walkthrough.md`
+- **Writes:** final "Current state" summary in `walkthrough.md`; promoted decisions in `docs/architecture.md`; promoted requirements (adjusted for deviations) in `docs/requirements.md`; then moves the directory to `.spec/archive/<date>-phase<N>-<slug>/`
+
+### Walkthrough upkeep (no skill)
+- Driven by the CLAUDE.md block, not a command, so it happens during normal work
+- On the first finished task the agent creates `walkthrough.md`. The CLAUDE.md block can't reference plugin paths, so it names the four sections inline; `skills/phase-new/templates/walkthrough.md` is the fuller version that `phase-archive` uses when it builds a missing walkthrough.
 
 ### Templates
 | File | Content |
 |---|---|
-| `overview.md` | Goal, what the phase delivers, out of scope, success criteria, Outcome (filled on archive) |
-| `design.md` | Decisions as *Decision / Why / Tradeoff*; handoff notes at the bottom |
+| `overview.md` | Goal, what the phase delivers, out of scope, success criteria (intent only, not updated after planning) |
+| `design.md` | Decisions as *Decision / Why / Tradeoff*, and nothing else |
 | `spec.md` | Numbered requirements (R1…), each with scope and a verifiable acceptance check |
 | `tasks.md` | Plain `- [ ]` checklist grouped by task; no status emoji, since the checkbox *is* the status |
+| `walkthrough.md` | Current state (≤ 10 lines) / How to verify / Changes by task / Deviations from spec |
 | `claude-block.md` | The marked CLAUDE.md block (see below) |
 
 ### CLAUDE.md block (shape)
@@ -72,9 +77,10 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 <!-- donatello:start -->
 ## Project workflow (Donatello)
 - Preferences: @docs/preferences.md
-- Architecture: docs/architecture.md (read when orienting)
-- Current work: .spec/ongoing/. Read the active phase's overview, spec, and tasks before starting
-- Tick items in tasks.md as you finish them; add handoff notes to design.md at the end of a session
+- Orientation: docs/architecture.md, docs/requirements.md (read when needed)
+- Current work: .spec/ongoing/. Read the active phase's overview, spec, tasks, and the "Current state" section of walkthrough.md
+- After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
+- End of session: rewrite walkthrough.md "Current state"
 - New phase: /donatello:phase-new · Finish a phase: /donatello:phase-archive
 <!-- donatello:end -->
 ```
@@ -102,6 +108,14 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 - **Why:** projects stay self-contained and can diverge; no lookup at runtime; works for collaborators who don't have Donatello installed.
 - **Tradeoff:** drift. Re-running onboard offers a diff against the current preferences.
 
+### Walkthrough as a separate record
+- **Why:** intent (overview, spec), reasoning (design), and what actually happened are different kinds of content; mixing them made `design.md` and `overview.md` change after planning. A walkthrough also gives reviewers a "how to verify" path. This follows Antigravity's artifacts (task list / implementation plan / walkthrough).
+- **Tradeoff:** one more file. Mitigated by creating it lazily and reading only "Current state" on resume.
+
+### Living requirements in `docs/requirements.md`
+- **Why:** without it, current behavior can only be pieced together from archived specs. This borrows OpenSpec's always-current `specs/` without its ADDED/MODIFIED/REMOVED delta format; the agent merges in prose at archive time.
+- **Tradeoff:** merges are judgment calls, so they're shown as a diff for approval.
+
 ### Marked block in CLAUDE.md
 - **Why:** many projects already have a CLAUDE.md; the markers let Donatello update its part idempotently.
 
@@ -121,4 +135,6 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 | `docs/preferences.md` exists | Show a diff against current preferences; merge only with approval |
 | Monorepo / ambiguous stack | Ask which part(s) to onboard |
 | Archiving with unchecked tasks | List them; archive anyway, carry over, or stop |
+| Archiving with no `walkthrough.md` | Build one from `tasks.md` and git history since the phase started; ask about "How to verify" |
+| No `docs/requirements.md` yet | Create it on this archive |
 | Not a git repo | Use plain moves; mention that history won't be tracked |

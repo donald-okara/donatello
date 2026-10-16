@@ -35,7 +35,7 @@ donatello/
 │   │   └── SKILL.md              # /donatello:onboard
 │   ├── phase-new/
 │   │   ├── SKILL.md              # /donatello:phase-new
-│   │   └── templates/            # overview.md, design.md, spec.md, tasks.md
+│   │   └── templates/            # overview, design, spec, tasks, walkthrough
 │   ├── phase-archive/
 │   │   └── SKILL.md              # /donatello:phase-archive
 │   └── <domain skills>/          # e.g. compose-patterns/, added over time
@@ -59,15 +59,17 @@ donatello/
 project/
 ├── CLAUDE.md                     # Existing content preserved; Donatello block added
 ├── docs/
-│   ├── architecture.md           # High-level system overview
+│   ├── architecture.md           # High-level system overview and durable decisions
+│   ├── requirements.md           # How the system behaves now; grows as phases are archived
 │   └── preferences.md            # Your preferences, copied and tailored to this project
 └── .spec/
     ├── ongoing/
     │   └── phase1-<slug>/
-    │       ├── overview.md       # What this phase accomplishes and why
-    │       ├── design.md         # Phase decisions and handoff notes
+    │       ├── overview.md       # Intent: what this phase accomplishes and why
+    │       ├── design.md         # Decisions only (Decision / Why / Tradeoff)
     │       ├── spec.md           # Requirements and acceptance criteria
-    │       └── tasks.md          # Checklist; agent ticks items as it goes
+    │       ├── tasks.md          # Checklist; agent ticks items as it goes
+    │       └── walkthrough.md    # Record: current state, how to verify, what changed (after first task)
     └── archive/
         └── 2026-10-16-phase1-<slug>/
 ```
@@ -99,14 +101,21 @@ Works on both new and existing projects.
 
 1. Read `docs/`, the archive, and ongoing phases to work out the next `<N>` and context.
 2. Discuss scope if it isn't clear from the argument.
-3. Fill the four templates: requirements in `spec.md`, decisions in `design.md`, and tasks in `tasks.md` shaped by `docs/preferences.md` (e.g. test-first tasks when TDD is preferred). Note in a task when a specific skill applies.
+3. Fill the four planning templates: requirements in `spec.md`, decisions in `design.md`, and tasks in `tasks.md` shaped by `docs/preferences.md` (e.g. test-first tasks when TDD is preferred). Note in a task when a specific skill applies. `walkthrough.md` is **not** created yet.
 4. Show the result for review.
+
+### During a phase (no command; driven by the CLAUDE.md block)
+
+- After finishing a task, the agent ticks it in `tasks.md` and updates `walkthrough.md`, creating it from the template on the first finished task.
+- At the end of a session, the agent rewrites the walkthrough's "Current state" section.
 
 ### 3. Archive a phase — `/donatello:phase-archive [phase]`
 
 1. Check `tasks.md`: if items are unchecked, list them and ask whether to archive anyway, carry them into the next phase, or stop.
-2. Add a short "Outcome" section to `overview.md` (what shipped, what was deferred).
-3. Promote durable decisions from the phase's `design.md` into `docs/architecture.md` if they matter beyond the phase.
+2. Finalize `walkthrough.md`: rewrite "Current state" as a closing summary (what shipped, what was deferred, where carried-over tasks went) and make sure "How to verify" is complete.
+3. Promote what outlives the phase, showing the diff for approval:
+   - durable decisions from `design.md` → `docs/architecture.md`
+   - requirements from `spec.md` that describe lasting behavior (not one-off migration or setup steps), adjusted for any "Deviations from spec" → `docs/requirements.md`, grouped by area, replacing older entries they supersede
 4. Move the directory to `.spec/archive/<today>-phase<N>-<slug>/` (via `git mv` when in a git repo).
 
 ---
@@ -116,8 +125,24 @@ Works on both new and existing projects.
 ### The CLAUDE.md block
 - Wrapped in `<!-- donatello:start -->` / `<!-- donatello:end -->` so it can be updated in place without touching the user's own content
 - Imports preferences with `@docs/preferences.md` (always relevant, so always loaded)
-- Points to `.spec/ongoing/` as current work and tells the agent to keep `tasks.md` up to date
+- Points to `.spec/ongoing/` as current work and tells the agent to keep `tasks.md` and `walkthrough.md` up to date
+- On resume, the agent reads only the walkthrough's "Current state" section, not the whole file
 - Target: under 300 tokens for the block itself
+
+### Walkthrough
+- The record of what actually happened in a phase, kept separate from intent (`overview.md`, `spec.md`) and reasoning (`design.md`)
+- Sections:
+  - **Current state**: ≤ 10 lines, rewritten each session; the only part read on resume
+  - **How to verify**: commands to run, screens to open, previews or screenshots to check; what a reviewer needs to accept the work without replaying it
+  - **Changes by task**: appended as tasks finish; files touched and notable details
+  - **Deviations from spec**: what changed relative to `spec.md` and why
+- Replaces handoff notes in `design.md` and the Outcome section in `overview.md`
+- Written by the agent; finalized by `phase-archive`
+
+### Living requirements
+- `docs/requirements.md` describes how the system behaves *now*. Archived phases keep their own `spec.md` as history, so nobody has to read the archive to learn current behavior.
+- Created on the first archive (or seeded by onboard for existing projects when behavior is clear from the code)
+- Entries are plain requirement statements grouped by area; superseded entries are replaced, not kept alongside
 
 ### Preferences
 - Live in `preferences/` in this repo, one Markdown file per category, each with a `summary:` frontmatter line
@@ -130,7 +155,7 @@ Works on both new and existing projects.
 - Third-party skills are installed from their own marketplaces; Donatello doesn't wrap or mirror them
 
 ### Documentation split
-- `docs/` answers "what is this and why": architecture, preferences. No step-by-step.
+- `docs/` answers "what is this, how does it behave, and why": architecture, requirements, preferences. No step-by-step.
 - `.spec/` answers "what are we doing now": phase-scoped and actionable, and refers to `docs/` rather than repeating it.
 
 ---
@@ -146,6 +171,7 @@ Works on both new and existing projects.
 ## Success Criteria
 
 - Installing the plugin and running `/donatello:onboard` on a new and an existing project produces `docs/`, `.spec/ongoing/phase1-*/`, and a CLAUDE.md block, with nothing overwritten
-- A fresh Claude session in an onboarded project knows the current phase and your preferences without being told
+- A fresh Claude session in an onboarded project knows the current phase, its current state, and your preferences without being told
+- After a phase is archived, `docs/requirements.md` reflects what it shipped
 - `/donatello:phase-new` and `/donatello:phase-archive` keep numbering and naming consistent across several phases
 - The Donatello block is under 300 tokens
