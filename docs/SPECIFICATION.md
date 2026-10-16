@@ -2,9 +2,9 @@
 
 ## Vision
 
-Donatello is a developer toolkit that scaffolds and manages spec-driven project structure. It provides a template for organizing projects into phases, integrates with your personal skills and preferences, and generates project onboarding context so Claude (or another AI agent) can work with you efficiently without redundant context replication across sessions.
+Donatello is a Claude Code plugin that sets up and runs spec-driven project structure. It interviews you about a project, organizes the work into phases, carries your coding preferences into every project, and leaves a small, consistent context footprint so Claude can pick up work across sessions without re-explaining.
 
-Donatello is **not an AI tool**—it's a preference and structure manager. It holds your coding conventions, references your skills, and helps organize project phases in a way that Claude can consume with minimal token overhead.
+Donatello is **a set of skills and templates, not a program.** Claude does the reasoning (interviewing, phase breakdown, task suggestion); Donatello supplies the workflow, the file conventions, and your preferences.
 
 ---
 
@@ -12,222 +12,140 @@ Donatello is **not an AI tool**—it's a preference and structure manager. It ho
 
 ### Two Components
 
-**1. Donatello Repo** (this project)
-- Central hub for your skills and preferences
-- Command-line tool that scaffolds projects
-- Personal toolkit; can be published to marketplace later if desired
+**1. Donatello repo** (this project)
+- A Claude Code plugin *and* its own marketplace (`.claude-plugin/marketplace.json` with `source: "./"`)
+- Holds workflow skills, phase templates, and your preferences
+- Installed once per machine: `/plugin marketplace add donald-okara/donatello` → `/plugin install donatello@donatello`
 
-**2. Per-Project `.spec/` Directory**
-- Created when you run `donatello onboard` on a new or existing project
-- Holds project phases (ongoing, archive)
-- High-level documentation lives in `docs/` (architecture, design, preferences)
-- Links to your skills (doesn't copy them)
+**2. Per-project structure**
+- Created by `/donatello:onboard` in any project
+- `docs/` for long-lived orientation, `.spec/` for phase work, a marked block in `CLAUDE.md` as the entry point
 
 ### Directory Structure
 
-#### Donatello Repo
+#### Donatello repo
 
 ```
 donatello/
-├── README.md
+├── .claude-plugin/
+│   ├── plugin.json
+│   └── marketplace.json
+├── skills/
+│   ├── onboard/
+│   │   └── SKILL.md              # /donatello:onboard
+│   ├── phase-new/
+│   │   ├── SKILL.md              # /donatello:phase-new
+│   │   └── templates/            # overview.md, design.md, spec.md, tasks.md
+│   ├── phase-archive/
+│   │   └── SKILL.md              # /donatello:phase-archive
+│   └── <domain skills>/          # e.g. compose-patterns/, added over time
+├── preferences/                  # Your coding preferences, one file per category
+│   ├── testing.md
+│   ├── naming.md
+│   └── ...
+├── templates/
+│   └── claude-block.md           # The block inserted into a project's CLAUDE.md
 ├── docs/
 │   ├── SPECIFICATION.md          # This file
-│   ├── ARCHITECTURE.md
-│   └── DESIGN.md
-├── src/donatello/
-│   └── cli/main.py               # CLI commands
-├── skills/                       # Skills you write
-│   ├── android/
-│   ├── web/
-│   └── general/
-├── preferences/                  # Your coding preferences (by category)
-│   ├── testing-preferences.md
-│   ├── preview-preferences.md
-│   ├── naming-preferences.md
-│   ├── dependency-injection-preferences.md
-│   └── ...
+│   └── ARCHITECTURE.md
 └── .spec/                        # Donatello's own phases (dogfooding)
     ├── ongoing/
-    │   └── phase1-cli-foundation/
-    │       ├── overview.md
-    │       ├── design.md
-    │       ├── spec.md
-    │       └── tasks.md
     └── archive/
 ```
 
-#### Per-Project After `donatello onboard`
+#### A project after `/donatello:onboard`
 
 ```
 project/
-├── README.md
+├── CLAUDE.md                     # Existing content preserved; Donatello block added
 ├── docs/
 │   ├── architecture.md           # High-level system overview
-│   ├── design.md                 # Decisions, handoff notes
-│   ├── preferences.md            # Project-specific rules, conventions
-│   └── ...
-├── CLAUDE.md or AGENT.md         # Agent context (skills list, preferences summary)
+│   └── preferences.md            # Your preferences, copied and tailored to this project
 └── .spec/
     ├── ongoing/
-    │   ├── phase1/
-    │   │   ├── overview.md       # What phase 1 accomplishes
-    │   │   ├── design.md         # Phase-specific decisions
-    │   │   ├── spec.md           # Phase-specific requirements
-    │   │   └── tasks.md          # Task checklist (auto-suggested, customizable)
-    │   ├── phase2/
-    │   │   └── ...
-    │   └── phaseN/
-    │       └── ...
+    │   └── phase1-<slug>/
+    │       ├── overview.md       # What this phase accomplishes and why
+    │       ├── design.md         # Phase decisions and handoff notes
+    │       ├── spec.md           # Requirements and acceptance criteria
+    │       └── tasks.md          # Checklist; agent ticks items as it goes
     └── archive/
-        ├── 2026-10-01-phase1/
-        ├── 2026-10-15-phase2/
-        └── ...
+        └── 2026-10-16-phase1-<slug>/
 ```
+
+**Naming conventions**
+- Ongoing phase: `.spec/ongoing/phase<N>-<kebab-slug>/`
+- Archived phase: `.spec/archive/<YYYY-MM-DD>-phase<N>-<kebab-slug>/` (date = archive date)
+- `<N>` continues across ongoing and archived phases; it never resets
 
 ---
 
 ## Workflows
 
-### Workflow 1: New Project Setup
+### 1. Onboard a project — `/donatello:onboard`
 
-**Command:** `donatello onboard <path>`
+Works on both new and existing projects.
 
-**Steps:**
-1. Detect if project is new or existing
-2. If new, ask if user wants an interview or defaults
-3. If interview: ask customizable questions based on project type (Android, Web, iOS, etc.)
-   - Inspect README and GitHub project description to tailor questions
-   - Understand what's being built and how to break into phases
-4. Create `.spec/` directory with phase structure
-5. Copy user's preferences from Donatello repo to `docs/preferences.md` (user can customize during interview)
-6. Generate `CLAUDE.md` or `AGENT.md` with:
-   - Links to skills (local + external)
-   - Summary of preferences
-   - Pointer to `.spec/` and `docs/`
-7. Suggest first phase (phase1) with auto-generated tasks based on:
-   - Phase scope
-   - User's preferences (e.g., always include test-first tasks if TDD is preferred)
+1. **Inspect** the repo: README, manifests (`build.gradle*`, `package.json`, `pyproject.toml`, …), existing `CLAUDE.md`, `docs/`, `.spec/`, git history.
+2. **Interview** the user, conversationally and briefly: what's being built, current state, where it's going, which preferences apply. Skippable: "use defaults" scaffolds immediately with what was inferred.
+3. **Propose** a phase breakdown (phase 1 in detail, later phases as one-liners). The user approves or edits before anything is written.
+4. **Write**:
+   - `docs/preferences.md` from the relevant files in `preferences/`, tailored per the interview
+   - `docs/architecture.md` (existing projects: drawn from the code; new: from the interview)
+   - Phase 1 via the `phase-new` workflow
+   - The Donatello block in `CLAUDE.md`
+5. **Never overwrite.** Existing files are left alone or merged with the user's approval; an existing `.spec/` means onboarding resumes instead of starting over.
 
-**User Flow:**
-- Runs `donatello onboard`
-- Answers interview questions (or skips with defaults)
-- Reviews and customizes `docs/preferences.md` if needed
-- Donatello scaffolds `.spec/` with phase1 ready to go
-- User can now hand the project to Claude with context already structured
+### 2. Start a phase — `/donatello:phase-new [scope]`
 
-### Workflow 2: Existing Project Onboarding
+1. Read `docs/`, the archive, and ongoing phases to work out the next `<N>` and context.
+2. Discuss scope if it isn't clear from the argument.
+3. Fill the four templates: requirements in `spec.md`, decisions in `design.md`, and tasks in `tasks.md` shaped by `docs/preferences.md` (e.g. test-first tasks when TDD is preferred). Note in a task when a specific skill applies.
+4. Show the result for review.
 
-**Command:** `donatello onboard <path>` (on existing project)
+### 3. Archive a phase — `/donatello:phase-archive [phase]`
 
-**Steps:**
-1. Detect project is existing
-2. If no `.spec/`, run interview to understand the current state and future direction
-3. Help user decide how to organize existing work and future work into phases
-4. Create `.spec/` structure
-5. Generate `CLAUDE.md` or `AGENT.md`
-
-**User Flow:**
-- Brings an existing project
-- Runs `donatello onboard`
-- Has a conversation with Donatello (preloaded with user's preferences) about how to organize work
-- Gets a `.spec/` structure and can start adding phases
-
-### Workflow 3: Skills Management
-
-**Command:** `donatello skills list`
-
-**Output:**
-- Lists available skills (local from Donatello repo + external references)
-- Shows which skills are active for current project (if in a project directory)
-- Plain text with indentation and bullets
-- Includes description for each skill
-
-**Per-Project Skill Reference:**
-- Skills are linked in `CLAUDE.md` or `AGENT.md` or optional `skills.md` at project root
-- Skills are stored wherever the agent prefers (e.g., `.claude/skills/`)
-- Task-specific references: within `.spec/phaseX/tasks.md`, mention if a task uses a specific skill
-- Example: "Task: Create core.ui module — Reference Jetpack Compose skill for component patterns"
+1. Check `tasks.md`: if items are unchecked, list them and ask whether to archive anyway, carry them into the next phase, or stop.
+2. Add a short "Outcome" section to `overview.md` (what shipped, what was deferred).
+3. Promote durable decisions from the phase's `design.md` into `docs/architecture.md` if they matter beyond the phase.
+4. Move the directory to `.spec/archive/<today>-phase<N>-<slug>/` (via `git mv` when in a git repo).
 
 ---
 
 ## Key Behaviors
 
+### The CLAUDE.md block
+- Wrapped in `<!-- donatello:start -->` / `<!-- donatello:end -->` so it can be updated in place without touching the user's own content
+- Imports preferences with `@docs/preferences.md` (always relevant, so always loaded)
+- Points to `.spec/ongoing/` as current work and tells the agent to keep `tasks.md` up to date
+- Target: under 300 tokens for the block itself
+
 ### Preferences
-- Stored in Donatello repo under `preferences/` (split by category)
-- Examples: testing-preferences.md, preview-preferences.md, naming-preferences.md
-- Content: How you prefer to code (TDD? Previews? DI patterns? Naming conventions?)
-- Copied to project's `docs/preferences.md` during onboard; user can customize per project
+- Live in `preferences/` in this repo, one Markdown file per category, each with a `summary:` frontmatter line
+- Copied (not linked) into `docs/preferences.md` so each project is self-contained and can diverge
+- Changing a preference in Donatello does not touch existing projects; re-run onboard to pull updates (it shows a diff)
 
 ### Skills
-- Stored in Donatello repo under `skills/` (by category: android, web, general)
-- Can be local (written by you) or external (linked from others)
-- Can have overrides: use external skill + your custom preferences on top
-- Skills are NOT stored in `.spec/` or project; they're referenced
-- Donatello does NOT publish/manage skills; user decides marketplace publishing separately
+- Workflow skills (onboard, phase-new, phase-archive) are explicit-only (`disable-model-invocation: true`); they run when you type them
+- Domain skills (e.g. Compose patterns) are model-invocable and ship in the same plugin
+- Third-party skills are installed from their own marketplaces; Donatello doesn't wrap or mirror them
 
-### Tasks Auto-Generation
-- When creating a phase, Donatello suggests tasks based on:
-  - Phase scope/name (e.g., "implement auth" suggests login, password reset, etc.)
-  - User's preferences (e.g., if TDD is preferred, suggest test-first tasks)
-  - Project type (Android, Web, iOS have different task patterns)
-- Tasks are suggestions; user edits and customizes
-- Tasks are stored in `.spec/phaseX/tasks.md` as a checklist
-
-### Documentation Separation
-- `docs/` = high-level orientation (architecture, design, preferences)
-  - No code details, no step-by-step
-  - Guides context; answers "why" and "what"
-- `.spec/` = phase-specific and actionable (overview, design, spec, tasks)
-  - Answers "what to do" for each phase
-  - Phases can reference `docs/` for orientation
-
-### Interview Customization
-- When running `donatello onboard`, interview questions adapt based on:
-  - Project type detected (Android, Web, Python, etc.)
-  - README and GitHub project description
-  - User's stored preferences
-- User can skip interview and use defaults
-- Interview is a conversation, not a questionnaire; Donatello suggests, user guides
-
----
-
-## CLI Commands
-
-```bash
-# Initialize Donatello in a new project (or onboard to existing)
-donatello onboard [--path .] [--no-interview]
-
-# List available skills (local + external)
-donatello skills list [--active]
-
-# Create a new phase (scaffold phase template)
-donatello phase create <name> [--scope "description"]
-
-# Archive a completed phase
-donatello phase archive <phase-name>
-
-# Validate .spec/ structure
-donatello validate [--path .]
-```
+### Documentation split
+- `docs/` answers "what is this and why": architecture, preferences. No step-by-step.
+- `.spec/` answers "what are we doing now": phase-scoped and actionable, and refers to `docs/` rather than repeating it.
 
 ---
 
 ## Non-Goals
 
-- **Donatello is not a code generator.** It generates task suggestions and structure, not code.
-- **Donatello is not a context manager.** It doesn't keep state across sessions or provide a stateful API.
-- **Donatello is not a skill publisher.** It manages references; users publish to marketplaces independently.
-- **Donatello is not an AI.** It's rule-based suggestions and templates.
+- **Not a code generator.** It produces structure, specs, and tasks, not application code.
+- **Not a skill mirror.** Third-party skills come from their own plugins.
+- **No standalone CLI.** If something later needs deterministic tooling (e.g. validation), it ships as a script or hook inside the plugin.
 
 ---
 
 ## Success Criteria
 
-✅ User can run `donatello onboard` on a new project and get a structured `.spec/` with phases  
-✅ User can customize preferences during onboard  
-✅ User receives a generated `CLAUDE.md` that links to their skills  
-✅ Phase structure is clean: `.spec/ongoing/phaseX/` with overview, design, spec, tasks  
-✅ `donatello skills list` shows available skills (local + external, filtered to active)  
-✅ No context duplication: high-level docs in `docs/`, phase-specific in `.spec/`  
-✅ User can hand a project to Claude with all context pre-structured  
-✅ Token overhead is minimal: Claude reads `.spec/phaseX/` + `docs/preferences.md`, not everything  
+- Installing the plugin and running `/donatello:onboard` on a new and an existing project produces `docs/`, `.spec/ongoing/phase1-*/`, and a CLAUDE.md block, with nothing overwritten
+- A fresh Claude session in an onboarded project knows the current phase and your preferences without being told
+- `/donatello:phase-new` and `/donatello:phase-archive` keep numbering and naming consistent across several phases
+- The Donatello block is under 300 tokens
