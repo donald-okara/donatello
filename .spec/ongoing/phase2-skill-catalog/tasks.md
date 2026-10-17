@@ -52,14 +52,14 @@ Each task ends with a commit. Verification means running the skill against fixtu
 **Serves:** R5, NF1
 **Files:** `skills/onboard/SKILL.md`
 
-- [ ] Step 3: after deduplicating preferences, build the import candidates by following "import" in `../skills/SKILL.md` up to (not including) the questions
-- [ ] Step 4: add the all / pick / none and committed / just me questions (skipped with `--defaults`)
-- [ ] Step 5: list the chosen skills and their scope in the proposal
-- [ ] Step 6: new sub-step "h. Skills" before plugin pruning: run the import's install step; 6g never proposes a plugin imported in 6h
-- [ ] `--defaults`: skip skills and name `/donatello:skills import` in the wrap-up; resume mode lists catalog candidates among the missing pieces
-- [ ] Step 7: include the import summary; leave "just me" files out of the onboard commit
-- [ ] Check: onboard's `SKILL.md` grew by ≤ 25 lines; the import flow isn't repeated in it; the reviewer walks onboard's normal, `--defaults`, and resume paths against R5 (live run in Task 5)
-- [ ] Commit: `feat: import catalog skills during onboard`
+- [x] Step 3: after deduplicating preferences, build the import candidates by following "import" in `../skills/SKILL.md` up to (not including) the questions
+- [x] Step 4: add the all / pick / none and committed / just me questions (skipped with `--defaults`)
+- [x] Step 5: list the chosen skills and their scope in the proposal
+- [x] Step 6: new sub-step "h. Skills" before plugin pruning: run the import's install step; 6g never proposes a plugin imported in 6h
+- [x] `--defaults`: skip skills and name `/donatello:skills import` in the wrap-up; resume mode lists catalog candidates among the missing pieces
+- [x] Step 7: include the import summary; leave "just me" files out of the onboard commit
+- [x] Check: onboard's `SKILL.md` grew by ≤ 25 lines; the import flow isn't repeated in it; the reviewer walks onboard's normal, `--defaults`, and resume paths against R5 (live run in Task 5)
+- [x] Commit: `feat: import catalog skills during onboard`
 
 ### Task 5: Fixture verification
 **Serves:** R3, R4, R5

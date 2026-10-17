@@ -2,7 +2,7 @@
 
 ## Current state
 
-Tasks 1–3 are done: the catalog, and `/donatello:skills` with list, add, remove, and import (all text-reviewed; live checks are in Task 5 because headless test runs can't write outside their project and auto mode refuses bypass runs). Next: Task 4, onboard integration.
+Tasks 1–4 are done: the catalog, `/donatello:skills` (list, add, remove, import), and onboard's skill import step, all text-reviewed. Live checks are in Task 5 because headless test runs can't write outside their project and auto mode refuses bypass runs. Next: Task 6 (docs), then Task 5 with Donald. Open: resume mode should compute the already-present list when offering candidates (reviewer note).
 
 ## How to verify
 
@@ -31,6 +31,12 @@ Tasks 1–3 are done: the catalog, and `/donatello:skills` with list, add, remov
 - Git fetch: `GIT_TERMINAL_PROMPT=0`, `git init` + `fetch --depth 1 <sha>` + checkout of the path in a `mktemp` dir (always removed), `SKILL.md` checked before copying, partial copies removed
 - Fix round: per-source fallback commands, separable parts for onboard, "stop" → go to Summary, explicit skip for existing folders and unknown picks; plus the robustness notes and a `git check-ignore` step for `.claude/settings.local.json` on just-me plugins
 - Not run live: git fetch and `/plugin` commands (Task 5)
+
+### Task 4: Onboard integration
+- `skills/onboard/SKILL.md` (94 → 100 lines): step 3 builds skill candidates via the import's Candidates section; step 4 shows the list and asks all / pick / none and the scope; step 5 lists candidates and choices; new 6g Skills runs Install; plugin pruning moved to 6h and never proposes an imported or already-present catalog plugin; `--defaults` skips import and points to `/donatello:skills import`; resume mode offers candidates; step 7 includes the import summary and commits committed skill files plus `.gitignore` lines, not just-me files
+- Differs from the task text: Skills is 6g and pruning 6h (letters follow text order) instead of a new 6h before 6g
+- Fix round: list shown before the question, proposal wording, explicit pruning exclusion, letter order, `.gitignore` in the commit
+- Reviewer note: in resume mode, make sure the already-present list is computed when candidates are offered (check in Task 5)
 
 ## Deviations from spec
 
