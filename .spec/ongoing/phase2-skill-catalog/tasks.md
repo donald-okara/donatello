@@ -27,14 +27,14 @@ Each task ends with a commit. Verification means running the skill against fixtu
 **Serves:** R2, R3
 **Files:** `skills/skills/SKILL.md`
 
-- [ ] Frontmatter: `name: skills`, a one-line `description`, `argument-hint: "[add <ref> | remove <id> | list | import]"`, `disable-model-invocation: true`
-- [ ] Section "Find the catalog": clone = current directory if its `.claude-plugin/plugin.json` has `"name": "donatello"`, else `clone` in `~/.claude/donatello.json`, else ask for the path and save it there; read from the clone if found, else from `../../catalog/skills.yaml` (installed copy); `add`/`remove` require the clone
-- [ ] Section "list": entries grouped by source, one line each: `id` · `applies-to` (or "all") · summary
-- [ ] Section "add": detect the source from the ref per R2's table; fill `id`/`summary` (Android: `android skills list`; plugin: the marketplace's `.claude-plugin/marketplace.json` under `~/.claude/plugins/marketplaces/<name>/`, taking `marketplace` from `~/.claude/plugins/known_marketplaces.json`; git: fetch `SKILL.md` frontmatter and resolve the branch to a SHA with `git ls-remote`; local: read `SKILL.md` and copy the folder to `catalog/skills/<id>/`); suggest `applies-to`; refuse a duplicate `id`; show the entry and write it on approval, keeping the file's comments and order
-- [ ] Section "remove": confirm, delete the entry and, for `donatello` entries, `catalog/skills/<id>/`
-- [ ] After `add` or `remove`: offer to commit in the clone (`feat: add <id> to skill catalog` / `chore: remove <id> from skill catalog`) and push
-- [ ] Check: from a scratch project (not the Donatello repo), `/donatello:skills add android:adaptive` refuses as a duplicate, `add` of a local fixture skill folder creates an entry and copies the folder into the clone, `list` shows it, `remove` deletes both; the scratch project is untouched
-- [ ] Commit: `feat: add /donatello:skills with list, add, remove`
+- [x] Frontmatter: `name: skills`, a one-line `description`, `argument-hint: "[add <ref> | remove <id> | list | import]"`, `disable-model-invocation: true`
+- [x] Section "Find the catalog": clone = current directory if its `.claude-plugin/plugin.json` has `"name": "donatello"`, else `clone` in `~/.claude/donatello.json`, else ask for the path and save it there; read from the clone if found, else from `../../catalog/skills.yaml` (installed copy); `add`/`remove` require the clone
+- [x] Section "list": entries grouped by source, one line each: `id` · `applies-to` (or "all") · summary
+- [x] Section "add": detect the source from the ref per R2's table; fill `id`/`summary` (Android: `android skills list`; plugin: the marketplace's `.claude-plugin/marketplace.json` under `~/.claude/plugins/marketplaces/<name>/`, taking `marketplace` from `~/.claude/plugins/known_marketplaces.json`; git: fetch `SKILL.md` frontmatter and resolve the branch to a SHA with `git ls-remote`; local: read `SKILL.md` and copy the folder to `catalog/skills/<id>/`); suggest `applies-to`; refuse a duplicate `id`; show the entry and write it on approval, keeping the file's comments and order
+- [x] Section "remove": confirm, delete the entry and, for `donatello` entries, `catalog/skills/<id>/`
+- [x] After `add` or `remove`: offer to commit in the clone (`feat: add <id> to skill catalog` / `chore: remove <id> from skill catalog`) and push
+- [x] Check: the reviewer walks each subcommand through the skill text against R2/R3 (live run moved to Task 5)
+- [x] Commit: `feat: add /donatello:skills with list, add, remove`
 
 ### Task 3: `/donatello:skills` — import
 **Serves:** R4, NF2
@@ -45,7 +45,7 @@ Each task ends with a commit. Verification means running the skill against fixtu
 - [ ] Install per R4's table; merge settings JSON keeping existing keys; never replace an existing `.claude/skills/<id>/`; for "just me" append `.claude/skills/<id>/` lines to `.gitignore` (creating it if needed, no duplicates)
 - [ ] On a failure, record the entry and the exact command to run later, and continue
 - [ ] Summary: imported (by scope), already present, failed with commands, and "start a new session to load newly enabled plugins" when any plugin was enabled
-- [ ] Check: in a scratch git repo with a catalog of one entry per source, import all as "committed" → files per R4's table; reset, import all as "just me" → `git status --porcelain` shows only `.gitignore`; run import again → every entry reported as already present; with `android` removed from `PATH`, the android entry fails with its command and the rest succeed
+- [ ] Check: the reviewer walks import through the skill text for each source and scope against R4/NF2 (live run moved to Task 5)
 - [ ] Commit: `feat: add catalog import to /donatello:skills`
 
 ### Task 4: Onboard integration
@@ -58,11 +58,16 @@ Each task ends with a commit. Verification means running the skill against fixtu
 - [ ] Step 6: new sub-step "h. Skills" before plugin pruning: run the import's install step; 6g never proposes a plugin imported in 6h
 - [ ] `--defaults`: skip skills and name `/donatello:skills import` in the wrap-up; resume mode lists catalog candidates among the missing pieces
 - [ ] Step 7: include the import summary; leave "just me" files out of the onboard commit
-- [ ] Check: onboard's `SKILL.md` grew by ≤ 25 lines; the import flow isn't repeated in it
+- [ ] Check: onboard's `SKILL.md` grew by ≤ 25 lines; the import flow isn't repeated in it; the reviewer walks onboard's normal, `--defaults`, and resume paths against R5 (live run in Task 5)
 - [ ] Commit: `feat: import catalog skills during onboard`
 
 ### Task 5: Fixture verification
-**Serves:** R4, R5
+**Serves:** R3, R4, R5
+
+Live checks moved here from Tasks 2–4: headless test runs can't write outside their project, and auto mode refuses bypass runs, so these are run interactively.
+
+- [ ] From a scratch project (not the Donatello repo): `/donatello:skills add android:adaptive` refuses as a duplicate; `add` of a local fixture skill folder creates an entry and copies the folder into the clone; `list` shows it; `remove` deletes both; the scratch project is untouched
+- [ ] In a scratch git repo with a catalog of one entry per source: import all as "committed" → files per R4's table; reset, import all as "just me" → `git status --porcelain` shows only `.gitignore`; import again → every entry reported as already present; with `android` off `PATH`, the android entry fails with its command and the rest succeed
 
 - [ ] Fresh Android fixture, catalog with an android entry, a `applies-to: [web]` entry, and an untagged entry: onboard offers the android and untagged ones only; pick one, "committed"; a new session in the fixture lists that skill
 - [ ] Same fixture, `/donatello:onboard` again (resume mode) offers the remaining candidate
