@@ -4,10 +4,10 @@
 
 Donatello is a Claude Code plugin with no runtime code. It has four parts:
 
-1. **Workflow skills**: instructions Claude follows (`onboard`, `phase-new`, `phase-run`, `phase-archive`)
+1. **Workflow skills**: instructions Claude follows (`onboard`, `phase-new`, `phase-run`, `phase-archive`, `skills`)
 2. **Agents**: subagents with fixed models for legwork and review (`implementer`, `reviewer`, `scout`)
 3. **Templates**: the shape of the files the skills write
-4. **Data**: your preferences and domain skills
+4. **Data**: your preferences, the skill catalog (`catalog/skills.yaml`), and your own skill folders (`catalog/skills/`)
 
 Claude is the engine: it reads the target project, runs the interview, fills the templates, and writes the code. The skills set the steps, guardrails, and output format; the agents decide which model does which work.
 
@@ -25,23 +25,28 @@ skills/
   phase-new/templates/{overview,design,spec,tasks,walkthrough}.md
   phase-run/SKILL.md
   phase-archive/SKILL.md
+  skills/SKILL.md
 agents/
   implementer.md
   reviewer.md
   scout.md
 preferences/*.md
+catalog/
+  skills.yaml           # the skill catalog: one entry per offerable skill
+  skills/<id>/SKILL.md  # your own skills (only folders with a donatello source)
 templates/claude-block.md
 ```
 
-Skills and agents are namespaced by the plugin: `skills/onboard/` is invoked as `/donatello:onboard`, and `agents/implementer.md` is the `donatello:implementer` agent.
+Skills and agents are namespaced by the plugin: `skills/onboard/` is invoked as `/donatello:onboard`, `skills/skills/` as `/donatello:skills`, and `agents/implementer.md` is the `donatello:implementer` agent.
 
 ### Referencing files across the plugin
 
 Claude Code gives a skill its base directory, so skills reference supporting files with relative paths:
 - `phase-new` → `templates/overview.md`
-- `onboard` → `../../preferences/`, `../../templates/claude-block.md`, and `../phase-new/` for phase 1
+- `onboard` → `../../preferences/`, `../../templates/claude-block.md`, `../phase-new/` for phase 1, and `../skills/SKILL.md` for the import flow
+- `skills` → `../../catalog/skills.yaml` (the installed copy, when no clone is found) and `../../catalog/skills/<id>/`
 
-Templates live in `phase-new` because that is their only writer; `onboard` delegates to it, so there is one source of truth for phase files.
+Templates live in `phase-new` because that is their only writer; `onboard` delegates to it, so there is one source of truth for phase files. The same holds for the import flow: it is defined once in `skills/skills/SKILL.md`, and onboard follows it.
 
 ---
 
@@ -50,8 +55,17 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 ### `onboard` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[--defaults]"`
 - **Reads:** the `donatello:scout` report on the target repo (not the repo directly), `preferences/`, the list of enabled plugins
-- **Writes:** `docs/preferences.md` (general preferences), `.claude/rules/<category>.md` (preferences with `paths`), `docs/architecture.md`, `docs/requirements.md` (existing projects, only when behavior is clear from the code), phase 1 (via phase-new steps), the CLAUDE.md block, and `.claude/settings.local.json` with the plugins you chose to disable
-- **Guardrails:** propose before writing; never overwrite; never duplicate (adopt existing docs for the architecture, requirements, and preferences roles, and drop preferences the project already states); resume if `.spec/` already exists; ask rather than guess when the project type is ambiguous (monorepos)
+- **Reads:** the `donatello:scout` report on the target repo (not the repo directly), `preferences/`, the skill catalog (via the import's Candidates step), the list of enabled plugins
+- **Writes:** `docs/preferences.md` (general preferences), `.claude/rules/<category>.md` (preferences with `paths`), `docs/architecture.md`, `docs/requirements.md` (existing projects, only when behavior is clear from the code), phase 1 (via phase-new steps), the CLAUDE.md block, `.claude/skills/<id>/` and the plugin entries for chosen catalog skills (skills step, 6g), `.gitignore` lines for "just me" imports, and `.claude/settings.local.json` with the plugins you chose to disable
+- **Guardrails:** propose before writing; never overwrite; never duplicate (adopt existing docs for the architecture, requirements, and preferences roles, and drop preferences the project already states); resume if `.spec/` already exists; ask rather than guess when the project type is ambiguous (monorepos); skills step runs before plugin pruning so pruning never proposes an imported plugin; `--defaults` skips skill import
+
+### `skills` skill
+- **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[add <ref> | remove <id> | list | import]"`
+- **Reads:** `catalog/skills.yaml` from the clone when one is found (cwd or `~/.claude/donatello.json`), else the installed copy; `list` and `import` never ask for a clone; the Android CLI's `skills list` and the marketplace files under `~/.claude/plugins/` (to fill `add` entries); `.claude/skills/`, `.claude/settings*.json` (to find what is already present)
+- **Writes:** on approval only: a catalog entry (and `catalog/skills/<id>/` for your own skills) in the clone; for `import`, `.claude/skills/<id>/`, plugin entries in `.claude/settings.json` or `.claude/settings.local.json`, and `.gitignore` lines for "just me"
+- **Clone path:** `~/.claude/donatello.json` (`{"clone": "<path>"}`), asked once for add and remove only
+- **Import shape:** four separable parts (Candidates, Ask, Install, Summary) so onboard can run Candidates and Ask as its own questions and Install and Summary later
+- **Guardrails:** refuses duplicate ids; pins git refs to a commit SHA; fetches git folders with `GIT_TERMINAL_PROMPT=0` into a `mktemp` directory that is always removed; never replaces an existing `.claude/skills/<id>/` folder or settings value; never edits the installed plugin copy; never commits or pushes without a yes
 
 ### `phase-new` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[scope]"`
@@ -167,6 +181,35 @@ Shared rules in each agent's prompt:
 - **Why:** a fact written in two files drifts, and duplicated rules in always-loaded files cost tokens every session.
 - **How:** onboard maps each role (architecture, requirements, preferences) to an existing file when one covers it and writes the paths into the block. Skills and agents read them from there, with `docs/*.md` as defaults.
 
+### Catalog stores references, not copies
+- **Why:** Android CLI skills and plugins have their own install and update channels; copying them into Donatello would fork them and go stale.
+- **Tradeoff:** importing needs the network and the relevant tools (`android`, `git`). Failures are skipped and listed with the command to run later.
+
+### Own skills live outside `skills/`
+- **Why:** everything in the plugin's `skills/` directory loads in every project. Keeping domain skills in `catalog/skills/` means a project pays only for the skills it imported, and matches how preferences are copied rather than linked.
+- **Tradeoff:** copies drift from the catalog version. Accepted for now; a later `import --update` could refresh them.
+
+### Edits go to your clone, not the installed plugin
+- **Why:** the installed plugin is a cached copy that a marketplace update overwrites. The clone is the source of truth and syncs across machines through git.
+- **Tradeoff:** one-time setup of the clone path. Other machines see new entries only after a push and a `/plugin marketplace update`; reading from the clone when one is configured hides that lag on the machine where you added them.
+
+### Scope is asked per import
+- **Why:** team projects want shared skills, and personal experiments in shared repos shouldn't leak into teammates' setups.
+- **Where:** "committed" writes `.claude/skills/` and `.claude/settings.json` (meant to be committed); "just me" writes the same folders and `.claude/settings.local.json`, then lists them in `.gitignore`.
+- **Tradeoff:** one more question per onboard.
+
+### Git skills are pinned to a commit
+- **Why:** imports are reproducible, and an upstream change can't silently alter a project's instructions.
+- **Tradeoff:** no automatic updates. To move the pin, `remove` the entry and `add` the URL again, since `add` refuses an existing id.
+
+### Plugins install whole
+- **Why:** Claude Code enables plugins, not individual skills inside them.
+- **Tradeoff:** a plugin can bring more skills than wanted; plugin pruning and the import summary make that visible.
+
+### The import flow lives in the `skills` skill
+- **Why:** one definition of the flow for onboard and for later `/donatello:skills import` runs; keeps onboard's always-read text short.
+- **Tradeoff:** onboard depends on a sibling skill's path (`../skills/`), the same pattern as `../phase-new/`.
+
 ### One plugin to start
 - **Why:** simplest to install and iterate on.
 - **Later:** split domain skills into per-stack plugins (`donatello-android`, `donatello-web`) in the same marketplace so onboard can enable only the relevant ones via the project's `.claude/settings.json`.
@@ -193,3 +236,21 @@ Shared rules in each agent's prompt:
 | Implementer blocked or review fails twice | Re-dispatch the implementer on Sonnet; if it still fails, stop and present the issues in the main session |
 | `docs/preferences.md` over 100 lines after merge | Onboard points out the longest sections and proposes moving file-specific ones into `.claude/rules/` |
 | Project already has `.claude/settings.local.json` | Merge the plugin entries only; leave other keys alone |
+| Project already has `.claude/settings.json` (committed import) | Merge the plugin entries only; leave other keys alone |
+| Settings file is not valid JSON | Don't touch it; fail that import entry and print the entries to add by hand |
+| `android` CLI missing or failing | Skip that entry; list it under Failed with `android skills add <id> --agent=claude-code --project=.` |
+| Plugin marketplace unknown to this machine | `add` stops with "not found" if it's not in `known_marketplaces.json`; `import` fails the entry with `/plugin marketplace add <owner/repo>` then `/plugin install` |
+| Plugin missing from the marketplace's `marketplace.json` | `add` stops with "not found"; nothing is written |
+| Android skill id not listed by `android skills list` | `add` stops with "not found" |
+| Git ref whose branch name contains `/` | Resolve by trying the longest prefix with `git ls-remote`; if none or several match, ask which is meant |
+| Git ref that is a tag, or a URL with no `tree/` segment | Tags aren't resolved (only `refs/heads/`) and fall back to asking; no `tree/` means `HEAD` |
+| Git repo private, missing, or offline | `GIT_TERMINAL_PROMPT=0` makes it fail instead of prompting; entry fails with the manual fetch command |
+| Fetched folder has no `SKILL.md` | Fail the entry; nothing is copied; scratch directory removed |
+| Copy fails partway | Remove the partial `.claude/skills/<id>/` and fail the entry |
+| `add` with an id that already exists in the catalog | Refuse |
+| `add` with a local folder that has no `SKILL.md` | Stop; nothing is copied into `catalog/skills/` |
+| Skill folder already in `.claude/skills/<id>/` | Skip it at Install, list as already present, and don't add it to `.gitignore` (even if it appeared after Candidates) |
+| No clone configured, `add` or `remove` | Ask once for the clone path and save it to `~/.claude/donatello.json`; decline stops the command |
+| No clone found, `list` or `import` | Read the installed copy; never prompt. A clone found in the cwd or `~/.claude/donatello.json` is read instead |
+| `import` in a project that isn't a git repo | The `git check-ignore` step is skipped (exit 128); `.gitignore` lines are still written for "just me" |
+| Onboard with `--defaults` | Skill import skipped; the wrap-up points to `/donatello:skills import` |

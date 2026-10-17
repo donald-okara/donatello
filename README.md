@@ -9,7 +9,7 @@ It's a set of skills, agents, and templates, not a program. Claude does the reas
    set up once          build task by task         close the phase             plan the next one
 ```
 
-> **Status:** v0.1.0. All four commands and three agents work and have been tested on fixture projects. Trials on real projects are still in progress (see `.spec/ongoing/phase1-plugin-mvp/`), so expect rough edges.
+> **Status:** v0.1.0. The four workflow commands and three agents work and have been tested on fixture projects. Trials on real projects are still in progress (see `.spec/ongoing/phase1-plugin-mvp/`), so expect rough edges. `/donatello:skills` and the skill import step in onboard are new in phase 2; their live checks are still pending.
 
 ---
 
@@ -25,6 +25,7 @@ It's a set of skills, agents, and templates, not a program. Claude does the reas
 - [Existing projects and existing docs](#existing-projects-and-existing-docs)
 - [Models and agents](#models-and-agents)
 - [Preferences](#preferences)
+- [Skill catalog](#skill-catalog)
 - [Working without the commands](#working-without-the-commands)
 - [Token cost](#token-cost)
 - [Customizing](#customizing)
@@ -84,7 +85,7 @@ Then restart Claude Code or start a new session, and type `/donatello:` to see t
 In the project you want to work on:
 
 1. **Onboard:** `/donatello:onboard`
-   Donatello surveys the repo, asks about five questions, shows a proposal (docs, preferences, phase plan, files it will touch), and writes everything once you approve.
+   Donatello surveys the repo, asks about five questions, offers skills from the [catalog](#skill-catalog) that fit your stack, shows a proposal (docs, preferences, phase plan, files it will touch), and writes everything once you approve.
 2. **Run the first task:** `/donatello:phase-run`
    Haiku implements the next task, Sonnet reviews it, and the task gets ticked, recorded in the walkthrough, and committed.
 3. **Keep going:** `/donatello:phase-run` again, or `/donatello:phase-run --all` to run every remaining task, stopping only when something needs you.
@@ -94,11 +95,13 @@ In the project you want to work on:
 
 You can `/clear` between any of these steps; the next session picks up from the walkthrough.
 
+To add skills later, `/donatello:skills import` offers the catalog entries for this project's stack. `/donatello:skills list` shows every entry.
+
 ---
 
 ## Commands
 
-All four commands run only when you type them. Claude never starts them on its own.
+All commands run only when you type them. Claude never starts them on its own.
 
 ### `/donatello:onboard [--defaults]`
 
@@ -108,11 +111,12 @@ Sets up Donatello in the current project, new or existing.
 2. **Surveys the repo** with the `scout` agent (stack, modules, exact build and test commands, conventions, existing docs). The main session doesn't read your code.
 3. **Picks preferences** that match your stack and removes any that your project already states.
 4. **Interviews you** briefly: what's being built, open questions from the survey, which preferences to keep, and how to resolve conflicts.
-5. **Proposes** the docs, the preferences split, a phase breakdown (phase 1 in detail, later ones as one-liners), plugins to disable, and every file it will create or touch. Nothing is written until you say yes.
-6. **Writes** the docs, `.claude/rules/`, phase 1, and the CLAUDE.md block. It can also turn off plugins that don't fit the project (only for you, via `.claude/settings.local.json`).
-7. Offers to commit with `docs: onboard project to Donatello`.
+5. **Offers skills** from the [skill catalog](#skill-catalog) that fit your stack: you pick all, some, or none, then choose committed or just me.
+6. **Proposes** the docs, the preferences split, a phase breakdown (phase 1 in detail, later ones as one-liners), the skills to install, plugins to disable, and every file it will create or touch. Nothing is written until you say yes.
+7. **Writes** the docs, `.claude/rules/`, phase 1, the CLAUDE.md block, and the chosen skills. It can also turn off plugins that don't fit the project (only for you, via `.claude/settings.local.json`).
+8. Offers to commit with `docs: onboard project to Donatello`. Committed skill files are included; "just me" skills stay out of the commit.
 
-`--defaults` skips the interview, the approval step, and plugin pruning, and writes new files straight from the survey. It still never changes existing content.
+`--defaults` skips the interview, the approval step, skill import, and plugin pruning, and writes new files straight from the survey. It still never changes existing content. The summary points to `/donatello:skills import` for later.
 
 ### `/donatello:phase-new [scope]`
 
@@ -167,6 +171,24 @@ Closes a phase.
 3. Promotes **lasting decisions** to the architecture doc and **lasting behavior** to the requirements doc, replacing entries they supersede. You see one diff and approve it first.
 4. Moves the folder to `.spec/archive/<YYYY-MM-DD>-phase<N>-<slug>/` with `git mv`.
 
+### `/donatello:skills [list | add <ref> | remove <id> | import]`
+
+Manages the skill catalog and installs catalog skills into the current project. With no argument, it shows the list and asks what to do.
+
+```
+/donatello:skills list
+/donatello:skills add android:navigation-3
+/donatello:skills remove styles
+/donatello:skills import
+```
+
+- **`list`** prints each entry as `id · applies-to · summary`, grouped by source.
+- **`add <ref>`** takes one of four ref forms (see [Sources](#sources)). It fills in the id and summary, refuses an id that's already in the catalog, shows the entry, and writes only after you approve. It offers to commit `feat: add <id> to skill catalog` and push.
+- **`remove <id>`** confirms first, then deletes the entry (and the folder, for your own skills). It offers to commit `chore: remove <id> from skill catalog`.
+- **`import`** runs the same flow as onboard's skill step. See [Importing into a project](#importing-into-a-project).
+
+`add` and `remove` edit your Donatello clone. If the current directory is the Donatello repo, or `~/.claude/donatello.json` names a clone, that clone is used. Otherwise `add` and `remove` ask once for the clone's path and save it in `~/.claude/donatello.json`. `list` and `import` never ask for a clone: they read the clone when one is found, and the installed copy otherwise.
+
 ---
 
 ## How a phase works
@@ -205,7 +227,9 @@ project/
 ├── CLAUDE.md                     # your content untouched; Donatello block appended
 ├── .claude/
 │   ├── rules/                    # path-scoped preferences, e.g. android-ui.md for **/*.kt
-│   └── settings.local.json       # personal: plugins disabled for this project (gitignored)
+│   ├── skills/                   # catalog skills imported with onboard or /donatello:skills import
+│   ├── settings.json             # committed plugin entries from the import (only if you chose committed)
+│   └── settings.local.json       # personal: plugins disabled for this project, and "just me" imports (gitignored)
 ├── docs/
 │   ├── architecture.md           # what the project is, modules, patterns, build/test commands, decisions
 │   ├── requirements.md           # how the system behaves now; grows with each archived phase
@@ -306,6 +330,77 @@ To add your own, drop a new file into `preferences/` in your fork with a `summar
 
 ---
 
+## Skill catalog
+
+Skills are a separate kind of content from preferences. Donatello keeps a **catalog** of skills that onboard and `/donatello:skills import` can offer. Each entry records where a skill comes from. Only your own skills are stored as files; Android CLI skills, plugins, and GitHub skill folders keep their own install and update channels.
+
+### Catalog format
+
+The catalog is `catalog/skills.yaml` in the Donatello repo:
+
+```yaml
+- id: adaptive
+  source: android
+  ref: adaptive
+  summary: Make or update Android UI adapt to phones, tablets, foldables, desktop, TV, Auto and XR.
+  applies-to: [android]
+```
+
+| Field | Meaning |
+|---|---|
+| `id` | Unique, kebab-case. Also the folder name in the project |
+| `source` | `android`, `plugin`, `git`, or `donatello` |
+| `ref` | Where to install from: the Android CLI id, `<plugin>@<marketplace>`, a GitHub folder URL pinned to a commit, or `catalog/skills/<id>` |
+| `summary` | One line, shown during onboard |
+| `applies-to` | Optional stack list. Left out means every stack |
+| `marketplace` | Plugins only: the marketplace's `owner/repo` |
+
+### Sources
+
+| Source | Ref form | Installs | `add` example |
+|---|---|---|---|
+| `android` | `android:<id>` | One skill, through the `android` CLI | `/donatello:skills add android:navigation-3` |
+| `plugin` | `<plugin>@<marketplace>` | The whole plugin (Claude Code enables plugins, not single skills) | `/donatello:skills add superpowers@claude-plugins-official` |
+| `git` | GitHub URL of a folder containing `SKILL.md` | That folder, pinned to the commit `add` resolved | `/donatello:skills add https://github.com/owner/repo/tree/main/skills/my-skill` |
+| `donatello` | Local folder containing `SKILL.md` | A copy of the folder, kept in `catalog/skills/<id>/` | `/donatello:skills add ./my-skill` |
+
+- **`android`** and **`plugin`** need the skill or marketplace to be available on this machine. `add` reads the name and description from `android skills list` or the marketplace's `marketplace.json`.
+- **`git`** refs are resolved to a commit SHA and stored as `.../tree/<sha>/<path>`, so an upstream change can't silently change a project. To move the pin to a newer commit, `remove` the entry and `add` the URL again (`add` refuses an id that already exists).
+- **`donatello`** folders are copied into `catalog/skills/<id>/` in your clone, and the copy is offered for commit.
+
+### Importing into a project
+
+Run `/donatello:skills import` in the project root, or accept the skill step during onboard. Standalone, it first asks which stacks the project uses (for example `android`, `web`, or none). Then it:
+
+1. **Lists the candidates:** entries whose `applies-to` includes the project's stack, plus entries with no `applies-to`. Skills already present are shown separately and not offered again.
+2. **Asks** all / pick / none, then **committed** or **just me**. Once per import, not per skill.
+3. **Installs** the chosen entries and prints a summary.
+
+What each scope writes:
+
+| Source | Committed (shared through git) | Just me (this machine only) |
+|---|---|---|
+| `android` | Runs `android skills add <id> --agent=claude-code --project=.` | The same command, then the skill folder goes in `.gitignore` |
+| `plugin` | Adds the marketplace (if missing) to `extraKnownMarketplaces` and `"<plugin>@<marketplace>": true` to `enabledPlugins` in `.claude/settings.json` | Writes `enabledPlugins` to `.claude/settings.local.json`, and adds the marketplace there only if `~/.claude/plugins/known_marketplaces.json` doesn't already list it. The file then goes in `.gitignore` |
+| `git` | Fetches the pinned folder into `.claude/skills/<id>/` | The same folder, listed in `.gitignore` |
+| `donatello` | Copies `catalog/skills/<id>/` into `.claude/skills/<id>/` | The same folder, listed in `.gitignore` |
+
+Import never replaces an existing `.claude/skills/<id>/` folder, and it adds only the settings keys that are missing. If a plugin was enabled, start a new session to load it.
+
+### When an import fails
+
+A failed entry is skipped and the rest carry on. The summary lists each failure with a command to fix it by hand:
+
+| Failure | What to do |
+|---|---|
+| `android` CLI missing or failing | Run `android skills add <id> --agent=claude-code --project=.` |
+| Plugin marketplace unknown here | Run `/plugin marketplace add <owner/repo>`, then `/plugin install <plugin>@<marketplace>` |
+| Settings file isn't valid JSON | Fix the file. The summary names the entries to add by hand. Donatello leaves the file untouched |
+| Git repo private, missing, or offline | Fix access, then re-run `/donatello:skills import`. The manual alternative is to fetch the folder at its SHA and copy it |
+| `SKILL.md` missing from a catalog folder | Fix the catalog folder, then re-run the import. Or copy it: `cp -R catalog/skills/<id> .claude/skills/<id>` |
+
+---
+
 ## Working without the commands
 
 You don't have to use `phase-run`. Because the CLAUDE.md block tells every session how the workflow goes, normal conversation keeps the structure intact:
@@ -345,6 +440,7 @@ What keeps it low:
 - **Edit project files freely.** Everything Donatello writes into a project is plain Markdown owned by that project. Edit `docs/preferences.md`, rules, phase files, or anything else outside the block markers.
 - **Override an agent for one project:** add `.claude/agents/implementer.md` (or `reviewer.md`, `scout.md`) to the project. Project agents take priority over plugin agents, so you can change the model, tools, or instructions.
 - **Change the defaults for all projects:** fork the repo and edit `preferences/`, `agents/`, the phase templates in `skills/phase-new/templates/`, or the block in `templates/claude-block.md`.
+- **Add your own skill:** put a folder with a `SKILL.md` somewhere on disk and run `/donatello:skills add ./path/to/folder`. It's copied into `catalog/skills/<id>/` in your clone, and the catalog entry is offered for commit. Other projects can then import it.
 
 ---
 
@@ -384,8 +480,12 @@ donatello/
 │   ├── onboard/                  # /donatello:onboard
 │   ├── phase-new/                # /donatello:phase-new, plus the phase templates
 │   ├── phase-run/                # /donatello:phase-run
-│   └── phase-archive/            # /donatello:phase-archive
+│   ├── phase-archive/            # /donatello:phase-archive
+│   └── skills/                   # /donatello:skills (list, add, remove, import)
 ├── agents/                       # scout, implementer, reviewer
+├── catalog/
+│   ├── skills.yaml               # skill catalog: what onboard and import can offer
+│   └── skills/<id>/              # your own skills, copied into projects on import
 ├── preferences/                  # coding preferences copied into projects
 ├── templates/claude-block.md     # the CLAUDE.md block
 ├── docs/

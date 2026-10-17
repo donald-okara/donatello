@@ -40,7 +40,12 @@ donatello/
 │   │   └── SKILL.md              # /donatello:phase-run
 │   ├── phase-archive/
 │   │   └── SKILL.md              # /donatello:phase-archive
-│   └── <domain skills>/          # e.g. compose-patterns/, added over time
+│   └── skills/
+│       └── SKILL.md              # /donatello:skills (catalog list, add, remove, import)
+├── catalog/
+│   ├── skills.yaml               # Catalog: which skills onboard and import can offer, and where each comes from
+│   └── skills/
+│       └── <id>/                 # Your own skill folders (SKILL.md); copied into projects on import
 ├── agents/
 │   ├── implementer.md            # donatello:implementer (Haiku): does one task
 │   ├── reviewer.md               # donatello:reviewer (Sonnet): read-only review against spec
@@ -67,7 +72,9 @@ project/
 ├── CLAUDE.md                     # Existing content preserved; Donatello block added
 ├── .claude/
 │   ├── rules/                    # Path-scoped preferences (e.g. android-ui.md, paths: **/*.kt)
-│   └── settings.local.json       # Personal: disables plugins irrelevant to this project
+│   ├── settings.local.json       # Personal: disables plugins irrelevant to this project
+│   ├── settings.json             # Committed plugin entries for catalog plugins chosen as "committed"
+│   └── skills/                   # Catalog skills imported into this project (one folder each)
 ├── docs/
 │   ├── architecture.md           # High-level system overview and durable decisions
 │   ├── requirements.md           # How the system behaves now; grows as phases are archived
@@ -107,6 +114,8 @@ Works on both new and existing projects.
    - Phase 1 via the `phase-new` workflow
    - The Donatello block in `CLAUDE.md`
    - `.claude/settings.local.json`: proposes disabling installed plugins that don't fit the project's stack (shown as a list; you pick)
+   - Skills chosen from the catalog (see workflow 5): `.claude/skills/<id>/` folders, plugin entries in `.claude/settings.json` (committed) or `.claude/settings.local.json` (just me), and `.gitignore` lines for "just me" folders
+   - Skip the skills step with `--defaults`; the wrap-up points to `/donatello:skills import` instead
 5. **Never overwrite.** Existing files are left alone or merged with the user's approval; an existing `.spec/` means onboarding resumes instead of starting over.
 6. **Never duplicate.** If an existing doc already covers architecture, requirements, or conventions (any name, matched case-insensitively), onboard adopts it instead of creating `docs/<role>.md`, and the block names its path. Preferences the project already states are dropped; conflicting ones are raised in the interview, where the project's rule wins by default.
 
@@ -127,6 +136,21 @@ The main session (Opus) coordinates; it doesn't write the code or read full diff
 4. On issues: send them back to the implementer once. If review fails again, or the implementer reports it's blocked, re-dispatch the implementer on Sonnet. If that fails too, stop and bring it to you.
 5. On PASS: commit (using the task's commit line), tick the task, append to the walkthrough's "Changes by task" (creating `walkthrough.md` on the first task), refresh "Current state".
 6. Stop after one task, or continue through the list with `--all` until done or a step needs you.
+
+### 5. Manage the skill catalog — `/donatello:skills [list | add <ref> | remove <id> | import]`
+
+The catalog (`catalog/skills.yaml` in this repo) lists skills that onboard and `import` can offer. Entries store where a skill comes from, not a copy of it, except for your own skills, which live in `catalog/skills/<id>/`.
+
+1. **Find the catalog.** `add` and `remove` edit your Donatello clone: the current directory if it's the repo, else the path saved in `~/.claude/donatello.json`. If neither exists, `add` and `remove` ask once and save the answer. `list` and `import` never ask for a clone: they read the clone when one is found, and the installed copy otherwise.
+2. **`list`** prints each entry as `id · applies-to · summary`, grouped by source.
+3. **`add <ref>`** accepts four ref forms: `android:<id>`, `<plugin>@<marketplace>`, a GitHub folder URL, or a local folder with `SKILL.md`. It fills `id` and `summary` from the source, refuses duplicate ids, suggests `applies-to`, shows the entry, and writes only on approval. Git refs are pinned to a commit SHA.
+4. **`remove <id>`** confirms, then deletes the entry (and `catalog/skills/<id>/` for your own skills).
+5. After `add` or `remove`, it offers to commit and push in the clone. Nothing is committed without a yes.
+6. **`import`** runs four parts, which onboard can also run separately:
+   - **Candidates:** entries whose `applies-to` matches the project's stack (or has none), minus skills already present
+   - **Ask:** all / pick / none, then committed / just me
+   - **Install:** per source, into `.claude/skills/<id>/` or the plugin settings. Never replaces an existing folder or settings value
+   - **Summary:** imported, already present, failed (each with a fallback command), and the committed paths
 
 ### Working without phase-run (driven by the CLAUDE.md block)
 
@@ -195,9 +219,9 @@ Built into the workflow rather than left to habit:
 - Onboard offers to disable plugins irrelevant to the project, since every enabled plugin's skill descriptions are listed every turn
 
 ### Skills
-- Workflow skills (onboard, phase-new, phase-run, phase-archive) are explicit-only (`disable-model-invocation: true`); they run when you type them
-- Domain skills (e.g. Compose patterns) are model-invocable and ship in the same plugin
-- Third-party skills are installed from their own marketplaces; Donatello doesn't wrap or mirror them
+- Workflow skills (onboard, phase-new, phase-run, phase-archive, skills) are explicit-only (`disable-model-invocation: true`); they run when you type them
+- Your own domain skills (e.g. Compose patterns) live in `catalog/skills/<id>/`, not in `skills/`, so they don't load in every project. `/donatello:skills import` and onboard copy the chosen ones into the project's `.claude/skills/<id>/`, the same way preferences are copied
+- Third-party skills are referenced in `catalog/skills.yaml` (Android CLI skills, plugins, and GitHub skill folders pinned to a commit) and installed through their own channels; Donatello doesn't wrap or mirror them
 
 ### Documentation split
 - `docs/` answers "what is this, how does it behave, and why": architecture, requirements, preferences. No step-by-step.

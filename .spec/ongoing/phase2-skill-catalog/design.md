@@ -23,7 +23,7 @@
 ### Git skills are pinned to a commit
 **Decision:** `add` resolves a GitHub URL to a commit SHA and stores that.
 **Why:** Imports are reproducible, and an upstream change can't silently alter a project's instructions.
-**Tradeoff:** No automatic updates; re-adding refreshes the pin.
+**Tradeoff:** No automatic updates; to move the pin, `remove` the entry and `add` the URL again (`add` refuses an existing id).
 
 ### Plugins install whole
 **Decision:** A `plugin` entry enables the whole plugin; the import list says so.

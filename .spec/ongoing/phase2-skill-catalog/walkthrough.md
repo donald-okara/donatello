@@ -2,7 +2,9 @@
 
 ## Current state
 
-Tasks 1–4 are done: the catalog, `/donatello:skills` (list, add, remove, import), and onboard's skill import step, all text-reviewed. Live checks are in Task 5 because headless test runs can't write outside their project and auto mode refuses bypass runs. Next: Task 6 (docs), then Task 5 with Donald. Open: resume mode should compute the already-present list when offering candidates (reviewer note).
+Tasks 1–4 and 6 are done: the catalog, `/donatello:skills` (list, add, remove, import), onboard's skill step (6g, before pruning in 6h), and the docs. All were reviewed as text only; nothing has run live yet.
+Next: Task 5 with Donald, which holds every live check (add/list/remove from a scratch project, import in both scopes and with a failing source, onboarding fixtures including `--defaults` and resume).
+Watch in Task 5: resume mode should compute the already-present list when offering candidates; tag refs in git URLs fall back to asking.
 
 ## How to verify
 
@@ -37,6 +39,12 @@ Tasks 1–4 are done: the catalog, `/donatello:skills` (list, add, remove, impor
 - Differs from the task text: Skills is 6g and pruning 6h (letters follow text order) instead of a new 6h before 6g
 - Fix round: list shown before the question, proposal wording, explicit pruning exclusion, letter order, `.gitignore` in the commit
 - Reviewer note: in resume mode, make sure the already-present list is computed when candidates are offered (check in Task 5)
+
+### Task 6: Docs and README
+- README: `/donatello:skills` in Commands and Quick start, a Skill catalog section (format, sources with `add` examples, import scopes, failures), onboard's skill step, `.claude/skills/` in the project tree, `catalog/` and `skills/skills/` in the repo layout
+- SPECIFICATION: the catalog replaces "domain skills ship in the plugin"; workflow 5 (`/donatello:skills`); onboard's skill step; repo and project trees
+- ARCHITECTURE: `skills` component, plugin layout, this phase's decisions, 17 edge-case rows
+- Fix round: duplicate README heading, "re-adding refreshes the pin" corrected to remove + add (also fixed in this phase's design.md), list/import read the clone when found, just-me marketplace entry only when unknown
 
 ## Deviations from spec
 

@@ -79,8 +79,8 @@ Live checks moved here from Tasks 2–4: headless test runs can't write outside 
 **Serves:** R6
 **Files:** `docs/SPECIFICATION.md`, `docs/ARCHITECTURE.md`, `README.md`
 
-- [ ] SPECIFICATION: add the catalog and `/donatello:skills` workflow; replace "Domain skills … ship in the same plugin" with the catalog approach; add the onboard skill step; add `catalog/` to the repo tree
-- [ ] ARCHITECTURE: a `skills` skill entry in Components; this phase's decisions; edge cases (missing CLI, unknown marketplace, skill already present, no clone configured)
-- [ ] README: a "Skill catalog" section (format, sources table, `add` examples for each source, import scopes), the command in Commands and Quick start, the repo layout
-- [ ] Check: `grep -n "catalog" README.md docs/*.md` covers every subcommand and source; nothing says domain skills live in `skills/`
-- [ ] Commit: `docs: document skill catalog`
+- [x] SPECIFICATION: add the catalog and `/donatello:skills` workflow; replace "Domain skills … ship in the same plugin" with the catalog approach; add the onboard skill step; add `catalog/` to the repo tree
+- [x] ARCHITECTURE: a `skills` skill entry in Components; this phase's decisions; edge cases (missing CLI, unknown marketplace, skill already present, no clone configured)
+- [x] README: a "Skill catalog" section (format, sources table, `add` examples for each source, import scopes), the command in Commands and Quick start, the repo layout
+- [x] Check: `grep -n "catalog" README.md docs/*.md` covers every subcommand and source; nothing says domain skills live in `skills/`
+- [x] Commit: `docs: document skill catalog`
