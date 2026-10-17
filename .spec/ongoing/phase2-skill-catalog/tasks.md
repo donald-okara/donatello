@@ -17,11 +17,11 @@ Each task ends with a commit. Verification means running the skill against fixtu
 **Serves:** R1
 **Files:** `catalog/skills.yaml`, `catalog/skills/`
 
-- [ ] Create `catalog/skills.yaml` with a header comment listing the fields (`id`, `source`, `ref`, `summary`, optional `applies-to`, `marketplace` for plugins) and the four `source` values
-- [ ] Add entries: `adaptive`, `navigation-3`, `styles` (`source: android`, `ref` = the id, `applies-to: [android]`, summary from `android skills list`), and `superpowers` (`source: plugin`, `ref: superpowers@claude-plugins-official`, `marketplace: anthropics/claude-plugins-official`, no `applies-to`)
-- [ ] Create `catalog/skills/.gitkeep`
-- [ ] Check: `python3 -c "import yaml; d=yaml.safe_load(open('catalog/skills.yaml')); assert all({'id','source','ref','summary'} <= set(e) for e in d)"` passes; `claude plugin validate .` still passes
-- [ ] Commit: `feat: add skill catalog`
+- [x] Create `catalog/skills.yaml` with a header comment listing the fields (`id`, `source`, `ref`, `summary`, optional `applies-to`, `marketplace` for plugins) and the four `source` values
+- [x] Add entries: `adaptive`, `navigation-3`, `styles` (`source: android`, `ref` = the id, `applies-to: [android]`, summary from `android skills list`), and `superpowers` (`source: plugin`, `ref: superpowers@claude-plugins-official`, `marketplace: anthropics/claude-plugins-official`, no `applies-to`)
+- [x] Create `catalog/skills/.gitkeep`
+- [x] Check: `python3 -c "import yaml; d=yaml.safe_load(open('catalog/skills.yaml')); assert all({'id','source','ref','summary'} <= set(e) for e in d)"` passes; `claude plugin validate .` still passes
+- [x] Commit: `feat: add skill catalog`
 
 ### Task 2: `/donatello:skills` — list, add, remove
 **Serves:** R2, R3

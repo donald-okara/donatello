@@ -1,0 +1,45 @@
+# Donatello skill catalog.
+#
+# Each entry is one skill that /donatello:onboard and /donatello:skills import can offer.
+#
+# Fields:
+#   id          unique, kebab-case
+#   source      android | plugin | git | donatello
+#   ref         install reference for the source:
+#                 android    the Android CLI skill id
+#                 plugin     <plugin>@<marketplace>
+#                 git        GitHub URL of the skill folder, pinned to a commit SHA
+#                 donatello  catalog/skills/<id>
+#   summary     one line, shown during onboard
+#   applies-to  optional stack list (same meaning as in preferences); omitted means every stack
+#   marketplace plugin entries only: the marketplace source (e.g. owner/repo)
+#
+# Sources:
+#   android    installed with the `android` CLI
+#   plugin     a Claude Code plugin from a marketplace; installs every skill in that plugin
+#   git        a skill folder in a GitHub repo
+#   donatello  a skill folder kept in this repo under catalog/skills/<id>/
+
+- id: adaptive
+  source: android
+  ref: adaptive
+  summary: Make or update Android UI adapt to phones, tablets, foldables, desktop, TV, Auto and XR (window sizes, input devices, multi-pane layouts).
+  applies-to: [android]
+
+- id: navigation-3
+  source: android
+  ref: navigation-3
+  summary: Install and migrate to Jetpack Navigation 3, with deep links, multiple backstacks, scenes, conditional navigation and Hilt/ViewModel integration.
+  applies-to: [android]
+
+- id: styles
+  source: android
+  ref: styles
+  summary: Integrate the Jetpack Compose Styles API into a project, including component themes, styleable custom components and Modifier.styleable.
+  applies-to: [android]
+
+- id: superpowers
+  source: plugin
+  ref: superpowers@claude-plugins-official
+  marketplace: anthropics/claude-plugins-official
+  summary: Core workflow skills for planning, TDD, debugging, code review and finishing branches.
