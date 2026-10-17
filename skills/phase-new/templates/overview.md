@@ -20,4 +20,4 @@
 
 ## Related Docs
 
-<!-- Pointers into docs/ (architecture.md, requirements.md, preferences.md) instead of repeating them. -->
+<!-- Pointers into the architecture, requirements, and preferences docs (paths in the CLAUDE.md block) instead of repeating them. -->

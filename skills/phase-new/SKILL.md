@@ -1,6 +1,6 @@
 ---
 name: phase-new
-description: Start the next Donatello phase in .spec/ongoing/ from templates, with tasks shaped by docs/preferences.md.
+description: Start the next Donatello phase in .spec/ongoing/ from templates, with tasks shaped by the project's preferences doc.
 argument-hint: "[scope]"
 disable-model-invocation: true
 ---
@@ -13,10 +13,10 @@ If `/donatello:onboard` sent you here for phase 1, skip step 1 (onboard already 
 
 ## 1. Gather context (cheaply)
 
-- Read `docs/preferences.md`, plus `docs/architecture.md` and `docs/requirements.md` if they exist.
+- Read the preferences, architecture, and requirements docs at the paths the Donatello block in `CLAUDE.md` names (defaults: `docs/preferences.md`, `docs/architecture.md`, `docs/requirements.md`), each one only if it exists. The rest of this skill calls them by role ("the preferences doc").
 - Read every `.claude/rules/*.md` too. Those rules load on their own only when code files are touched, and planning touches none, but tasks must follow them (e.g. UI setup order, preview requirements).
 - List the directory names in `.spec/ongoing/` and `.spec/archive/`. Don't read old phases in full. For the most recent archived phase, read only its walkthrough's "Current state" and "Deviations from spec".
-- If `docs/preferences.md` doesn't exist, the project isn't onboarded. Suggest `/donatello:onboard` and stop unless the user wants to continue anyway.
+- If `CLAUDE.md` (or `AGENTS.md`) has no Donatello block, the project isn't onboarded. Suggest `/donatello:onboard` and stop unless the user wants to continue anyway.
 - If a phase is already in `.spec/ongoing/`, say so and ask whether to start another one in parallel or finish that one first.
 
 ## 2. Number and name
@@ -46,7 +46,7 @@ Tasks are carried out by a Haiku implementer agent working alone, then checked b
 - **Header:** `**Serves:**` requirement IDs, `**Files:**` the paths or modules involved, `**Skill:**` only when a specific skill you can see applies. Otherwise delete the line entirely; never write "none".
 - **Size:** one task is one implementer run: a few files, about 3–6 steps. Split anything bigger.
 - **Concrete steps:** name the function, class, or composable and what it must return, emit, or show. "Add `farewell(name)` returning `"Bye, <name>"`", not "add farewell support".
-- **Tests are explicit steps.** Any task that adds behavior gets a step saying what to test and what result to assert, written the way `docs/preferences.md` asks (e.g. assert results, not implementation). Never leave the implementer to infer that tests are wanted.
+- **Tests are explicit steps.** Any task that adds behavior gets a step saying what to test and what result to assert, written the way the preferences doc asks (e.g. assert results, not implementation). Never leave the implementer to infer that tests are wanted.
 - **UI follows the preferences**, e.g. a preview step using the project's preview wrappers and grouped annotations.
 - **Check:** the exact command to run, or the preview or screen to look at.
 - **Commit:** a conventional commit line (`feat:`, `fix:`, `test:`, `chore:`, `docs:`).

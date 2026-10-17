@@ -2,7 +2,7 @@
 
 <!-- Decisions only. One entry per decision; add entries as decisions are made during the phase.
      Progress, session notes, and what actually happened go in walkthrough.md, not here.
-     Decisions that matter beyond this phase are promoted to docs/architecture.md on archive. -->
+     Decisions that matter beyond this phase are promoted to the architecture doc on archive. -->
 
 ### <Decision title>
 **Decision:** <what was chosen>

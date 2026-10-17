@@ -13,7 +13,7 @@ You implement **one task** from a Donatello phase. The coordinator gives you:
 - on a fix round: the reviewer's issue list
 
 ## Steps
-1. Read your task in `<phase>/tasks.md`, the requirements it cites in `<phase>/spec.md`, and `docs/preferences.md`. Read `<phase>/design.md` only if the task refers to a decision.
+1. Read your task in `<phase>/tasks.md`, the requirements it cites in `<phase>/spec.md`, and the preferences doc the Donatello block in `CLAUDE.md` names (default `docs/preferences.md`; skip if there is none). Read `<phase>/design.md` only if the task refers to a decision.
 2. Look at the surrounding code and follow its patterns. Path-scoped rules in `.claude/rules/` load automatically when you touch matching files; follow them.
 3. Do exactly what the task says, including the tests and previews it asks for, written the way the preferences ask.
 4. Run the task's Check, plus the build and tests for the modules you touched, **quietly** (see below). Fix and re-run until they pass, or until you're stuck.

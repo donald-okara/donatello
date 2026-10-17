@@ -51,7 +51,7 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[--defaults]"`
 - **Reads:** the `donatello:scout` report on the target repo (not the repo directly), `preferences/`, the list of enabled plugins
 - **Writes:** `docs/preferences.md` (general preferences), `.claude/rules/<category>.md` (preferences with `paths`), `docs/architecture.md`, `docs/requirements.md` (existing projects, only when behavior is clear from the code), phase 1 (via phase-new steps), the CLAUDE.md block, and `.claude/settings.local.json` with the plugins you chose to disable
-- **Guardrails:** propose before writing; never overwrite; resume if `.spec/` already exists; ask rather than guess when the project type is ambiguous (monorepos)
+- **Guardrails:** propose before writing; never overwrite; never duplicate (adopt existing docs for the architecture, requirements, and preferences roles, and drop preferences the project already states); resume if `.spec/` already exists; ask rather than guess when the project type is ambiguous (monorepos)
 
 ### `phase-new` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[scope]"`
@@ -105,7 +105,7 @@ Shared rules in each agent's prompt:
 ## Spec workflow (Donatello plugin)
 - Preferences: @docs/preferences.md (file-specific rules live in .claude/rules/)
 - Models: plan and discuss in the main session; implement via donatello:implementer, review via donatello:reviewer, survey via donatello:scout
-- Orientation: docs/architecture.md, docs/requirements.md (read when needed)
+- Orientation: architecture in docs/architecture.md, requirements in docs/requirements.md (read when needed)
 - Current work: .spec/ongoing/. Read the active phase's overview, spec, tasks, and the "Current state" section of walkthrough.md
 - After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
 - End of session: rewrite walkthrough.md "Current state"
@@ -163,6 +163,10 @@ Shared rules in each agent's prompt:
 ### Marked block in CLAUDE.md
 - **Why:** many projects already have a CLAUDE.md; the markers let Donatello update its part idempotently.
 
+### Adopt existing docs; the block holds the paths
+- **Why:** a fact written in two files drifts, and duplicated rules in always-loaded files cost tokens every session.
+- **How:** onboard maps each role (architecture, requirements, preferences) to an existing file when one covers it and writes the paths into the block. Skills and agents read them from there, with `docs/*.md` as defaults.
+
 ### One plugin to start
 - **Why:** simplest to install and iterate on.
 - **Later:** split domain skills into per-stack plugins (`donatello-android`, `donatello-web`) in the same marketplace so onboard can enable only the relevant ones via the project's `.claude/settings.json`.
@@ -177,6 +181,10 @@ Shared rules in each agent's prompt:
 | CLAUDE.md has a block | Replace only between the markers, after showing a diff |
 | `.spec/` exists | Resume: report what's there, offer to add missing pieces |
 | `docs/preferences.md` exists | Show a diff against current preferences; merge only with approval |
+| Existing doc covers a role under another name (`docs/DESIGN.md`, ADRs, `CONTRIBUTING.md`) | Adopt it: no new file; the block names its path; additions go in as a diff |
+| Architecture or requirements only described inside CLAUDE.md / AGENTS.md | Create the default file anyway (those files load every session), without repeating what they say |
+| CLAUDE.md / rules already state a preference | Drop that rule; on conflict the project wins unless the user switches |
+| File name differs only in case (`ARCHITECTURE.md`) | Treated as the same file |
 | Monorepo / ambiguous stack | Ask which part(s) to onboard |
 | Archiving with unchecked tasks | List them; archive anyway, carry over, or stop |
 | Archiving with no `walkthrough.md` | Build one from `tasks.md` and git history since the phase started; ask about "How to verify" |

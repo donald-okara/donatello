@@ -1,7 +1,7 @@
 # Phase <N>: Specification
 
 <!-- What must be true when the phase is done. Number requirements so tasks, reviews, and the walkthrough can cite them (R1, R2, ...).
-     Lasting behavior here is promoted to docs/requirements.md on archive, so state behavior, not implementation steps. -->
+     Lasting behavior here is promoted to the requirements doc on archive, so state behavior, not implementation steps. -->
 
 ## Requirements
 

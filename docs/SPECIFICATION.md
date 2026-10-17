@@ -108,6 +108,7 @@ Works on both new and existing projects.
    - The Donatello block in `CLAUDE.md`
    - `.claude/settings.local.json`: proposes disabling installed plugins that don't fit the project's stack (shown as a list; you pick)
 5. **Never overwrite.** Existing files are left alone or merged with the user's approval; an existing `.spec/` means onboarding resumes instead of starting over.
+6. **Never duplicate.** If an existing doc already covers architecture, requirements, or conventions (any name, matched case-insensitively), onboard adopts it instead of creating `docs/<role>.md`, and the block names its path. Preferences the project already states are dropped; conflicting ones are raised in the interview, where the project's rule wins by default.
 
 ### 2. Start a phase — `/donatello:phase-new [scope]`
 

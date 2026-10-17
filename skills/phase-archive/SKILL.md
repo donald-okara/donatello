@@ -1,15 +1,15 @@
 ---
 name: phase-archive
-description: Close out a Donatello phase: finalize the walkthrough, promote decisions and requirements to docs/, and move it to .spec/archive/.
+description: Close out a Donatello phase: finalize the walkthrough, promote decisions and requirements to the project docs, and move it to .spec/archive/.
 argument-hint: "[phase]"
 disable-model-invocation: true
 ---
 
 # Archive a phase
 
-Close out a phase so that what it shipped lives on in `docs/` and the phase folder moves to the archive. Arguments: `$ARGUMENTS`
+Close out a phase so that what it shipped lives on in the project docs and the phase folder moves to the archive. Arguments: `$ARGUMENTS`
 
-Nothing is deleted. Changes to `docs/` are shown as a diff and applied only after approval.
+Nothing is deleted. Doc paths are the ones the Donatello block in `CLAUDE.md` names (defaults: `docs/architecture.md`, `docs/requirements.md`). Changes to them are shown as a diff and applied only after approval.
 
 ## 1. Pick the phase
 
@@ -39,8 +39,8 @@ Don't continue until the user chooses.
 
 Prepare both changes, then show them together as one diff:
 
-- **Decisions → `docs/architecture.md`.** From `<phase>/design.md`, take decisions that shape the project beyond this phase (architecture, conventions, libraries), not phase-local ones. Add each to a `## Decisions` section as a single line with its reason. Update an existing line rather than adding a contradicting one.
-- **Requirements → `docs/requirements.md`.** From `<phase>/spec.md`, take requirements that describe lasting behavior; skip one-off setup or migration steps. Adjust them for the walkthrough's "Deviations from spec", so the file says what was built. Write them as plain statements grouped under `## <Area>` headings. When a new requirement changes an existing entry, **replace** the old entry; never keep both. If the file doesn't exist, create it with `# Requirements` and a one-line note that it describes current behavior.
+- **Decisions → the architecture doc.** From `<phase>/design.md`, take decisions that shape the project beyond this phase (architecture, conventions, libraries), not phase-local ones. Add each to a `## Decisions` section as a single line with its reason; if the doc already records decisions another way (e.g. one file per ADR), follow that format instead. Update an existing line rather than adding a contradicting one.
+- **Requirements → the requirements doc.** From `<phase>/spec.md`, take requirements that describe lasting behavior; skip one-off setup or migration steps. Adjust them for the walkthrough's "Deviations from spec", so the file says what was built. Write them as plain statements grouped under `## <Area>` headings, or match an adopted doc's existing structure. When a new requirement changes an existing entry, **replace** the old entry; never keep both. If the file doesn't exist, create it at the block's path with `# Requirements` and a one-line note that it describes current behavior.
 
 Apply the changes only after approval. Promote nothing for a phase that delivered no lasting behavior or decisions, and say so.
 

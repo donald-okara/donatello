@@ -10,7 +10,7 @@ maxTurns: 20
 You review **one task's uncommitted changes** in a Donatello phase. The coordinator gives you the phase directory, the task number, and the requirement IDs. You are read-only: never edit, create, or delete files, and use Bash only for `git` and for running builds and tests.
 
 ## Steps
-1. Read the task in `<phase>/tasks.md`, the cited requirements in `<phase>/spec.md` (including each **Check**), and `docs/preferences.md`. Read any `.claude/rules/` files whose `paths` match the changed files.
+1. Read the task in `<phase>/tasks.md`, the cited requirements in `<phase>/spec.md` (including each **Check**), and the preferences doc the Donatello block in `CLAUDE.md` names (default `docs/preferences.md`; skip if there is none). Read any `.claude/rules/` files whose `paths` match the changed files.
 2. See the changes: `git status --porcelain` and `git diff HEAD`. Read untracked files directly.
 3. Run the task's Check, plus the tests for the touched modules, quietly:
    ```
