@@ -40,13 +40,13 @@ Each task ends with a commit. Verification means running the skill against fixtu
 **Serves:** R4, NF2
 **Files:** `skills/skills/SKILL.md`
 
-- [ ] Section "import", written so onboard can follow it from its own step: work out the stack (from the caller's scout report, or ask), build candidates per R4 (matching `applies-to` or none; minus `.claude/skills/<id>/` present or plugin already in either settings file)
-- [ ] Show candidates grouped by source with "(installs the whole plugin)" on plugin entries; ask all / pick / none, then committed / just me
-- [ ] Install per R4's table; merge settings JSON keeping existing keys; never replace an existing `.claude/skills/<id>/`; for "just me" append `.claude/skills/<id>/` lines to `.gitignore` (creating it if needed, no duplicates)
-- [ ] On a failure, record the entry and the exact command to run later, and continue
-- [ ] Summary: imported (by scope), already present, failed with commands, and "start a new session to load newly enabled plugins" when any plugin was enabled
-- [ ] Check: the reviewer walks import through the skill text for each source and scope against R4/NF2 (live run moved to Task 5)
-- [ ] Commit: `feat: add catalog import to /donatello:skills`
+- [x] Section "import", written so onboard can follow it from its own step: work out the stack (from the caller's scout report, or ask), build candidates per R4 (matching `applies-to` or none; minus `.claude/skills/<id>/` present or plugin already in either settings file)
+- [x] Show candidates grouped by source with "(installs the whole plugin)" on plugin entries; ask all / pick / none, then committed / just me
+- [x] Install per R4's table; merge settings JSON keeping existing keys; never replace an existing `.claude/skills/<id>/`; for "just me" append `.claude/skills/<id>/` lines to `.gitignore` (creating it if needed, no duplicates)
+- [x] On a failure, record the entry and the exact command to run later, and continue
+- [x] Summary: imported (by scope), already present, failed with commands, and "start a new session to load newly enabled plugins" when any plugin was enabled
+- [x] Check: the reviewer walks import through the skill text for each source and scope against R4/NF2 (live run moved to Task 5)
+- [x] Commit: `feat: add catalog import to /donatello:skills`
 
 ### Task 4: Onboard integration
 **Serves:** R5, NF1

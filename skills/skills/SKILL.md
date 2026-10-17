@@ -64,4 +64,60 @@ Offer to commit in the clone, then push. Don't commit or push without a yes.
 
 ## import
 
-Defined in Task 3 of this phase. Not written yet.
+Installs catalog skills into the current project. The four parts below can run at different times, so a caller can use some of them alone:
+- **Candidates** ends with a list and asks nothing.
+- **Ask** turns the user's answers into chosen ids and a scope.
+- **Install** takes those ids and that scope as input.
+- **Summary** reports the results.
+
+Standalone `import` runs all four in order. Onboard runs Candidates and Ask as its own questions (it can show the Candidates list in its proposal instead of showing it again), then runs Install and Summary later.
+
+Run it from the project root. The stack comes from the caller (onboard passes the stack it found); standalone, ask once: "Which stacks does this project use?" (for example `android`, `web`, or none).
+
+### Candidates
+
+1. **Read** the catalog (see "Find the catalog"; `import` never asks for a clone).
+2. **Keep** entries whose `applies-to` includes the project's stack, or that have no `applies-to`.
+3. **Split** the kept entries into:
+   - **present**: `.claude/skills/<id>/` exists, or the plugin is a key of `enabledPlugins` in `.claude/settings.json` or `.claude/settings.local.json`. Don't offer these; they go in the summary as already present.
+   - **candidates**: the rest.
+4. **Show** the candidates grouped by source, with "(installs the whole plugin)" on each `plugin` entry. If there are no candidates, end the import and go to Summary (which still lists the present entries).
+
+### Ask
+
+1. Ask **all / pick / none**. "All" selects every candidate. "Pick" takes ids from the candidate list; an id that isn't in the list is rejected and the question repeats. "None" ends the import and goes to Summary.
+2. Ask **committed / just me** once for the whole import:
+   - **committed**: shared through git. Files go in `.claude/` and are meant to be committed.
+   - **just me**: stays on this machine. Skill folders and the plugin settings file are listed in `.gitignore`.
+
+Output: the chosen ids (from the candidates only) and the scope.
+
+### Install
+
+Input: the chosen ids and the scope. Never replace an existing `.claude/skills/<id>/` folder or an existing settings value. Before each entry, check that `.claude/skills/<id>/` doesn't exist (folder sources only). If it has appeared since Candidates, skip the entry, list it as already present, and don't add it to `.gitignore`.
+
+| Source | Committed | Just me |
+|---|---|---|
+| `android` | `android skills add <id> --agent=claude-code --project=.` | same command, then gitignore the folder |
+| `plugin` | `.claude/settings.json`: add the marketplace to `extraKnownMarketplaces` (if missing) and `"<plugin>@<marketplace>": true` to `enabledPlugins` (if missing) | `.claude/settings.local.json`: the same two entries; the marketplace goes in only if `~/.claude/plugins/known_marketplaces.json` doesn't already have it; then gitignore the settings file |
+| `git` | fetch the pinned folder (see below) into `.claude/skills/<id>/` | same, then gitignore the folder |
+| `donatello` | copy `catalog/skills/<id>/` from the same location the catalog was read from (clone or installed copy) into `.claude/skills/<id>/` | same, then gitignore the folder |
+
+- **Marketplace entry:** `extraKnownMarketplaces` is keyed by the marketplace name (the part after `@` in the ref), with value `{"source": {"source": "github", "repo": "<owner/repo>"}}`, where `<owner/repo>` is the entry's `marketplace` field.
+- **Settings files:** read the file (create it as `{}` if missing) and add only the missing keys. Keep every other key and value. If the file isn't valid JSON, don't touch it and fail the entry.
+- **Git folder:** run every git command with `GIT_TERMINAL_PROMPT=0`, so a private or missing repo fails instead of prompting. In a new scratch directory made with `mktemp -d` (outside the project): `git init -q`, `git remote add origin https://github.com/<owner>/<repo>.git`, `git fetch -q --depth 1 origin <sha>`, `git checkout -q FETCH_HEAD -- <path>`. Check that `<path>/SKILL.md` exists in the scratch directory; if not, fail the entry. Only then copy `<path>` into `.claude/skills/<id>/`. Delete the scratch directory whether or not the install succeeded. If the copy fails, remove any partial `.claude/skills/<id>/`.
+- **Gitignore (just me):** create `.gitignore` if missing, then append each just-me folder as `.claude/skills/<id>/` if that line isn't already there. For a just-me plugin, also make sure `.claude/settings.local.json` is ignored: run `git check-ignore -q .claude/settings.local.json`; exit 1 means it isn't ignored, so append that line. Exit 128 means the project isn't a git repo; skip the check. Add a newline before the first appended line if the file doesn't end with one.
+- **Failures** (missing CLI, no network, unknown marketplace, bad ref, unreadable settings file, missing `SKILL.md`): skip that entry and carry on. Record the entry and its fallback command:
+  - `android`: `android skills add <id> --agent=claude-code --project=.`
+  - `plugin`: `/plugin marketplace add <owner/repo>` (only if the marketplace is unknown), then `/plugin install <plugin>@<marketplace>`. If the cause was invalid JSON, also name the file (`.claude/settings.json` for committed, `.claude/settings.local.json` for just me) and the entries to add: `"extraKnownMarketplaces": {"<name>": {"source": {"source": "github", "repo": "<owner/repo>"}}}` and `"enabledPlugins": {"<plugin>@<marketplace>": true}`.
+  - `git`: fix the cause, then re-run `/donatello:skills import`. Manual alternative: fetch `<path>` at `<sha>` from `https://github.com/<owner>/<repo>` (the commands above) and copy it to `.claude/skills/<id>/`.
+  - `donatello`: fix the cause (usually `catalog/skills/<id>/SKILL.md` is missing from the catalog), then re-run `/donatello:skills import`. Manual alternative: `cp -R <catalog location>/catalog/skills/<id> .claude/skills/<id>`.
+
+### Summary
+
+Print these, even when the import stopped early:
+- **Imported**: each entry with its scope (committed or just me).
+- **Already present**: the present entries, plus any entry skipped at Install because its folder appeared.
+- **Failed**: each entry with its fallback command.
+- **Committed files**: the paths written for committed entries (for onboard's commit).
+- If any plugin was enabled: "Start a new session to load newly enabled plugins."

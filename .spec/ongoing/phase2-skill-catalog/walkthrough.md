@@ -2,7 +2,7 @@
 
 ## Current state
 
-Tasks 1–2 are done: the catalog holds four entries, and `/donatello:skills` has list, add, and remove (text-reviewed; live check deferred). Live checks for Tasks 2–4 moved to Task 5 because headless test runs can't write outside their project and auto mode refuses bypass runs. Next: Task 3, import.
+Tasks 1–3 are done: the catalog, and `/donatello:skills` with list, add, remove, and import (all text-reviewed; live checks are in Task 5 because headless test runs can't write outside their project and auto mode refuses bypass runs). Next: Task 4, onboard integration.
 
 ## How to verify
 
@@ -24,6 +24,13 @@ Tasks 1–2 are done: the catalog holds four entries, and `/donatello:skills` ha
 - Live headless Check blocked (writes outside the project refused; bypass run refused by auto mode); per Donald, replaced with a reviewer walk-through, live run moved to Task 5
 - Fix round: clone prompt limited to add/remove, spec-ID reference removed, git ref handling specified, not-found failures stop explicitly
 - Reviewer notes: tag refs aren't resolved (`refs/heads/` only) and fall back to asking; the import placeholder must be replaced in Task 3
+
+### Task 3: `/donatello:skills` — import
+- Replaced the import placeholder in `skills/skills/SKILL.md` with four separable parts: Candidates (lists, asks nothing), Ask (all / pick / none, then scope; unknown ids rejected), Install (per-source table for committed and just me), Summary (imported by scope, already present, failed with fallback commands, committed paths, new-session note)
+- Install re-checks `.claude/skills/<id>/` before each entry and skips it if present; settings JSON merges missing keys only, and invalid JSON fails the entry untouched
+- Git fetch: `GIT_TERMINAL_PROMPT=0`, `git init` + `fetch --depth 1 <sha>` + checkout of the path in a `mktemp` dir (always removed), `SKILL.md` checked before copying, partial copies removed
+- Fix round: per-source fallback commands, separable parts for onboard, "stop" → go to Summary, explicit skip for existing folders and unknown picks; plus the robustness notes and a `git check-ignore` step for `.claude/settings.local.json` on just-me plugins
+- Not run live: git fetch and `/plugin` commands (Task 5)
 
 ## Deviations from spec
 
