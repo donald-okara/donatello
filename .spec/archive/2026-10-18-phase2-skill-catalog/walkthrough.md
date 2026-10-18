@@ -2,15 +2,19 @@
 
 ## Current state
 
-Tasks 1–4 and 6 are done: the catalog, `/donatello:skills` (list, add, remove, import), onboard's skill step (6g, before pruning in 6h), and the docs. All were reviewed as text only; nothing has run live yet.
-Next: Task 5 with Donald, which holds every live check (add/list/remove from a scratch project, import in both scopes and with a failing source, onboarding fixtures including `--defaults` and resume).
-Watch in Task 5: resume mode should compute the already-present list when offering candidates; tag refs in git URLs fall back to asking.
+Shipped: `catalog/skills.yaml`, `/donatello:skills` (list, add, remove, import), onboard's skills step (6g, which runs before plugin pruning in 6h), and the docs. Fixtures were reviewed as text only. On 2026-10-18 a real onboarding of a new project ran the skills step without problems.
+Open: tag refs in git URLs aren't resolved and fall back to asking. In resume mode, onboard must compute the already-present list before it offers candidates.
+Carried over (Task 5, live checks):
+- `add` / `list` / `remove` from a scratch project (duplicate refused, local fixture folder copied and removed)
+- import in both scopes ("committed" and "just me"), re-import reporting skills as already present, and an android entry failing when `android` is off `PATH`
+- onboard filtering by `applies-to` on an Android fixture, resume mode offering the remaining candidate, and `--defaults` importing nothing
+- log and fix anything unexpected, then commit with `fix: adjust skill import from fixture trial`
 
 ## How to verify
 
 - `ruby -ryaml -e 'd=YAML.load_file("catalog/skills.yaml"); abort unless d.all?{|e| %w[id source ref summary].all?{|k| e.key?(k)}}'` passes (PyYAML isn't installed here; the Python check in tasks.md is equivalent)
 - `claude plugin validate .` passes
-- `/donatello:skills` add/list/remove and import: run interactively in Task 5 (see tasks.md)
+- `/donatello:skills` add/list/remove and import, plus the onboard skills step: the live checks under "Carried over" above
 
 ## Changes by task
 

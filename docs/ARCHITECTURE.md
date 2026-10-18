@@ -54,7 +54,6 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 
 ### `onboard` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[--defaults]"`
-- **Reads:** the `donatello:scout` report on the target repo (not the repo directly), `preferences/`, the list of enabled plugins
 - **Reads:** the `donatello:scout` report on the target repo (not the repo directly), `preferences/`, the skill catalog (via the import's Candidates step), the list of enabled plugins
 - **Writes:** `docs/preferences.md` (general preferences), `.claude/rules/<category>.md` (preferences with `paths`), `docs/architecture.md`, `docs/requirements.md` (existing projects, only when behavior is clear from the code), phase 1 (via phase-new steps), the CLAUDE.md block, `.claude/skills/<id>/` and the plugin entries for chosen catalog skills (skills step, 6g), `.gitignore` lines for "just me" imports, and `.claude/settings.local.json` with the plugins you chose to disable
 - **Guardrails:** propose before writing; never overwrite; never duplicate (adopt existing docs for the architecture, requirements, and preferences roles, and drop preferences the project already states); resume if `.spec/` already exists; ask rather than guess when the project type is ambiguous (monorepos); skills step runs before plugin pruning so pruning never proposes an imported plugin; `--defaults` skips skill import
@@ -69,7 +68,7 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 
 ### `phase-new` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[scope]"`
-- **Reads:** `docs/`, `.spec/ongoing/`, `.spec/archive/` (to find the next N and prior context)
+- **Reads:** `docs/`, all `.claude/rules/*.md` (path-scoped rules don't load during planning, since no matching file is touched), `.spec/ongoing/`, `.spec/archive/` (to find the next N and prior context)
 - **Writes:** `.spec/ongoing/phase<N>-<slug>/` from the four templates
 - **Task shaping:** follows `docs/preferences.md` (test-first ordering, preview tasks, etc.); a task names a skill when one applies
 
@@ -209,6 +208,14 @@ Shared rules in each agent's prompt:
 ### The import flow lives in the `skills` skill
 - **Why:** one definition of the flow for onboard and for later `/donatello:skills import` runs; keeps onboard's always-read text short.
 - **Tradeoff:** onboard depends on a sibling skill's path (`../skills/`), the same pattern as `../phase-new/`.
+
+### Repo is both plugin and marketplace
+- **Why:** one repo and one install command, with no separate marketplace repo to maintain.
+- **Tradeoff:** splitting into several plugins later means restructuring into subdirectories.
+
+### Phase templates live in `phase-new`
+- **Why:** one writer and one source of truth for phase files. Onboard reuses phase-new's steps for phase 1.
+- **Tradeoff:** onboard depends on a sibling skill's path (`../phase-new/`).
 
 ### One plugin to start
 - **Why:** simplest to install and iterate on.

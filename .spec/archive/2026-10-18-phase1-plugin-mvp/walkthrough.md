@@ -2,14 +2,21 @@
 
 ## Current state
 
-Tasks 1–8 are done: all four skills and three agents are implemented and verified in fixtures. Carried to Task 9 (real projects, interactive): the fix round and Sonnet escalation in phase-run, onboard's approval and plugin-pruning paths, one continuous new → run → archive → new loop, Next: Task 9, which needs Donald to onboard a real Android project. The relative-path check and token cost were measured after the GitHub push: the cached copy holds `preferences/` and `templates/`, and always-on cost is ~391 tokens (on-invoke: onboard ~2.1k, phase-new ~1.5k, phase-run ~1.3k, phase-archive ~1.2k, agents ~0.5–0.8k).
+Shipped: the plugin and its marketplace, preferences, templates, three agents (implementer, reviewer, scout) and four workflow skills (onboard, phase-new, phase-run, phase-archive), all verified in fixtures. After the GitHub install, the cached copy holds `preferences/` and `templates/`. Always-on cost is ~391 tokens.
+The real-project trial began on 2026-10-18: onboarding a new project went smoothly. A trial on an existing project is next.
+Open: phase-run's fix round and Sonnet escalation have never run, because Haiku avoided both trap tasks.
+Carried over:
+- Task 9: verify that an underspecified task triggers the fix round, then escalation
+- Task 9: onboard an existing project and run at least two tasks with `/donatello:phase-run`
+- Task 9: log issues from the trial (including Haiku escalations) and fix the skill and agent text
+- Task 9: update the README (what it is, install, commands, agents, files created)
 
 ## How to verify
 
 - `claude plugin validate .` and `claude plugin validate .claude-plugin/plugin.json` both pass
 - In a scratch git repo: `claude plugin marketplace add <path-to-donatello> --scope project`, then `claude plugin install donatello@donatello --scope project`, then `claude plugin details donatello@donatello`
 - Agent models: in a scratch repo with the plugin installed, run `echo "Use the donatello:scout agent ..." | claude -p --model sonnet --output-format stream-json --verbose` and check that subagent messages (non-null `parent_tool_use_id`) report `claude-haiku-*`; for the reviewer, use `--model haiku` as the main model and expect `claude-sonnet-*`
-- Typing `/donatello:` shows onboard, phase-new, phase-run, phase-archive (stubs reply that they aren't implemented)
+- Typing `/donatello:` shows onboard, phase-new, phase-run, phase-archive, and skills
 
 ## Changes by task
 
