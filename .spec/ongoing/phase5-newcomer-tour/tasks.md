@@ -18,12 +18,12 @@ Each task ends with a commit. As in phases 3 and 4, checks in Tasks 1–5 are re
 **Serves:** R1, R2
 **Files:** `skills/tour/SKILL.md`
 
-- [ ] Frontmatter: `name: tour`, a one-line `description` that names the triggers ("new to this repo", "show me around"), `argument-hint: "[area]"`, no `disable-model-invocation`; a short intro stating the tour is read-only and chat only
-- [ ] Section "1. Load": onboarded detection via the Donatello block in `CLAUDE.md`/`AGENTS.md`; the exact files read when onboarded (per R1); scout dispatch when not; no source reads
-- [ ] Section "2. Stops": the six stops in order with their content per R2, each at most ~10 lines, each ending "questions, deeper, or next?"; stop 5 skipped when not onboarded; stop 6's next step for each case
-- [ ] One rule line: facts come from the docs, the scout report, or files read for "deeper"; otherwise say "unknown"
-- [ ] Check: the reviewer walks an onboarded and a non-onboarded repo through "Load" and "Stops" against R1 and R2
-- [ ] Commit: `feat: add /donatello:tour`
+- [x] Frontmatter: `name: tour`, a one-line `description` that names the triggers ("new to this repo", "show me around"), `argument-hint: "[area]"`, no `disable-model-invocation`; a short intro stating the tour is read-only and chat only
+- [x] Section "1. Load": onboarded detection via the Donatello block in `CLAUDE.md`/`AGENTS.md`; the exact files read when onboarded (per R1); scout dispatch when not; no source reads
+- [x] Section "2. Stops": the six stops in order with their content per R2, each at most ~10 lines, each ending "questions, deeper, or next?"; stop 5 skipped when not onboarded; stop 6's next step for each case
+- [x] One rule line: facts come from the docs, the scout report, or files read for "deeper"; otherwise say "unknown"
+- [x] Check: the reviewer walks an onboarded and a non-onboarded repo through "Load" and "Stops" against R1 and R2
+- [x] Commit: `feat: add /donatello:tour`
 
 ### Task 2: tour — area focus, deeper, read-only
 **Serves:** R3, NF2
