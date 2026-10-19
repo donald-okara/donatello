@@ -2,14 +2,15 @@
 
 ## Current state
 
-Tasks 1–3 are done: `/donatello:tour` is complete (Load, six stops, area focus, navigation, read-only); onboard asks whether you're new and offers the tour on onboarded repos.
-Next: Task 4 (onboard newcomer mode on non-onboarded repos).
-Open: non-onboarded + area may dispatch the scout twice (Task 2 NOTE); an unset `git config user.email` makes the newcomer default "no" (Task 3 NOTE).
+Tasks 1–4 are done: `/donatello:tour` is complete; onboard asks whether you're new, offers the tour on onboarded repos, and runs newcomer mode (Open questions, docs only, tour offer) on non-onboarded ones.
+Next: Task 5 (block and scout integration), then Task 7 (docs); Task 6 needs Donald.
+Open: non-onboarded + area may dispatch the scout twice (Task 2 NOTE).
 Donatello agents weren't installed in this session; tasks ran on general-purpose agents (Haiku implementer, Sonnet reviewer) briefed with `agents/*.md`.
 
 ## How to verify
 
 - `claude plugin validate .` passes
+- Task 4: walk a non-onboarded repo with "new", one "don't know", and "docs only" through onboard steps 4–7 against R5; onboarded resume and `--defaults` unaffected
 - Task 3: walk onboarded + new, onboarded + not new, and `--defaults` through onboard step 1 against R4
 - Task 2: walk `/donatello:tour auth` where docs cover auth and where they don't (scout with focus path) against R3; no write, edit, or commit path (NF2)
 - Task 1: walk an onboarded and a non-onboarded repo through "Load" and "Stops" in `skills/tour/SKILL.md` against R1 and R2
@@ -29,7 +30,14 @@ Donatello agents weren't installed in this session; tasks ran on general-purpose
 ### Task 3: onboard — newcomer question, onboarded branch
 - `skills/onboard/SKILL.md` step 1: "Are you new to this repo?" (unless `--defaults`), default from git authorship; the answer carries forward as newcomer mode
 - "Already onboarded" bullet: new → offers `/donatello:tour` or resume mode, with a shared-files warning before resume; not new and `--defaults` unchanged
-- Reviewer NOTE: with no `user.email` set, `--author=""` matches every commit, so the default becomes "no"
+- Reviewer NOTE: with no `user.email` set, `--author=""` matches every commit, so the default becomes "no" (fixed in Task 4)
+
+### Task 4: onboard — newcomer mode
+- `skills/onboard/SKILL.md`: newcomer clauses in steps 4 (next-work question, open questions as findings, conflicts keep the project's rule), 5 (kept conflicts, "docs only" / "docs + phase 1"), 6c (`## Open questions`, at most 5 lines), 6e (skipped for docs only), 7 (phase-run or phase-new, tour offer, shared-files/PR note)
+- Coordinator addition: step 1 defaults to "new" when `git config user.email` is empty
+- Step 6f untouched; the reviewer confirmed the block is already written unchanged in docs-only mode
+- Fix round on PASS NOTEs: newcomer mode limited to non-onboarded repos (it could leak into resume mode), phase breakdown "unless docs only", tour offer scoped to newcomer mode
+- Reviewer NOTE: step 5 doesn't say outright that "docs + phase 1" shows phase 1's detail
 
 ## Deviations from spec
 

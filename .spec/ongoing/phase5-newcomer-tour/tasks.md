@@ -49,12 +49,12 @@ Each task ends with a commit. As in phases 3 and 4, checks in Tasks 1–5 are re
 **Serves:** R5, NF2
 **Files:** `skills/onboard/SKILL.md`
 
-- [ ] Step 4: in newcomer mode, replace "what's next" with "Do you know the next piece of work? 'No' is fine"; present scout open questions as findings to confirm, correct, or mark "don't know"; conflicts keep the project's rule without asking
-- [ ] Step 5: list kept conflicts; offer "docs only" or "docs + phase 1"
-- [ ] Step 6c: "don't know" answers go to `## Open questions` (at most 5 lines) at the end of the architecture doc, or as a diff to an adopted one; step 6e skipped for "docs only"
-- [ ] Step 7: next step `/donatello:phase-run` or `/donatello:phase-new`; offer `/donatello:tour`; commit offer notes shared files and suggests a PR
-- [ ] Check: the reviewer walks a non-onboarded repo with "new", one "don't know", and "docs only" against R5
-- [ ] Commit: `feat: add newcomer mode to /donatello:onboard`
+- [x] Step 4: in newcomer mode, replace "what's next" with "Do you know the next piece of work? 'No' is fine"; present scout open questions as findings to confirm, correct, or mark "don't know"; conflicts keep the project's rule without asking
+- [x] Step 5: list kept conflicts; offer "docs only" or "docs + phase 1"
+- [x] Step 6c: "don't know" answers go to `## Open questions` (at most 5 lines) at the end of the architecture doc, or as a diff to an adopted one; step 6e skipped for "docs only"
+- [x] Step 7: next step `/donatello:phase-run` or `/donatello:phase-new`; offer `/donatello:tour`; commit offer notes shared files and suggests a PR
+- [x] Check: the reviewer walks a non-onboarded repo with "new", one "don't know", and "docs only" against R5
+- [x] Commit: `feat: add newcomer mode to /donatello:onboard`
 
 ### Task 5: Integration
 **Serves:** R6

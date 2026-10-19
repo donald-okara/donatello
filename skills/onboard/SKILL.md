@@ -21,7 +21,7 @@ Paths below that start with `../` are relative to this skill's directory.
 
 Look for `CLAUDE.md` (and whether it has `<!-- donatello:start -->`), `AGENTS.md`, `docs/preferences.md`, `docs/architecture.md`, `docs/requirements.md`, `.claude/rules/`, and `.spec/`. Match names case-insensitively: `docs/ARCHITECTURE.md` counts as `docs/architecture.md`.
 
-**Ask whether they're new.** Unless `--defaults`, ask "Are you new to this repo?" once, before the branches below. Default to yes when there's no git repo or no commits, or when `git log --author="$(git config user.email)" --oneline | wc -l` is under 5% of `git rev-list --count HEAD`; otherwise default to no. Ask even with a default, so a wrong guess costs one answer. A yes carries forward as newcomer mode in steps 4–7.
+**Ask whether they're new.** Unless `--defaults`, ask "Are you new to this repo?" once, before the branches below. Default to yes when there's no git repo or no commits, when `git config user.email` is empty (an empty `--author` matches every commit), or when `git log --author="$(git config user.email)" --oneline | wc -l` is under 5% of `git rev-list --count HEAD`; otherwise default to no. Ask even with a default, so a wrong guess costs one answer. A yes carries forward as newcomer mode in steps 4–7 (non-onboarded repos only; an onboarded repo never enters newcomer mode, even when the user is new).
 
 - **Already onboarded** (block or `.spec/` present): if the user is new, say the repo is already set up and offer `/donatello:tour` (recommended) or resume mode. Before resume mode, warn that the preferences refresh and block update change shared, committed files. Otherwise switch to resume mode: report what exists and what's missing, then offer only the missing pieces (including skill candidates from step 3), a preferences refresh (shown as a diff against the current Donatello preferences, deduplicated as in step 3), or a block update. Don't redo anything that exists. The doc paths are the ones the existing block names. With `--defaults`, skip the question and go straight to resume mode.
 - **Only `AGENTS.md`, no `CLAUDE.md`**: ask whether the block goes into `AGENTS.md` or a new `CLAUDE.md`.
@@ -59,10 +59,10 @@ Drop individual rules, not whole files; the rest of a file's section stays. The 
 ## 4. Interview (skip with `--defaults`)
 
 Keep it short: about five questions in total, one or two at a time, and never ask what the scout already answered. Cover:
-- what's being built and where it's going (new projects: the core idea; existing: what's next)
-- anything the scout's "Open questions" flagged, especially architecture specifics the tasks will depend on (DI, state management, navigation)
+- what's being built and where it's going (new projects: the core idea; existing: what's next; newcomer mode: "Do you know the next piece of work? 'No' is fine")
+- anything the scout's "Open questions" flagged, especially architecture specifics the tasks will depend on (DI, state management, navigation). Newcomer mode: show each as a finding to confirm, correct, or mark "don't know"
 - the preference selection: list each file's `summary` and ask if any should be dropped or changed for this project
-- each conflict from step 3: keep the project's rule (the default) or switch to Donatello's. Switching means editing the project's rule where it already lives, not adding a second one
+- each conflict from step 3: keep the project's rule (the default) or switch to Donatello's. Switching means editing the project's rule where it already lives, not adding a second one. Newcomer mode: keep the project's rule without asking
 - skills (skip with `--defaults`, or when there are no candidates): show the import's Candidates list, grouped by source with "(installs the whole plugin)" on plugin entries, then ask the Ask questions in `../skills/SKILL.md`: all / pick / none, then committed / just me. Pick ids come only from that list.
 
 ## 5. Propose (skip approval with `--defaults`)
@@ -71,7 +71,8 @@ Show one compact proposal and wait for a yes or changes:
 - where each doc lives: an adopted existing file or a new default file
 - the architecture outline you'll write (a few bullets), or the additions to the adopted file
 - preferences: what goes to the preferences doc and what to `.claude/rules/`, plus how many rules were dropped as already stated (with a couple of examples)
-- phase breakdown: phase 1 with its goal and rough tasks; later phases as one-liners
+- phase breakdown: phase 1 with its goal and rough tasks; later phases as one-liners (unless docs only)
+- newcomer mode: the conflicts kept from step 3, listed, and a choice of "docs only" or "docs + phase 1"
 - skill candidates, and the ones chosen with their scope (omit when none; see step 6g)
 - plugins to disable for this project (see step 6h)
 - every file you'll create, and every existing file you'll touch and how
@@ -82,11 +83,11 @@ Show one compact proposal and wait for a yes or changes:
 
 **b. `.claude/rules/<category>.md`.** For each path-scoped preference with rules left after step 3: the body, with frontmatter reduced to the `paths` key only (that's the key Claude Code reads for rules). If the file already exists, show the new rules as a diff.
 
-**c. Architecture doc.** If it's a new file: under 80 lines, from the scout report and the interview, covering what the project is, modules, stack, key patterns (state, DI, navigation, testing), **exact build and test commands** (the agents rely on these), and decisions already made. Leave out anything `CLAUDE.md`/`AGENTS.md` already states. Where that's a section the agents need (e.g. build commands), write a one-line pointer such as `Build and test commands: see CLAUDE.md`. If it's adopted: propose only what's missing, as a diff. Build and test commands are the most important gap to fill.
+**c. Architecture doc.** If it's a new file: under 80 lines, from the scout report and the interview, covering what the project is, modules, stack, key patterns (state, DI, navigation, testing), **exact build and test commands** (the agents rely on these), and decisions already made. Leave out anything `CLAUDE.md`/`AGENTS.md` already states. Where that's a section the agents need (e.g. build commands), write a one-line pointer such as `Build and test commands: see CLAUDE.md`. If it's adopted: propose only what's missing, as a diff. Build and test commands are the most important gap to fill. Newcomer mode: put "don't know" answers and unresolved scout questions under a final `## Open questions` section (at most 5 lines), as a diff if adopted.
 
 **d. Requirements doc.** If it's adopted, leave it alone. Otherwise create `docs/requirements.md` only for existing projects, and only when current behavior is clear from the scout report: plain requirement statements grouped by area. If not, don't create it at all, not even as a placeholder; the first `phase-archive` creates it.
 
-**e. Phase 1.** Follow `../phase-new/SKILL.md` from its step 2, using its templates. You already have the context, so don't repeat its step 1. In resume mode with archived phases, numbering continues from them.
+**e. Phase 1.** Follow `../phase-new/SKILL.md` from its step 2, using its templates. Newcomer mode with "docs only": skip this step. You already have the context, so don't repeat its step 1. In resume mode with archived phases, numbering continues from them.
 
 **f. CLAUDE.md block.** Read `../../templates/claude-block.md`. Replace its default doc paths with the ones from step 2; the other skills and agents find the docs through these lines. Preferences line: import with `@` only a preferences file of 100 lines or less. Name a longer one without `@` ("read before coding"). If there's no separate preferences file (none survived, or they live in `CLAUDE.md` itself), keep only the pointer to `.claude/rules/`. Keep the requirements path even if the file doesn't exist yet; `phase-archive` creates it there.
 - No `CLAUDE.md`: create it with `# <Project name>` and the block.
@@ -99,4 +100,4 @@ Show one compact proposal and wait for a yes or changes:
 
 ## 7. Wrap up
 
-Summarize what was created and changed in a few lines, add the import summary from `../skills/SKILL.md` (imported by scope, already present, failed with commands; with `--defaults`, just the `/donatello:skills import` pointer), name the next step (`/donatello:phase-run` to start phase 1's first task), and offer to commit with `docs: onboard project to Donatello`. Include the committed skill files from step 6g in that commit, plus the `.gitignore` lines added for "just me" imports (so the ignores are shared). Leave out the ignored "just me" skill folders and `.claude/settings.local.json`. Commit only if the user agrees.
+Summarize what was created and changed in a few lines, add the import summary from `../skills/SKILL.md` (imported by scope, already present, failed with commands; with `--defaults`, just the `/donatello:skills import` pointer), name the next step (`/donatello:phase-run` to start phase 1's first task, or `/donatello:phase-new` when no phase 1 was written), in newcomer mode offer `/donatello:tour`, and offer to commit with `docs: onboard project to Donatello`. In newcomer mode, note that `CLAUDE.md` and `docs/` are shared, so a PR may suit better than a direct commit. Include the committed skill files from step 6g in that commit, plus the `.gitignore` lines added for "just me" imports (so the ignores are shared). Leave out the ignored "just me" skill folders and `.claude/settings.local.json`. Commit only if the user agrees.
