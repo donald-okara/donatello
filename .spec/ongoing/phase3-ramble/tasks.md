@@ -83,11 +83,11 @@ Each task ends with a commit. As in phase 2, checks in Tasks 1–6 are reviewer 
 **Serves:** R11
 **Files:** `docs/SPECIFICATION.md`, `docs/ARCHITECTURE.md`, `README.md`
 
-- [ ] SPECIFICATION: workflow 6 `/donatello:ramble`; `.spec/rambles/` in the project tree; ramble mode under Key Behaviors
-- [ ] ARCHITECTURE: a `ramble` component (frontmatter, reads, writes, guardrails); this phase's lasting decisions; the edge cases from R11
-- [ ] README: the command in Commands and a short "Ramble" section (start, ramble mode, end and outcomes, skills to catalog); `skills/ramble/` in the layout
-- [ ] Check: `grep -n "ramble" README.md docs/*.md` covers the command, `.spec/rambles/`, and all five outcomes
-- [ ] Commit: `docs: document /donatello:ramble`
+- [x] SPECIFICATION: workflow 6 `/donatello:ramble`; `.spec/rambles/` in the project tree; ramble mode under Key Behaviors
+- [x] ARCHITECTURE: a `ramble` component (frontmatter, reads, writes, guardrails); this phase's lasting decisions; the edge cases from R11
+- [x] README: the command in Commands and a short "Ramble" section (start, ramble mode, end and outcomes, skills to catalog); `skills/ramble/` in the layout
+- [x] Check: `grep -n "ramble" README.md docs/*.md` covers the command, `.spec/rambles/`, and all five outcomes
+- [x] Commit: `docs: document /donatello:ramble`
 
 ### Task 8: Fixture verification
 **Serves:** R1–R10

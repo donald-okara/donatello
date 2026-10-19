@@ -4,7 +4,7 @@
 
 Donatello is a Claude Code plugin with no runtime code. It has four parts:
 
-1. **Workflow skills**: instructions Claude follows (`onboard`, `phase-new`, `phase-run`, `phase-archive`, `skills`)
+1. **Workflow skills**: instructions Claude follows (`onboard`, `phase-new`, `phase-run`, `phase-archive`, `skills`, `ramble`)
 2. **Agents**: subagents with fixed models for legwork and review (`implementer`, `reviewer`, `scout`)
 3. **Templates**: the shape of the files the skills write
 4. **Data**: your preferences, the skill catalog (`catalog/skills.yaml`), and your own skill folders (`catalog/skills/`)
@@ -25,6 +25,8 @@ skills/
   phase-new/templates/{overview,design,spec,tasks,walkthrough}.md
   phase-run/SKILL.md
   phase-archive/SKILL.md
+  ramble/SKILL.md
+  ramble/templates/notes.md
   skills/SKILL.md
 agents/
   implementer.md
@@ -45,6 +47,7 @@ Claude Code gives a skill its base directory, so skills reference supporting fil
 - `phase-new` → `templates/overview.md`
 - `onboard` → `../../preferences/`, `../../templates/claude-block.md`, `../phase-new/` for phase 1, and `../skills/SKILL.md` for the import flow
 - `skills` → `../../catalog/skills.yaml` (the installed copy, when no clone is found) and `../../catalog/skills/<id>/`
+- `ramble` → `templates/notes.md`, and `../skills/SKILL.md` for the catalog adds at wrap-up
 
 Templates live in `phase-new` because that is their only writer; `onboard` delegates to it, so there is one source of truth for phase files. The same holds for the import flow: it is defined once in `skills/skills/SKILL.md`, and onboard follows it.
 
@@ -68,8 +71,8 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 
 ### `phase-new` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[scope]"`
-- **Reads:** `docs/`, all `.claude/rules/*.md` (path-scoped rules don't load during planning, since no matching file is touched), `.spec/ongoing/`, `.spec/archive/` (to find the next N and prior context)
-- **Writes:** `.spec/ongoing/phase<N>-<slug>/` from the four templates
+- **Reads:** `docs/`, all `.claude/rules/*.md` (path-scoped rules don't load during planning, since no matching file is touched), `.spec/ongoing/`, `.spec/archive/` (to find the next N and prior context), and the frontmatter of `.spec/rambles/*.md`. Closed rambles with a `closed` date after the newest archive date (all of them if there is no archive) have their Learnings read, at most the 5 most recent; a promoted ramble's full notes are read
+- **Writes:** `.spec/ongoing/phase<N>-<slug>/` from the four templates; decisions settled by the read ramble Learnings go in `design.md`, naming the ramble
 - **Task shaping:** follows `docs/preferences.md` (test-first ordering, preview tasks, etc.); a task names a skill when one applies
 
 ### `phase-run` skill
@@ -78,11 +81,18 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 - **Loop per task:** implementer → reviewer → (one fix round) → escalate the implementer to Sonnet via the Agent tool's per-call `model` → stop and ask
 - **Writes:** commit per task, tick in `tasks.md`, walkthrough "Changes by task" and "Current state"
 - **Handoff to agents:** passes paths, not content (phase directory, `docs/preferences.md`, requirement IDs), so each agent reads only what it needs
+- **Guardrails:** refuses on a `ramble/*` branch. Its clean-tree check and its commits both ignore `.spec/rambles/`, since worktree rambles write their notes into the main checkout
 
 ### `phase-archive` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[phase]"`
 - **Reads:** the phase's `tasks.md`, `design.md`, `spec.md`, `walkthrough.md`
 - **Writes:** final "Current state" summary in `walkthrough.md`; promoted decisions in `docs/architecture.md`; promoted requirements (adjusted for deviations) in `docs/requirements.md`; then moves the directory to `.spec/archive/<date>-phase<N>-<slug>/`
+
+### `ramble` skill
+- **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[topic | end]"`; no `model` (it runs in the main session)
+- **Reads:** `git worktree list --porcelain` and `git branch --list 'ramble/*'` to find the main checkout and the rambles; the frontmatter of each `.spec/rambles/*.md` in the main checkout (picker); on resume, the Question and last 5 Log lines; on end, the Log and `git log main..ramble/<slug>` (Learnings draft); `templates/notes.md` at start; `../skills/SKILL.md` for the catalog adds. `donatello:scout` only when the user asks for a survey
+- **Writes:** `.spec/rambles/<date>-<slug>.md` in the main checkout (status, closed, Learnings, Outcome); branch `ramble/<slug>` and worktree `../<repo>-ramble-<slug>`; `wip:` checkpoints on the ramble branch; on main, only the notes file, catalog adds, and the squash commit for a merge. Commit messages: `docs: start|resume|abandon|close|park ramble <slug>`, `docs: record PR for ramble <slug>`, `docs: record promotion of ramble <slug>`. Skill folders are copied to `$TMPDIR/donatello-ramble-<slug>/` and removed after the adds
+- **Guardrails:** main is touched only through the notes file and the commits above, and only from the main checkout on `main` (asks first if main isn't checked out there); the notes file is never staged on the branch; changes are staged by path, never `git add -A`; a slug is never reused; uncommitted changes are checkpointed or discarded only after a yes; merge, PR, and promote each need an explicit yes; worktrees are removed without `--force`; a failed branch action is reported and not retried; no implementer or reviewer agents
 
 ### Walkthrough upkeep (no skill)
 - Driven by the CLAUDE.md block, not a command, so it happens during normal work
@@ -111,6 +121,7 @@ Shared rules in each agent's prompt:
 | `tasks.md` | Plain `- [ ]` checklist grouped by task; no status emoji, since the checkbox *is* the status |
 | `walkthrough.md` | Current state (≤ 10 lines) / How to verify / Changes by task / Deviations from spec |
 | `claude-block.md` | The marked CLAUDE.md block (see below) |
+| `ramble/templates/notes.md` | Ramble notes: frontmatter (`status`, `mode`, `branch`, `worktree`, `started`, `closed`), then Question, Log, Learnings, Outcome. HTML-comment guidance is removed when a ramble starts |
 
 ### CLAUDE.md block (shape)
 ```markdown
@@ -122,7 +133,8 @@ Shared rules in each agent's prompt:
 - Current work: .spec/ongoing/. Read the active phase's overview, spec, tasks, and the "Current state" section of walkthrough.md
 - After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
 - End of session: rewrite walkthrough.md "Current state"
-- Commands: /donatello:phase-new · /donatello:phase-run · /donatello:phase-archive
+- Rambles: on `ramble/*`, read only the frontmatter, Question and last 5 Log entries of that ramble's notes in `.spec/rambles/` (frontmatter `branch` matches); follow ramble mode; `/donatello:ramble` resumes
+- Commands: /donatello:phase-new · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble
 <!-- donatello:end -->
 ```
 
@@ -221,6 +233,46 @@ Shared rules in each agent's prompt:
 - **Why:** simplest to install and iterate on.
 - **Later:** split domain skills into per-stack plugins (`donatello-android`, `donatello-web`) in the same marketplace so onboard can enable only the relevant ones via the project's `.claude/settings.json`.
 
+### One `ramble` command with modes
+- **Why:** one thing to remember, matching `/donatello:skills` subcommands. The picker makes pending rambles visible instead of relying on the branch you happen to be on.
+- **Tradeoff:** a longer skill file. The wrap-up sits behind an explicit `end`, so it isn't triggered by accident.
+
+### Rambles are not phases
+- **Why:** the point is low ceremony. Folding rambles into phases would muddle numbering and bring back the process a ramble skips.
+- **Tradeoff:** a second kind of record in `.spec/`; `phase-new` has to read it explicitly.
+
+### Notes always survive; code survives only by choice, decided at `end`
+- **Why:** you don't know whether an experiment is worth keeping until it's done, but what was learned is worth keeping either way. Every ramble commits its notes to main.
+- **Tradeoff:** every ramble leaves a file on main, even trivial ones. Kept small: the Log is terse and Learnings are at most 10 lines.
+
+### Worktree or in place, asked each time
+- **Why:** worktrees keep main free for phase work in parallel; in place avoids a second checkout and a cold build.
+- **Tradeoff:** two code paths. In place relies on the notes file never being staged on the branch, so ramble mode stages by path.
+
+### Ramble mode runs in the main session, preferences relaxed
+- **Why:** it's a learning tool, so the reasoning should stay visible, and experiments shouldn't pay for conventions they may throw away.
+- **Tradeoff:** kept code needs cleanup. Merge squashes the history, and promote-to-phase redoes the work properly.
+
+### Catalog adds run from main
+- **Why:** inside the Donatello repo, `skills` treats the current directory as the clone, so an add on the ramble branch would be deleted with a throwaway branch. Chosen folders are copied to a temp directory and added from main, without changing `skills`.
+- **Tradeoff:** a temp copy step, removed after the add.
+
+### Draft a skill from the Learnings
+- **Why:** a ramble often teaches something skill-worthy without a skill having been written. A draft goes through the same catalog path.
+- **Tradeoff:** a draft is only as good as the notes, so it's shown for edit before anything is added.
+
+### Merge squashes
+- **Why:** `wip:` checkpoints are for rolling back during the ramble, not for main's history.
+- **Tradeoff:** the checkpoint history is lost on main; choose "kept" if it matters.
+
+### Branch action runs last
+- **Why:** if deleting or merging fails, the notes and catalog adds are already safe on main.
+- **Tradeoff:** a failed branch action leaves the notes recording the chosen outcome. It's reported, and not retried without asking.
+
+### `phase-run` refuses on a ramble branch
+- **Why:** phase work mixed into an experiment branch would be lost with a throwaway.
+- **Tradeoff:** phase-run's clean-tree check excludes `.spec/rambles/`, so notes that worktree rambles write into the main checkout don't block phase work.
+
 ---
 
 ## Edge Cases
@@ -261,3 +313,18 @@ Shared rules in each agent's prompt:
 | No clone found, `list` or `import` | Read the installed copy; never prompt. A clone found in the cwd or `~/.claude/donatello.json` is read instead |
 | `import` in a project that isn't a git repo | The `git check-ignore` step is skipped (exit 128); `.gitignore` lines are still written for "just me" |
 | Onboard with `--defaults` | Skill import skipped; the wrap-up points to `/donatello:skills import` |
+| Ramble: not a git repo | Notes file only, with `mode: notes-only`; no branch, commits, or outcome. Wrap-up drafts Learnings and any catalog adds, then closes |
+| Ramble: slug already used (notes file or `ramble/<slug>` exists) | Ask for another topic or slug; never reuse one |
+| Ramble: dirty tree when starting in place | Offer stash (noted in the Log), worktree instead, or stop |
+| Ramble: dirty tree when resuming in place | Offer stash or stop, then `git switch ramble/<slug>` on a clean tree |
+| Ramble: two rambles open at once | Each has its own branch and notes; the picker lists all open and parked rambles. Worktree rambles run side by side; in-place rambles share one checkout, so switching needs a clean tree |
+| Ramble: `end` outside a ramble | The picker lists open and parked rambles to choose from |
+| Ramble: uncommitted changes at `end` | Checkpoint as `wip:` or discard after confirmation. In place, the switch back to main stops on any change other than the notes |
+| Ramble: `ramble/*` branch with no notes file (orphan) | The picker creates its notes file (mode from `git worktree list`), then resumes it |
+| Ramble: notes open, branch gone | The picker offers to mark it `abandoned`. A tracked file is committed on main; an untracked one is left for the user |
+| Ramble: worktree path gone on resume | Say so; offer `git worktree add <path> ramble/<slug>` to recreate it |
+| Ramble: worktree removal refused (e.g. untracked files) | Report it and ask; no `--force` |
+| Ramble: squash merge conflicts | No `MERGE_HEAD`, so `git merge --abort` isn't used. Report `git status` and don't resolve without asking |
+| Ramble: branch action fails | Report it; the notes stay committed with the chosen outcome; not retried |
+| Ramble inside the Donatello repo | Catalog adds run from main, so a throwaway branch can't delete them |
+| `phase-run` on a `ramble/*` branch | Stops and points to `/donatello:ramble end` or switching to main |

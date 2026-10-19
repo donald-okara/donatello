@@ -2,13 +2,15 @@
 
 ## Current state
 
-Tasks 1–6 are done: `skills/ramble/SKILL.md` is complete; phase-new reads and uses ramble Learnings; phase-run refuses on `ramble/*` and ignores `.spec/rambles/`; the CLAUDE.md block has the ramble line (~273 tokens total).
-Next: Task 7, docs and README. Then Task 8 (live fixture checks) with Donald. Task 6 gained a step: phase-run ignores `.spec/rambles/` in its clean check and task commits.
+Tasks 1–7 are done: `/donatello:ramble` is written (start, picker, resume, ramble mode, end with five outcomes, skills to the catalog), wired into phase-new, phase-run, and the CLAUDE.md block (~274 tokens), and documented in SPECIFICATION, ARCHITECTURE, and README.
+Everything so far was reviewed as text; nothing has run live.
+Next: Task 8 with Donald (live fixture checks). Riskiest paths to try first: throwaway in worktree mode (worktree remove, then branch -D), in-place notes crossing to main, and a skill surviving a throwaway inside the Donatello repo. Task 6 gained a step: phase-run ignores `.spec/rambles/` in its clean check and task commits.
 
 ## How to verify
 
 - `claude plugin validate .` passes
 - Task 1: walk worktree, in-place, and non-git starts through the "Start" section of `skills/ramble/SKILL.md` against R2 and R3
+- Task 7: `grep -n "ramble" README.md docs/*.md` shows the command, `.spec/rambles/`, and the outcomes; the block copies in README and ARCHITECTURE match `templates/claude-block.md`
 - Task 6: block under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); phase-new step 1 read limits and step 4 use of Learnings; phase-run's ramble guard and `.spec/rambles` pathspecs
 - Task 5: walk a throwaway worktree ramble, an in-place one, one inside the Donatello repo, and a notes-only one; the skill reaches the clone's catalog on main each time
 - Task 4: walk each outcome in "End" against R8 and the close-out order against R9 (worktree, in-place, notes-only, failing merge)
@@ -56,6 +58,12 @@ Next: Task 7, docs and README. Then Task 8 (live fixture checks) with Donald. Ta
 - `skills/phase-run/SKILL.md`: stops on `ramble/*`; clean check `git status --porcelain -- . ':!.spec/rambles'`; commit `git add -A -- . ':!.spec/rambles'`
 - `templates/claude-block.md`: ramble line with an explicit read bound and the notes location; `/donatello:ramble` in Commands
 - Fix round (phase-new didn't use the Learnings; line over 30 tokens), then escalated to Sonnet: shortening the line kept dropping the read bound or the notes location. Stopped and asked Donald, who approved the reviewer's wording and relaxing NF1's per-line cap
+
+### Task 7: Docs and README
+- SPECIFICATION: workflow 6 (Ramble), `.spec/rambles/` and `skills/ramble/` in the trees, ramble mode under Key Behaviors, block bullets
+- ARCHITECTURE: `ramble` component; phase-new and phase-run entries updated; block shape synced with the template; this phase's decisions; R11 edge cases plus squash conflict, missing worktree path, refused worktree removal
+- README: command, a "Ramble" section, `.spec/rambles/` and `skills/ramble/` in the trees, block synced
+- Reviewer NOTE: ARCHITECTURE doesn't list the five outcomes in one place (they're spread across guardrails, decisions, and edge cases)
 
 ## Deviations from spec
 

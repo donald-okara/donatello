@@ -20,6 +20,7 @@ It's a set of skills, agents, and templates, not a program. Claude does the reas
 - [Install](#install)
 - [Quick start](#quick-start)
 - [Commands](#commands)
+- [Ramble](#ramble)
 - [How a phase works](#how-a-phase-works)
 - [What Donatello adds to your project](#what-donatello-adds-to-your-project)
 - [Existing projects and existing docs](#existing-projects-and-existing-docs)
@@ -189,6 +190,44 @@ Manages the skill catalog and installs catalog skills into the current project. 
 
 `add` and `remove` edit your Donatello clone. If the current directory is the Donatello repo, or `~/.claude/donatello.json` names a clone, that clone is used. Otherwise `add` and `remove` ask once for the clone's path and save it in `~/.claude/donatello.json`. `list` and `import` never ask for a clone: they read the clone when one is found, and the installed copy otherwise.
 
+### `/donatello:ramble [topic | end]`
+
+Explores a question on a branch or in a worktree, with notes in `.spec/rambles/`, then decides what survives. See [Ramble](#ramble).
+
+```
+/donatello:ramble "does the sync layer need CRDTs"
+/donatello:ramble            # picker: continue, resume, or start new
+/donatello:ramble end        # wrap up and choose an outcome
+```
+
+---
+
+## Ramble
+
+A ramble is a short exploration you can throw away. You pick a question, work on it in a branch or worktree, keep notes as you go, and decide at the end what survives. Rambles aren't phases: no number, spec, or review loop.
+
+**Start.** `/donatello:ramble <topic>` (or `/donatello:ramble` and choose a new ramble). Donatello asks whether to use a **worktree** (`../<repo>-ramble-<slug>`, so your main checkout stays free) or **in place** (a branch in the current checkout, which needs a clean tree). Either way it creates the branch `ramble/<slug>` and a notes file in `.spec/rambles/`. In a folder that isn't a git repo, you get the notes file only.
+
+**Ramble mode.** Claude teaches as you go: it explains why things work or break and compares designs with their trade-offs. Preferences are relaxed unless the experiment is about them. Main is never touched except the notes file. Work happens on the ramble branch, checkpointed as `wip:` commits, and each finding adds one line to the notes' Log.
+
+**Resume.** `/donatello:ramble` with no argument shows a picker: continue the current ramble, resume an open or parked one, or start a new one. Rambles whose branch is gone can be marked abandoned, and stray `ramble/*` branches can be adopted.
+
+**End.** `/donatello:ramble end` wraps up the current ramble. It checks for uncommitted changes, drafts Learnings (at most 10 lines) for you to edit, and then asks for one of five outcomes:
+
+| Outcome | What happens | Status |
+|---|---|---|
+| **throwaway** | Branch and worktree are deleted | closed |
+| **kept** | Branch and worktree stay for later | parked |
+| **merged** | Squash-merged into main as one commit, with a message you approve; branch and worktree are deleted | closed |
+| **PR** | Branch is pushed and a pull request is opened with `gh`; branch and worktree stay | closed |
+| **promoted to phase** | `phase-new` starts a phase with the notes as context | closed |
+
+The notes are committed to main whatever the outcome, so what you learned survives even when the code doesn't.
+
+**Skills to the catalog.** Wrap-up can add skill folders made during the ramble to the [skill catalog](#skill-catalog), and can draft a new skill from the Learnings. Adds run from main, so a throwaway branch can't take them along.
+
+**Phases read rambles.** `phase-new` reads the Learnings of recently closed rambles and names them in the decisions they settled. `phase-run` refuses to run on a `ramble/*` branch.
+
 ---
 
 ## How a phase works
@@ -237,6 +276,8 @@ project/
 └── .spec/
     ├── ongoing/
     │   └── phase1-<slug>/        # overview, spec, design, tasks, walkthrough
+    ├── rambles/
+    │   └── <date>-<slug>.md      # ramble notes: Question, Log, Learnings, Outcome
     └── archive/
         └── 2026-10-16-phase1-<slug>/
 ```
@@ -256,7 +297,8 @@ This is the entry point every session loads. It's wrapped in markers so Donatell
 - Current work: .spec/ongoing/. Read the active phase's overview, spec, tasks, and the "Current state" section of walkthrough.md
 - After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
 - End of session: rewrite walkthrough.md "Current state"
-- Commands: /donatello:phase-new · /donatello:phase-run · /donatello:phase-archive
+- Rambles: on `ramble/*`, read only the frontmatter, Question and last 5 Log entries of that ramble's notes in `.spec/rambles/` (frontmatter `branch` matches); follow ramble mode; `/donatello:ramble` resumes
+- Commands: /donatello:phase-new · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble
 <!-- donatello:end -->
 ```
 
@@ -481,6 +523,7 @@ donatello/
 │   ├── phase-new/                # /donatello:phase-new, plus the phase templates
 │   ├── phase-run/                # /donatello:phase-run
 │   ├── phase-archive/            # /donatello:phase-archive
+│   ├── ramble/                   # /donatello:ramble, plus the notes template
 │   └── skills/                   # /donatello:skills (list, add, remove, import)
 ├── agents/                       # scout, implementer, reviewer
 ├── catalog/

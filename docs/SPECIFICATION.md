@@ -40,6 +40,9 @@ donatello/
 │   │   └── SKILL.md              # /donatello:phase-run
 │   ├── phase-archive/
 │   │   └── SKILL.md              # /donatello:phase-archive
+│   ├── ramble/
+│   │   ├── SKILL.md              # /donatello:ramble (explore on a branch, notes, wrap-up)
+│   │   └── templates/            # notes.md: the notes file written to .spec/rambles/
 │   └── skills/
 │       └── SKILL.md              # /donatello:skills (catalog list, add, remove, import)
 ├── catalog/
@@ -87,6 +90,8 @@ project/
     │       ├── spec.md           # Requirements and acceptance criteria
     │       ├── tasks.md          # Checklist; agent ticks items as it goes
     │       └── walkthrough.md    # Record: current state, how to verify, what changed (after first task)
+    ├── rambles/
+    │   └── 2026-10-19-<slug>.md  # ramble notes: frontmatter, Question, Log, Learnings, Outcome
     └── archive/
         └── 2026-10-16-phase1-<slug>/
 ```
@@ -95,6 +100,7 @@ project/
 - Ongoing phase: `.spec/ongoing/phase<N>-<kebab-slug>/`
 - Archived phase: `.spec/archive/<YYYY-MM-DD>-phase<N>-<kebab-slug>/` (date = archive date)
 - `<N>` continues across ongoing and archived phases; it never resets
+- Ramble notes: `.spec/rambles/<YYYY-MM-DD>-<kebab-slug>.md` (date = start date); rambles have no number
 
 ---
 
@@ -166,6 +172,29 @@ The catalog (`catalog/skills.yaml` in this repo) lists skills that onboard and `
    - requirements from `spec.md` that describe lasting behavior (not one-off migration or setup steps), adjusted for any "Deviations from spec" → `docs/requirements.md`, grouped by area, replacing older entries they supersede
 4. Move the directory to `.spec/archive/<today>-phase<N>-<slug>/` (via `git mv` when in a git repo).
 
+### 6. Ramble — `/donatello:ramble [topic | end]`
+
+Explores a question on a branch or in a worktree, with teaching on, then decides what survives. Rambles are not phases: they have no number, spec, tasks, or review loop, and `phase-archive` doesn't touch them.
+
+1. **Start** (a topic, or "new" in the picker): the slug is kebab-case, at most 4 words, and rejected if `.spec/rambles/<date>-<slug>.md` or branch `ramble/<slug>` already exists. Claude asks **worktree** or **in place** every time.
+   - **Worktree:** a worktree at `../<repo>-ramble-<slug>` on a new branch `ramble/<slug>`. The notes file is committed on main as `docs: start ramble <slug>` before the branch has any work on it.
+   - **In place:** `git switch -c ramble/<slug>` on a clean tree. The notes file stays untracked until the ramble ends.
+   - **Not a git repo:** the notes file only, with no branch, commits, or outcome.
+2. **Picker** (no argument): offers to continue the current ramble when on `ramble/*`, then lists open and parked rambles, orphan `ramble/*` branches (their notes file is created on resume), and open rambles whose branch is gone (which can be marked `abandoned`). A new ramble is the last choice.
+3. **Resume:** reads only the notes frontmatter, the Question, and the last 5 Log lines, then switches to the ramble's worktree or branch. A parked ramble becomes open again.
+4. **Ramble mode** (see Key Behaviors) runs until the ramble ends.
+5. **End** (`/donatello:ramble end`): wraps up the current ramble. With `end` outside a ramble, the picker lists open and parked rambles to choose from.
+   1. **Tidy:** uncommitted changes are checkpointed as `wip:` or discarded after confirmation. Nothing is dropped silently.
+   2. **Learnings:** a draft of at most 10 lines, drawn from the Log and the branch's commits, for the user to edit.
+   3. **Skills to the catalog:** chosen skill folders from the ramble are added with `/donatello:skills add`, run from main. A new `SKILL.md` can be drafted from the Learnings first.
+   4. **Outcome:** one of five:
+      - **throwaway:** branch and worktree deleted; status `closed`
+      - **kept:** branch and worktree stay; status `parked`
+      - **merged:** squash-merged into main as one commit with an approved message; branch and worktree deleted; status `closed`
+      - **PR:** branch pushed and a pull request opened with `gh`; branch and worktree stay; status `closed`
+      - **promoted to phase:** `phase-new` runs with the notes as context; status `closed`. A throwaway choice is applied after the phase is created.
+   5. **Close-out:** back to main, run the catalog adds, write Learnings and Outcome, and commit the notes on main (`docs: close ramble <slug>`, or `docs: park ramble <slug>` for kept). The branch action runs last, so the notes are safe if it fails.
+
 ---
 
 ## Key Behaviors
@@ -174,6 +203,8 @@ The catalog (`catalog/skills.yaml` in this repo) lists skills that onboard and `
 - Wrapped in `<!-- donatello:start -->` / `<!-- donatello:end -->` so it can be updated in place without touching the user's own content
 - Imports preferences with `@docs/preferences.md` (always relevant, so always loaded)
 - Points to `.spec/ongoing/` as current work and tells the agent to keep `tasks.md` and `walkthrough.md` up to date
+- Rambles: on a `ramble/*` branch, the agent reads only the frontmatter, Question, and last 5 Log entries of that ramble's notes in `.spec/rambles/` (matched by `branch`) and follows ramble mode; `/donatello:ramble` resumes
+- Lists `/donatello:ramble` among the commands
 - On resume, the agent reads only the walkthrough's "Current state" section, not the whole file
 - Target: under 300 tokens for the block itself
 
@@ -219,9 +250,18 @@ Built into the workflow rather than left to habit:
 - Onboard offers to disable plugins irrelevant to the project, since every enabled plugin's skill descriptions are listed every turn
 
 ### Skills
-- Workflow skills (onboard, phase-new, phase-run, phase-archive, skills) are explicit-only (`disable-model-invocation: true`); they run when you type them
+- Workflow skills (onboard, phase-new, phase-run, phase-archive, skills, ramble) are explicit-only (`disable-model-invocation: true`); they run when you type them
 - Your own domain skills (e.g. Compose patterns) live in `catalog/skills/<id>/`, not in `skills/`, so they don't load in every project. `/donatello:skills import` and onboard copy the chosen ones into the project's `.claude/skills/<id>/`, the same way preferences are copied
 - Third-party skills are referenced in `catalog/skills.yaml` (Android CLI skills, plugins, and GitHub skill folders pinned to a commit) and installed through their own channels; Donatello doesn't wrap or mirror them
+
+### Ramble mode
+- Runs in the main session. No implementer or reviewer; `donatello:scout` runs only when the user asks for a survey
+- Teaching is on: explain why things work or break, and compare designs by their trade-offs. Tests, previews, and naming rules are relaxed unless the experiment is about them
+- Main is never touched except the notes file. Experiments happen on `ramble/<slug>` or in its worktree
+- Checkpoints are `wip: <what>` commits. Changes are staged by path, never with `git add -A`, and the notes file is never staged on the branch
+- Each thing learned, design tried, dead end, or answered question adds one terse Log line (`HH:MM — <what>`), with no code or raw output
+- Building a skill: suggests `.claude/skills/<id>/SKILL.md`, so it loads and can be tested in the same ramble
+- Rambles feed the phase workflow: `phase-new` reads the Learnings of recently closed rambles and records the decisions they settled, naming the ramble. `phase-run` refuses to run on a `ramble/*` branch, and its clean-tree check ignores `.spec/rambles/`
 
 ### Documentation split
 - `docs/` answers "what is this, how does it behave, and why": architecture, requirements, preferences. No step-by-step.
