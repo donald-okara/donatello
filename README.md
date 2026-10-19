@@ -21,6 +21,7 @@ It's a set of skills, agents, and templates, not a program. Claude does the reas
 - [Quick start](#quick-start)
 - [Commands](#commands)
 - [Ramble](#ramble)
+- [Revising a phase](#revising-a-phase)
 - [How a phase works](#how-a-phase-works)
 - [What Donatello adds to your project](#what-donatello-adds-to-your-project)
 - [Existing projects and existing docs](#existing-projects-and-existing-docs)
@@ -139,6 +140,19 @@ Plans the next phase in `.spec/ongoing/phase<N>-<slug>/`.
 - Tasks are sized for one Haiku run (a few files, 3–6 concrete steps) and include explicit test steps, a Check, and a commit message.
 - Numbering continues across ongoing and archived phases and never resets.
 
+### `/donatello:phase-discuss [topic]`
+
+Revises the ongoing phase's plan through a conversation. See [Revising a phase](#revising-a-phase).
+
+```
+/donatello:phase-discuss "split task 3 into a store and a screen"
+```
+
+- Talks the change through in chat, then shows one diff across the phase files and applies it only after you approve.
+- Ticked tasks are never edited. Rework becomes a new task, `Task <N>: <title> (revises Task <M>)`.
+- Task and requirement numbers are never reused or renumbered. Removed tasks stay as `(removed: …)` stubs, deferred ones as `(deferred)`, and dropped requirements as `(dropped <date>)`.
+- Commits only the phase folder, as `docs: revise phase <N> plan (…)`. Your other uncommitted changes are left alone.
+
 ### `/donatello:phase-run [task | --all]`
 
 Runs tasks from the active phase.
@@ -236,6 +250,17 @@ The notes are committed to main whatever the outcome, so what you learned surviv
 
 ---
 
+## Revising a phase
+
+Plans change. When `phase-run` stops and the task or spec looks wrong, it suggests `/donatello:phase-discuss`. You can also run it any time to change an ongoing phase.
+
+- **Ticked tasks stay as they are.** Their commits match their text, so a change to finished work becomes a new `(revises Task M)` task.
+- **Numbers are stable.** A new task takes the next free number. Removed or deferred tasks stay in `tasks.md` as stubs, so a number always points to the same thing.
+- **Requirement changes are recorded.** Edits to `spec.md` get a dated entry in `design.md`, and a deferred task gets a `Deferred:` line in `overview.md`. Tasks that cite a changed requirement are revised, or a revisit task is proposed for a ticked one.
+- **Nothing is written before you approve.** You see the whole change as one diff, and declining writes nothing.
+
+---
+
 ## How a phase works
 
 Each phase is one folder with five files, each with a single job:
@@ -304,7 +329,7 @@ This is the entry point every session loads. It's wrapped in markers so Donatell
 - After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
 - End of session: rewrite walkthrough.md "Current state"
 - Rambles: on `ramble/*`, read only the frontmatter, Question and last 5 Log entries of that ramble's notes in `.spec/rambles/` (frontmatter `branch` matches); follow ramble mode; `/donatello:ramble` resumes
-- Commands: /donatello:phase-new · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble
+- Commands: /donatello:phase-new · /donatello:phase-discuss · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble
 <!-- donatello:end -->
 ```
 
@@ -507,7 +532,7 @@ Commit or stash your changes first. Each task is committed on its own, and uncom
 After a fix round and a Sonnet retry, `phase-run` stops and shows you the issues with its take on whether the task or the spec needs changing. The changes are left uncommitted so you can inspect them. Usually the fix is to make the task more precise in `tasks.md`, or split it.
 
 **Can I run two phases at once?**
-Yes. `phase-new` asks if a phase is already ongoing, and `phase-run` / `phase-archive` ask which one when there are several.
+Yes. `phase-new` asks if a phase is already ongoing, and `phase-run`, `phase-discuss`, and `phase-archive` ask which one when there are several.
 
 **The commands don't show up.**
 Make sure the plugin is installed and enabled (`/plugin`), then start a new session. If a newer command is missing after an update, you probably ran only the first of the two [update](#install) steps: `/plugin marketplace update donatello` fetches the code, but the old cached copy stays in use until `/plugin update donatello@donatello` (or an uninstall and reinstall).
@@ -527,6 +552,7 @@ donatello/
 ├── skills/
 │   ├── onboard/                  # /donatello:onboard
 │   ├── phase-new/                # /donatello:phase-new, plus the phase templates
+│   ├── phase-discuss/            # /donatello:phase-discuss
 │   ├── phase-run/                # /donatello:phase-run
 │   ├── phase-archive/            # /donatello:phase-archive
 │   ├── ramble/                   # /donatello:ramble, plus the notes template

@@ -2,13 +2,14 @@
 
 ## Current state
 
-Tasks 1–3 are done: `skills/phase-discuss/SKILL.md` is complete; phase-run suggests it at Stop and never edits the plan; phase-archive carries over `Deferred:` items; the block lists the command (~282 tokens).
-Next: Task 4, docs and README (sync the block copies).
-Plan revised (Donald approved heading stubs): spec R3–R5 and R7, design, and a new Task 6 (phase-archive skips dropped stubs).
+Tasks 1–4 are done: `/donatello:phase-discuss` is written, wired into phase-run, phase-archive, and the block, and documented. Plan revised for heading stubs (Donald approved).
+Next: Task 6 (phase-archive skips dropped requirement stubs), then Task 5 with Donald.
+Open: the "no ticked task text changed" check has no baseline, so a hand-edit to a ticked task made before running phase-discuss isn't caught; comparing against `git show HEAD:<phase>/tasks.md` would fix it. design.md and ARCHITECTURE claim hand-edits are caught. Candidate for `/donatello:phase-discuss` once it's installed.
 
 ## How to verify
 
 - `claude plugin validate .` passes
+- Task 4: `grep -n "phase-discuss" README.md docs/*.md` covers the command, frozen ticked tasks, and no renumbering; block copies match the template
 - Task 3: block under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); phase-run Stop suggests phase-discuss; phase-archive step 3 includes `Deferred:` items
 - Task 2: walk a task split, a requirement change across ticked and unticked tasks, a deferral, and a declined diff through "Propose" and "Check and apply" against R3–R6 and NF2
 - Task 1: walk one / several / no ongoing phases, the `ramble/*` refusal, the read limits, and the new-phase response through "Load" and "Discuss" against R1 and R2
@@ -32,6 +33,12 @@ Plan revised (Donald approved heading stubs): spec R3–R5 and R7, design, and a
 - `skills/phase-archive/SKILL.md`: `Carried over:` also lists `overview.md` `Deferred:` items
 - `templates/claude-block.md`: `/donatello:phase-discuss` in Commands
 - Reviewer NOTE: heading stubs have no boxes, so phase-run and phase-archive skip them without any change
+
+### Task 4: Docs and README
+- SPECIFICATION: workflow 7, tree entry, phase-run and phase-archive notes in workflows 3 and 4
+- ARCHITECTURE: `phase-discuss` component, phase-run and phase-archive updates, this phase's decisions, edge cases; block copy synced
+- README: command, "Revising a phase" section, layout, FAQ; block copy synced
+- Reviewer NOTE: "a hand-edit made beforehand is still caught" overstates the ticked-task check (see Current state)
 
 ## Deviations from spec
 

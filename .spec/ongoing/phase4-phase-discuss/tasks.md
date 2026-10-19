@@ -49,11 +49,11 @@ Each task ends with a commit. As in phase 3, checks in Tasks 1–3 are reviewer 
 **Serves:** R8
 **Files:** `docs/SPECIFICATION.md`, `docs/ARCHITECTURE.md`, `README.md`
 
-- [ ] SPECIFICATION: workflow 7 `/donatello:phase-discuss` after workflow 6, without renumbering others
-- [ ] ARCHITECTURE: a `phase-discuss` component (frontmatter, reads, writes, guardrails); phase-run and phase-archive entries updated; this phase's lasting decisions; the edge cases from R8; block copy synced with `templates/claude-block.md`
-- [ ] README: the command in Commands, a short "Revising a phase" section, `skills/phase-discuss/` in the layout, block copy synced
-- [ ] Check: `grep -n "phase-discuss" README.md docs/*.md` covers the command, frozen ticked tasks, and no renumbering; block copies match the template
-- [ ] Commit: `docs: document /donatello:phase-discuss`
+- [x] SPECIFICATION: workflow 7 `/donatello:phase-discuss` after workflow 6, without renumbering others
+- [x] ARCHITECTURE: a `phase-discuss` component (frontmatter, reads, writes, guardrails); phase-run and phase-archive entries updated; this phase's lasting decisions; the edge cases from R8; block copy synced with `templates/claude-block.md`
+- [x] README: the command in Commands, a short "Revising a phase" section, `skills/phase-discuss/` in the layout, block copy synced
+- [x] Check: `grep -n "phase-discuss" README.md docs/*.md` covers the command, frozen ticked tasks, and no renumbering; block copies match the template
+- [x] Commit: `docs: document /donatello:phase-discuss`
 
 ### Task 5: Fixture verification
 **Serves:** R1–R7

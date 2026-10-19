@@ -37,6 +37,8 @@ donatello/
 │   ├── phase-new/
 │   │   ├── SKILL.md              # /donatello:phase-new
 │   │   └── templates/            # overview, design, spec, tasks, walkthrough
+│   ├── phase-discuss/
+│   │   └── SKILL.md              # /donatello:phase-discuss (revise an ongoing phase's plan)
 │   ├── phase-run/
 │   │   └── SKILL.md              # /donatello:phase-run
 │   ├── phase-archive/
@@ -140,7 +142,7 @@ The main session (Opus) coordinates; it doesn't write the code or read full diff
 1. Pick the next unchecked task (or the one named).
 2. Dispatch `donatello:implementer` (Haiku) with the task, the relevant spec requirements, and the phase path. It implements, runs quiet builds/tests, and returns a short report: files changed, test result, anything blocked.
 3. Dispatch `donatello:reviewer` (Sonnet) with the task and spec requirements. It reviews the uncommitted changes (`git diff HEAD` plus untracked files) and returns PASS or a short list of issues with file:line.
-4. On issues: send them back to the implementer once. If review fails again, or the implementer reports it's blocked, re-dispatch the implementer on Sonnet. If that fails too, stop and bring it to you.
+4. On issues: send them back to the implementer once. If review fails again, or the implementer reports it's blocked, re-dispatch the implementer on Sonnet. If that fails too, stop and bring it to you, and if the task or spec looks wrong, suggest `/donatello:phase-discuss`. Reviewer notes that imply a plan change go into the report; phase-run never edits `tasks.md` or `spec.md` beyond ticking boxes.
 5. On PASS: commit (using the task's commit line), tick the task, append to the walkthrough's "Changes by task" (creating `walkthrough.md` on the first task), refresh "Current state".
 6. Stop after one task, or continue through the list with `--all` until done or a step needs you.
 
@@ -167,7 +169,7 @@ The catalog (`catalog/skills.yaml` in this repo) lists skills that onboard and `
 ### 4. Archive a phase — `/donatello:phase-archive [phase]`
 
 1. Check `tasks.md`: if items are unchecked, list them and ask whether to archive anyway, carry them into the next phase, or stop.
-2. Finalize `walkthrough.md`: rewrite "Current state" as a closing summary (what shipped, what was deferred, where carried-over tasks went) and make sure "How to verify" is complete.
+2. Finalize `walkthrough.md`: rewrite "Current state" as a closing summary (what shipped, what was deferred, where carried-over tasks went) and make sure "How to verify" is complete. `Carried over:` also lists the `Deferred:` items in `overview.md`.
 3. Promote what outlives the phase, showing the diff for approval:
    - durable decisions from `design.md` → `docs/architecture.md`
    - requirements from `spec.md` that describe lasting behavior (not one-off migration or setup steps), adjusted for any "Deviations from spec" → `docs/requirements.md`, grouped by area, replacing older entries they supersede
@@ -195,6 +197,22 @@ Explores a question on a branch or in a worktree, with teaching on, then decides
       - **PR:** branch pushed and a pull request opened with `gh`; branch and worktree stay; status `closed`
       - **promoted to phase:** `phase-new` runs with the notes as context; status `closed`. A throwaway choice is applied after the phase is created.
    5. **Close-out:** back to main, run the catalog adds, write Learnings and Outcome, and commit the notes on main (`docs: close ramble <slug>`, or `docs: park ramble <slug>` for kept). The branch action runs last, so the notes are safe if it fails.
+
+### 7. Revise a phase — `/donatello:phase-discuss [topic]`
+
+Changes the ongoing phase's plan through a conversation, then applies one diff that you approve. Ticked tasks are never changed, and task and requirement numbers are never reused or renumbered.
+
+1. **Load:** uses the one ongoing phase in `.spec/ongoing/` (asks when there are several; suggests `/donatello:phase-new` and stops when there are none). Archived phases are never revised, and on a `ramble/*` branch it refuses. It reads the overview, spec, design, tasks, and the walkthrough's "Current state" if it exists, and notes which tasks are ticked and which requirements each task serves. It reads no source code; a fact about the code comes from a `donatello:scout` report.
+2. **Discuss:** starts from the topic or asks what to change, one question at a time, in chat. If a change contradicts the overview's goal it says so. If the request is really new work, it offers to record it as a `Deferred:` line in the overview instead of adding tasks.
+3. **Propose:** builds one proposal from the discussion:
+   - Unticked tasks can be edited, split, merged, deleted, reordered, or deferred. New and changed tasks follow the "Writing tasks" rules in phase-new.
+   - A change to a ticked task is a new task titled `Task <N>: <title> (revises Task <M>)`.
+   - A new task takes the next free number. A deleted task keeps its heading as `(removed: <reason>)` and a deferred one as `(deferred)`; these stubs have no checkboxes and are left out of the dependency sketch, so their numbers stay in the file.
+   - An added requirement takes the next free R-number. A dropped one keeps its heading as `(dropped <YYYY-MM-DD>)`.
+   - Tasks citing a changed or dropped requirement are listed. Unticked ones are revised in the same diff; a ticked one gets a revisit task, or a recorded "no change needed" if you agree.
+   - A requirement or scope change adds a dated `design.md` entry (Decision / Why / Tradeoff, citing R-numbers). A task-only reshape adds nothing beyond the change itself.
+   - A deferral becomes a `(deferred)` stub and a `Deferred:` line under the overview's Out of Scope. If `walkthrough.md` exists, its "Current state" is rewritten; "Deviations from spec" is never touched.
+4. **Check and apply:** before showing anything, it checks that no ticked task's text changed, that heading numbers are unique and every `Serves:` ID exists in `spec.md`, that every live requirement is served by a live task, and that the dependency sketch lists exactly the live tasks. It shows the whole change as one diff and writes nothing until you approve. On approval it stages and commits only the phase directory (`docs: revise phase <N> plan (<summary>)`), leaving other uncommitted changes as they are. On decline it writes nothing and summarises the discussion in chat.
 
 ---
 
@@ -251,7 +269,7 @@ Built into the workflow rather than left to habit:
 - Onboard offers to disable plugins irrelevant to the project, since every enabled plugin's skill descriptions are listed every turn
 
 ### Skills
-- Workflow skills (onboard, phase-new, phase-run, phase-archive, skills, ramble) are explicit-only (`disable-model-invocation: true`); they run when you type them
+- Workflow skills (onboard, phase-new, phase-discuss, phase-run, phase-archive, skills, ramble) are explicit-only (`disable-model-invocation: true`); they run when you type them
 - Your own domain skills (e.g. Compose patterns) live in `catalog/skills/<id>/`, not in `skills/`, so they don't load in every project. `/donatello:skills import` and onboard copy the chosen ones into the project's `.claude/skills/<id>/`, the same way preferences are copied
 - Third-party skills are referenced in `catalog/skills.yaml` (Android CLI skills, plugins, and GitHub skill folders pinned to a commit) and installed through their own channels; Donatello doesn't wrap or mirror them
 

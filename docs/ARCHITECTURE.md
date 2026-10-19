@@ -4,7 +4,7 @@
 
 Donatello is a Claude Code plugin with no runtime code. It has four parts:
 
-1. **Workflow skills**: instructions Claude follows (`onboard`, `phase-new`, `phase-run`, `phase-archive`, `skills`, `ramble`)
+1. **Workflow skills**: instructions Claude follows (`onboard`, `phase-new`, `phase-discuss`, `phase-run`, `phase-archive`, `skills`, `ramble`)
 2. **Agents**: subagents with fixed models for legwork and review (`implementer`, `reviewer`, `scout`)
 3. **Templates**: the shape of the files the skills write
 4. **Data**: your preferences, the skill catalog (`catalog/skills.yaml`), and your own skill folders (`catalog/skills/`)
@@ -23,6 +23,7 @@ skills/
   onboard/SKILL.md
   phase-new/SKILL.md
   phase-new/templates/{overview,design,spec,tasks,walkthrough}.md
+  phase-discuss/SKILL.md
   phase-run/SKILL.md
   phase-archive/SKILL.md
   ramble/SKILL.md
@@ -48,6 +49,7 @@ Claude Code gives a skill its base directory, so skills reference supporting fil
 - `onboard` → `../../preferences/`, `../../templates/claude-block.md`, `../phase-new/` for phase 1, and `../skills/SKILL.md` for the import flow
 - `skills` → `../../catalog/skills.yaml` (the installed copy, when no clone is found) and `../../catalog/skills/<id>/`
 - `ramble` → `templates/notes.md`, and `../skills/SKILL.md` for the catalog adds at wrap-up
+- `phase-discuss` → `../phase-new/SKILL.md` for the "Writing tasks" rules, which it follows without restating
 
 Templates live in `phase-new` because that is their only writer; `onboard` delegates to it, so there is one source of truth for phase files. The same holds for the import flow: it is defined once in `skills/skills/SKILL.md`, and onboard follows it.
 
@@ -75,18 +77,26 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 - **Writes:** `.spec/ongoing/phase<N>-<slug>/` from the four templates; decisions settled by the read ramble Learnings go in `design.md`, naming the ramble
 - **Task shaping:** follows `docs/preferences.md` (test-first ordering, preview tasks, etc.); a task names a skill when one applies
 
+### `phase-discuss` skill
+- **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[topic]"`; no `model` (it runs in the main session)
+- **Reads:** the ongoing phase's `overview.md`, `spec.md`, `design.md`, `tasks.md`, and the "Current state" section of `walkthrough.md`; the current branch name (for the `ramble/*` check). No source code; a fact about the code comes from a `donatello:scout` report
+- **Writes:** on approval only, the phase's `spec.md`, `tasks.md`, `design.md` (dated entries for requirement or scope changes), `overview.md` (`Deferred:` lines under Out of Scope), and the walkthrough's "Current state". Then `git add <phase dir>` and a commit whose pathspec is the phase directory: `docs: revise phase <N> plan (<summary>)`
+- **Numbering:** new tasks and requirements take the next free number; removed tasks stay as `(removed: …)` or `(deferred)` stubs and dropped requirements as `(dropped <date>)` stubs; no number is reused or renumbered, and the dependency sketch lists only live tasks
+- **Guardrails:** ticked task text is never changed (rework is a `(revises Task M)` task); the consistency checks run before the diff is shown; nothing is written before approval, and a decline writes nothing; `git add -A` is never used, so uncommitted source changes stay uncommitted; refuses on a `ramble/*` branch; only `.spec/ongoing/` is considered, never archived phases
+
 ### `phase-run` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[task | --all]"`; no `model` (it runs on the session model, Opus)
 - **Reads:** the phase's `tasks.md` and the spec requirements the task references; agent reports. Never full diffs or build logs.
 - **Loop per task:** implementer → reviewer → (one fix round) → escalate the implementer to Sonnet via the Agent tool's per-call `model` → stop and ask
 - **Writes:** commit per task, tick in `tasks.md`, walkthrough "Changes by task" and "Current state"
 - **Handoff to agents:** passes paths, not content (phase directory, `docs/preferences.md`, requirement IDs), so each agent reads only what it needs
-- **Guardrails:** refuses on a `ramble/*` branch. Its clean-tree check and its commits both ignore `.spec/rambles/`, since worktree rambles write their notes into the main checkout
+- **Stop step:** when a task or spec looks wrong, suggests `/donatello:phase-discuss`; reviewer `NOTE:` lines that imply a plan change go into its report
+- **Guardrails:** refuses on a `ramble/*` branch. Its clean-tree check and its commits both ignore `.spec/rambles/`, since worktree rambles write their notes into the main checkout. It never edits `tasks.md` or `spec.md` beyond ticking boxes
 
 ### `phase-archive` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[phase]"`
-- **Reads:** the phase's `tasks.md`, `design.md`, `spec.md`, `walkthrough.md`
-- **Writes:** final "Current state" summary in `walkthrough.md`; promoted decisions in `docs/architecture.md`; promoted requirements (adjusted for deviations) in `docs/requirements.md`; then moves the directory to `.spec/archive/<date>-phase<N>-<slug>/`
+- **Reads:** the phase's `tasks.md`, `design.md`, `spec.md`, `overview.md` (for `Deferred:` lines), `walkthrough.md`
+- **Writes:** final "Current state" summary in `walkthrough.md`, with `Carried over:` also listing the `Deferred:` items from `overview.md`; promoted decisions in `docs/architecture.md`; promoted requirements (adjusted for deviations) in `docs/requirements.md`; then moves the directory to `.spec/archive/<date>-phase<N>-<slug>/`
 
 ### `ramble` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[topic | end]"`; no `model` (it runs in the main session)
@@ -134,7 +144,7 @@ Shared rules in each agent's prompt:
 - After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
 - End of session: rewrite walkthrough.md "Current state"
 - Rambles: on `ramble/*`, read only the frontmatter, Question and last 5 Log entries of that ramble's notes in `.spec/rambles/` (frontmatter `branch` matches); follow ramble mode; `/donatello:ramble` resumes
-- Commands: /donatello:phase-new · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble
+- Commands: /donatello:phase-new · /donatello:phase-discuss · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble
 <!-- donatello:end -->
 ```
 
@@ -273,6 +283,31 @@ Shared rules in each agent's prompt:
 - **Why:** phase work mixed into an experiment branch would be lost with a throwaway.
 - **Tradeoff:** phase-run's clean-tree check excludes `.spec/rambles/`, so notes that worktree rambles write into the main checkout don't block phase work.
 
+### Talk first, then one diff (phase-discuss)
+- **Why:** it matches onboard and phase-archive (propose, then write), and one diff shows spec, design, and task changes together.
+- **Tradeoff:** more turns than editing by hand. A hand-edit made beforehand is still caught by the consistency checks.
+
+### Ticked tasks are frozen
+- **Why:** each commit keeps matching the task text it was made for, and the walkthrough's "Changes by task" stays true.
+- **Tradeoff:** a phase can grow `(revises Task M)` tasks instead of tidy edits.
+
+### Task numbers are never reused or renumbered
+- **Why:** commits, the walkthrough, and reviewer notes cite task numbers. Removed and deferred tasks keep their heading as a stub, and the dependency sketch gives the order.
+- **Tradeoff:** the file keeps numbers that no longer have a live task.
+
+### Where the reason goes
+- **Why:** `design.md` already collects decisions made during the phase, and phase-archive promotes the lasting ones. After a revision the spec matches the plan, so it isn't a deviation.
+- **Tradeoff:** task-only changes leave no in-file trace beyond git history.
+
+### Deferred work lives in the overview
+- **Why:** a walkthrough may not exist yet when a phase is revised, but the overview always does, and phase-new already reads `Carried over:`.
+
+### Commit only the phase files
+- **Why:** its main use is right after phase-run stops mid-task, when uncommitted changes are expected and belong to the user.
+
+### phase-run suggests, never edits the plan
+- **Why:** plan changes need the user's agreement and a recorded reason. Editing `tasks.md` and `spec.md` by hand mid-run is what phase-discuss replaces.
+
 ---
 
 ## Edge Cases
@@ -328,3 +363,11 @@ Shared rules in each agent's prompt:
 | Ramble: branch action fails | Report it; the notes stay committed with the chosen outcome; not retried |
 | Ramble inside the Donatello repo | Catalog adds run from main, so a throwaway branch can't delete them |
 | `phase-run` on a `ramble/*` branch | Stops and points to `/donatello:ramble end` or switching to main |
+| `phase-discuss`: no ongoing phase | Suggests `/donatello:phase-new` and stops; archived phases are never revised |
+| `phase-discuss`: several ongoing phases | Asks which one |
+| `phase-discuss` on a `ramble/*` branch | Refuses and points to `/donatello:ramble end` or switching to main |
+| `phase-discuss` with uncommitted source changes | Revision commit holds only the phase directory (pathspec); source changes stay uncommitted |
+| `phase-discuss`: change that is really a new phase | Says so and offers a `Deferred:` line under Out of Scope instead of new tasks |
+| `phase-discuss`: every task ticked | Nothing unticked to edit; changes arrive as new `(revises Task M)` tasks, and requirement changes need a revisit task or a recorded "no change needed" |
+| `phase-discuss`: diff declined | Nothing written; the discussion is summarised in chat |
+| `phase-discuss`: consistency check fails | Fixed before the diff is shown |
