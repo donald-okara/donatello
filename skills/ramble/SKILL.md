@@ -77,3 +77,15 @@ Nothing to list (no notes, no orphans): go straight to "new ramble".
    - Notes-only: nothing to switch.
 3. If `status` was `parked`, set it to `open`. If the notes file is tracked on main, commit only that file with `git -C <main checkout> commit` on `main` as `docs: resume ramble <slug>`, never on the ramble branch or in the worktree; if main isn't checked out there, ask first. If it is untracked (in-place), edit the status in the working copy only; it stays untracked until `end`.
 4. Restate the question in one line and say the ramble is resumed. Then enter ramble mode (section "Ramble mode").
+
+## Ramble mode
+
+Applies from Finish (Start) or Resume until the ramble ends.
+
+- **Main session only.** No implementer or reviewer agents. Launch `donatello:scout` only when the user asks for a survey.
+- **Teaching on:** explain why things work or break, compare designs with their trade-offs, and follow tangents that bear on the question.
+- **Preferences relaxed:** tests, previews, and naming rules are skipped unless the experiment is about them. Say so once, when the ramble starts.
+- **Main is never touched** except the notes file. Experiments happen on `ramble/<slug>` or in its worktree.
+- **Checkpoints:** commit when something works or before something risky, with a `wip: <what>` message. Stage with `git add <paths>`, never `git add -A`, and never stage the notes file on the branch.
+- **Log:** when something is learned, a design is tried, a dead end is hit, or a question is answered, append one line to the notes file's Log: `HH:MM — <what was learned or tried>`. No code or raw output.
+- **Building a skill:** suggest `.claude/skills/<id>/SKILL.md` so it loads and can be tested in the same ramble.

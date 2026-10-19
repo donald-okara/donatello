@@ -39,11 +39,11 @@ Each task ends with a commit. As in phase 2, checks in Tasks 1–6 are reviewer 
 **Serves:** R4
 **Files:** `skills/ramble/SKILL.md`
 
-- [ ] Section "Ramble mode" with the rules from R4 as a short list: main session only (scout on request), teaching on, preferences relaxed and said once, main untouched except the notes, `wip:` checkpoints, `git add <paths>` never `-A`, notes never staged on the branch
-- [ ] Log rule: when to append, the one-line format (`HH:MM — <what was learned or tried>`), no code or output
-- [ ] Skill-building rule: suggest `.claude/skills/<id>/SKILL.md` so it loads and can be tested in the same ramble
-- [ ] Check: the reviewer confirms every R4 bullet is covered and the section stays under ~30 lines
-- [ ] Commit: `feat: define ramble mode`
+- [x] Section "Ramble mode" with the rules from R4 as a short list: main session only (scout on request), teaching on, preferences relaxed and said once, main untouched except the notes, `wip:` checkpoints, `git add <paths>` never `-A`, notes never staged on the branch
+- [x] Log rule: when to append, the one-line format (`HH:MM — <what was learned or tried>`), no code or output
+- [x] Skill-building rule: suggest `.claude/skills/<id>/SKILL.md` so it loads and can be tested in the same ramble
+- [x] Check: the reviewer confirms every R4 bullet is covered and the section stays under ~30 lines
+- [x] Commit: `feat: define ramble mode`
 
 ### Task 4: Wrap-up — Learnings, outcomes, close-out
 **Serves:** R6, R8, R9, NF2
@@ -74,6 +74,7 @@ Each task ends with a commit. As in phase 2, checks in Tasks 1–6 are reviewer 
 
 - [ ] phase-new step 1: read the Learnings of closed rambles per R10 (closed after the newest archive date, at most 5); when given a ramble notes path, read that file in full
 - [ ] phase-run: before picking a task, stop with "this is a ramble branch; end it with `/donatello:ramble end` or switch to main" when the branch is `ramble/*`
+- [ ] phase-run: the clean-tree check ignores changes under `.spec/rambles/` (worktree rambles keep appending to their notes in the main checkout), and the task commit stages everything except `.spec/rambles/` (`git add -A -- . ':!.spec/rambles'`)
 - [ ] `templates/claude-block.md`: add the ramble line and `/donatello:ramble` to Commands
 - [ ] Check: the block measures under 300 tokens (chars / 4); the reviewer confirms phase-new's read limits and phase-run's guard
 - [ ] Commit: `feat: connect rambles to phases`
