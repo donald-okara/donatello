@@ -16,11 +16,11 @@ Each task ends with a commit. As in phase 3, checks in Tasks 1–3 are reviewer 
 **Serves:** R1, R2
 **Files:** `skills/phase-discuss/SKILL.md`
 
-- [ ] Frontmatter: `name: phase-discuss`, a one-line `description`, `argument-hint: "[topic]"`, `disable-model-invocation: true`; a short intro stating that ticked tasks are frozen and nothing is written without approval
-- [ ] Section "1. Load": phase selection (one / several / none), `ramble/*` refusal, the files read (overview, spec, design, tasks, walkthrough Current state only), no source reads, scout on demand; build the ticked list and the task → requirement map
-- [ ] Section "2. Discuss": start from the topic or ask; one question at a time; flag changes that contradict the overview's goal; for work that is really a new phase, say so and offer to defer it
-- [ ] Check: the reviewer walks the one, several, none, and `ramble/*` cases and the new-phase response against R1 and R2
-- [ ] Commit: `feat: add /donatello:phase-discuss load and discuss`
+- [x] Frontmatter: `name: phase-discuss`, a one-line `description`, `argument-hint: "[topic]"`, `disable-model-invocation: true`; a short intro stating that ticked tasks are frozen and nothing is written without approval
+- [x] Section "1. Load": phase selection (one / several / none), `ramble/*` refusal, the files read (overview, spec, design, tasks, walkthrough Current state only), no source reads, scout on demand; build the ticked list and the task → requirement map
+- [x] Section "2. Discuss": start from the topic or ask; one question at a time; flag changes that contradict the overview's goal; for work that is really a new phase, say so and offer to defer it
+- [x] Check: the reviewer walks the one, several, none, and `ramble/*` cases and the new-phase response against R1 and R2
+- [x] Commit: `feat: add /donatello:phase-discuss load and discuss`
 
 ### Task 2: phase-discuss — changes, checks, apply
 **Serves:** R3, R4, R5, R6, NF2
