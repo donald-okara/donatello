@@ -2,13 +2,14 @@
 
 ## Current state
 
-Tasks 1–4 are done: `/donatello:phase-discuss` is written, wired into phase-run, phase-archive, and the block, and documented. Plan revised for heading stubs (Donald approved).
-Next: Task 6 (phase-archive skips dropped requirement stubs), then Task 5 with Donald.
+Tasks 1–4 and 6 are done: `/donatello:phase-discuss` is written, wired into phase-run, phase-archive (including skipping dropped stubs), and the block, and documented. Plan revised for heading stubs (Donald approved). Released as 0.2.0.
+Next: Task 5 with Donald (live fixture checks).
 Open: the "no ticked task text changed" check has no baseline, so a hand-edit to a ticked task made before running phase-discuss isn't caught; comparing against `git show HEAD:<phase>/tasks.md` would fix it. design.md and ARCHITECTURE claim hand-edits are caught. Candidate for `/donatello:phase-discuss` once it's installed.
 
 ## How to verify
 
 - `claude plugin validate .` passes
+- Task 6: phase-archive step 4 skips `(dropped <date>)` requirement headings
 - Task 4: `grep -n "phase-discuss" README.md docs/*.md` covers the command, frozen ticked tasks, and no renumbering; block copies match the template
 - Task 3: block under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); phase-run Stop suggests phase-discuss; phase-archive step 3 includes `Deferred:` items
 - Task 2: walk a task split, a requirement change across ticked and unticked tasks, a deferral, and a declined diff through "Propose" and "Check and apply" against R3–R6 and NF2
@@ -39,6 +40,10 @@ Open: the "no ticked task text changed" check has no baseline, so a hand-edit to
 - ARCHITECTURE: `phase-discuss` component, phase-run and phase-archive updates, this phase's decisions, edge cases; block copy synced
 - README: command, "Revising a phase" section, layout, FAQ; block copy synced
 - Reviewer NOTE: "a hand-edit made beforehand is still caught" overstates the ticked-task check (see Current state)
+
+### Task 6: phase-archive skips dropped requirement stubs
+- `skills/phase-archive/SKILL.md` step 4: `(dropped <date>)` requirement headings are never promoted
+- Added by the plan revision for heading stubs
 
 ## Deviations from spec
 

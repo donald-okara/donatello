@@ -92,7 +92,7 @@ Each task ends with a commit. As in phase 2, checks in Tasks 1–6 are reviewer 
 ### Task 8: Fixture verification
 **Serves:** R1–R10
 
-- [ ] Worktree ramble in a scratch repo: start, two checkpoints, `/clear`, `/donatello:ramble` offers continue and resumes with the question restated
+- [x] Worktree ramble in a scratch repo: start, two checkpoints, `/clear`, `/donatello:ramble` offers continue and resumes with the question restated
 - [ ] In-place ramble: notes stay untracked on the branch and cross to main on `end`; a dirty tree at start offers stash / worktree / stop
 - [ ] Picker with one open, one parked, one orphan branch, and one notes file whose branch was deleted
 - [ ] Each outcome: throwaway (warns with commit count), keep (parked), merge (one squash commit), PR (skip if no remote), promote (phase-new cites the notes)

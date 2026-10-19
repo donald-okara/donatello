@@ -70,6 +70,6 @@ Each task ends with a commit. As in phase 3, checks in Tasks 1–3 are reviewer 
 **Serves:** R7
 **Files:** `skills/phase-archive/SKILL.md`
 
-- [ ] Step 4 "Requirements → the requirements doc": skip `spec.md` headings marked `(dropped <date>)`; never promote them
-- [ ] Check: the reviewer confirms the promote step ignores dropped stubs and still promotes the rest; `claude plugin validate .` passes
-- [ ] Commit: `fix: skip dropped requirements when archiving`
+- [x] Step 4 "Requirements → the requirements doc": skip `spec.md` headings marked `(dropped <date>)`; never promote them
+- [x] Check: the reviewer confirms the promote step ignores dropped stubs and still promotes the rest; `claude plugin validate .` passes
+- [x] Commit: `fix: skip dropped requirements when archiving`
