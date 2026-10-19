@@ -2,14 +2,15 @@
 
 ## Current state
 
-Tasks 1–4 are done: `/donatello:tour` is complete; onboard asks whether you're new, offers the tour on onboarded repos, and runs newcomer mode (Open questions, docs only, tour offer) on non-onboarded ones.
-Next: Task 5 (block and scout integration), then Task 7 (docs); Task 6 needs Donald.
-Open: non-onboarded + area may dispatch the scout twice (Task 2 NOTE).
+Tasks 1–5 are done: `/donatello:tour` is complete and in the block (~286 tokens, 14 to spare); the scout takes a focus path; onboard asks whether you're new, offers the tour on onboarded repos, and runs newcomer mode on non-onboarded ones.
+Next: Task 7 (docs and README); Task 6 (live fixture checks) needs Donald.
+Open: nothing blocking.
 Donatello agents weren't installed in this session; tasks ran on general-purpose agents (Haiku implementer, Sonnet reviewer) briefed with `agents/*.md`.
 
 ## How to verify
 
 - `claude plugin validate .` passes
+- Task 5: block under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); scout report format unchanged with a focus path
 - Task 4: walk a non-onboarded repo with "new", one "don't know", and "docs only" through onboard steps 4–7 against R5; onboarded resume and `--defaults` unaffected
 - Task 3: walk onboarded + new, onboarded + not new, and `--defaults` through onboard step 1 against R4
 - Task 2: walk `/donatello:tour auth` where docs cover auth and where they don't (scout with focus path) against R3; no write, edit, or commit path (NF2)
@@ -38,6 +39,12 @@ Donatello agents weren't installed in this session; tasks ran on general-purpose
 - Step 6f untouched; the reviewer confirmed the block is already written unchanged in docs-only mode
 - Fix round on PASS NOTEs: newcomer mode limited to non-onboarded repos (it could leak into resume mode), phase breakdown "unless docs only", tour offer scoped to newcomer mode
 - Reviewer NOTE: step 5 doesn't say outright that "docs + phase 1" shows phase 1's detail
+
+### Task 5: Integration
+- `templates/claude-block.md`: `/donatello:tour` in Commands (block 1145 chars, ~286 tokens)
+- `agents/scout.md`: description names `/donatello:tour`; a brief may name a focus path, which limits reads to it plus top-level docs and manifests; report format unchanged
+- Coordinator addition: the tour's not-onboarded Load passes the area as the scout's focus, so the scout runs once (Task 2 NOTE)
+- Reviewer NOTE: only ~14 tokens of block headroom remain
 
 ## Deviations from spec
 

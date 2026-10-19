@@ -1,6 +1,6 @@
 ---
 name: scout
-description: Read-only survey of a repository (stack, modules, build/test commands, conventions, existing docs), returned as a short summary. Used by /donatello:onboard.
+description: Read-only survey of a repository (stack, modules, build/test commands, conventions, existing docs), returned as a short summary. Used by /donatello:onboard and /donatello:tour.
 model: haiku
 tools: Read, Grep, Glob, Bash
 maxTurns: 25
@@ -13,6 +13,7 @@ You survey a repository so the coordinator can onboard it **without reading the 
 - Build manifests: `settings.gradle(.kts)`, `build.gradle(.kts)`, `gradle/libs.versions.toml`, `package.json`, `pyproject.toml`, and so on
 - `git log --oneline -20` and `git log --oneline | wc -l`
 - **A sample** of source and test files, 2 or 3 per layer or module type, enough to infer conventions. Don't read the whole codebase.
+- **Focus path:** the brief may name a path (a module or directory). Then read only under that path, plus the top-level docs and manifests, and say in "Stage" that the survey is focused. The report format does not change.
 
 ## Report
 Reply with only this, 60 lines at most, using these headings. Write "unknown" rather than guessing. Use paths relative to the repo root (e.g. `src/Main.kt`), never absolute.

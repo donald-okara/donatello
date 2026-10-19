@@ -16,7 +16,7 @@ A read-only, chat-only orientation in six stops. The tour writes nothing: no fil
   - each ongoing phase's `overview.md` and the "Current state" section of its `walkthrough.md`
   - the directory names in `.spec/archive/`
   - the frontmatter of `.spec/rambles/*.md`
-- **Not onboarded:** dispatch the `donatello:scout` agent and work from its report. Say that the repo isn't onboarded yet.
+- **Not onboarded:** dispatch the `donatello:scout` agent and work from its report. With an area in `$ARGUMENTS`, pass it as the scout's focus path so the scout runs once. Say that the repo isn't onboarded yet.
 - **No source files** are read while loading, in either case.
 
 ## 2. Stops

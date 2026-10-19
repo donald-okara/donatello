@@ -60,10 +60,10 @@ Each task ends with a commit. As in phases 3 and 4, checks in Tasks 1–5 are re
 **Serves:** R6
 **Files:** `templates/claude-block.md`, `agents/scout.md`
 
-- [ ] `templates/claude-block.md`: add `/donatello:tour` to Commands
-- [ ] `agents/scout.md`: description names `/donatello:tour` as a user; one line saying a brief may name a focus path, which narrows what is read but not the report format
-- [ ] Check: the block measures under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); `claude plugin validate .` passes
-- [ ] Commit: `feat: connect tour to the block and scout`
+- [x] `templates/claude-block.md`: add `/donatello:tour` to Commands
+- [x] `agents/scout.md`: description names `/donatello:tour` as a user; one line saying a brief may name a focus path, which narrows what is read but not the report format
+- [x] Check: the block measures under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); `claude plugin validate .` passes
+- [x] Commit: `feat: connect tour to the block and scout`
 
 ### Task 6: Fixture verification
 **Serves:** R1–R6
