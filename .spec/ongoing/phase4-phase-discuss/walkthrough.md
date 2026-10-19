@@ -2,13 +2,14 @@
 
 ## Current state
 
-Tasks 1–2 are done: `skills/phase-discuss/SKILL.md` is complete (Load, Discuss, Propose, Check and apply).
-Next: Task 3, integration with phase-run, phase-archive, and the block.
+Tasks 1–3 are done: `skills/phase-discuss/SKILL.md` is complete; phase-run suggests it at Stop and never edits the plan; phase-archive carries over `Deferred:` items; the block lists the command (~282 tokens).
+Next: Task 4, docs and README (sync the block copies).
 Open (needs Donald's call, not edited by phase-run): removed tasks and dropped requirements now stay as heading stubs (see Deviations). spec.md R3/R5 and design.md still say "gaps"; phase-archive should skip `(dropped)` requirement stubs when promoting.
 
 ## How to verify
 
 - `claude plugin validate .` passes
+- Task 3: block under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); phase-run Stop suggests phase-discuss; phase-archive step 3 includes `Deferred:` items
 - Task 2: walk a task split, a requirement change across ticked and unticked tasks, a deferral, and a declined diff through "Propose" and "Check and apply" against R3–R6 and NF2
 - Task 1: walk one / several / no ongoing phases, the `ramble/*` refusal, the read limits, and the new-phase response through "Load" and "Discuss" against R1 and R2
 
@@ -25,6 +26,12 @@ Open (needs Donald's call, not edited by phase-run): removed tasks and dropped r
 - A ticked task citing a dropped requirement is exempt, recorded as "no change needed"
 - The first implementer run committed its own change, misreading a coordinator brief about the skill's commit behavior; it undid the unpushed commit before the fix round
 - Fix round: 3 review issues (task and R-numbers unrecoverable after removing the highest one; commit without pathspec; check 2 impossible after dropping a requirement cited by a ticked task)
+
+### Task 3: Integration
+- `skills/phase-run/SKILL.md`: Stop suggests `/donatello:phase-discuss`; new "Plan files" rule (never edits `tasks.md` or `spec.md` beyond ticking; plan-change notes go in the report)
+- `skills/phase-archive/SKILL.md`: `Carried over:` also lists `overview.md` `Deferred:` items
+- `templates/claude-block.md`: `/donatello:phase-discuss` in Commands
+- Reviewer NOTE: heading stubs have no boxes, so phase-run and phase-archive skip them without any change
 
 ## Deviations from spec
 

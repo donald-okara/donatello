@@ -11,6 +11,8 @@ You coordinate; the agents do the work. Arguments: `$ARGUMENTS` (a task number, 
 
 **Stay light.** Don't read source files, diffs, or build logs yourself, and don't run builds or tests. Work from the agents' reports. Read only `tasks.md`, `walkthrough.md`, and `git status --porcelain`.
 
+**Plan files:** never edit `tasks.md` or `spec.md` beyond ticking boxes. A reviewer NOTE that implies a plan change goes in your report instead.
+
 ## 1. Set up
 
 - **Phase:** the single directory in `.spec/ongoing/`. If there are several, ask which one. If there are none, suggest `/donatello:phase-new` and stop.
@@ -38,7 +40,7 @@ Dispatch the `donatello:reviewer` agent with the phase directory, the task numbe
 Follow this ladder, re-running the review (step 3) after each step:
 1. **Fix round:** dispatch the implementer again with the same inputs plus the reviewer's issue list, verbatim.
 2. **Escalate:** still failing (or blocked in step 2)? Dispatch the implementer again with the Agent tool's `model` set to `sonnet`, passing every issue list so far.
-3. **Stop:** still failing? Bring the latest issues to the user, briefly, with your read on whether the task or spec needs changing. Leave the changes uncommitted so the user can inspect them.
+3. **Stop:** still failing? Bring the latest issues to the user, briefly, with your read on whether the task or spec needs changing. If it looks wrong, suggest `/donatello:phase-discuss`. Leave the changes uncommitted so the user can inspect them.
 
 ## 5. Record and commit
 

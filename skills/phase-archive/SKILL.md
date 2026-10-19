@@ -27,7 +27,7 @@ Don't continue until the user chooses.
 ## 3. Finalize the walkthrough
 
 **If `<phase>/walkthrough.md` exists:**
-- Rewrite **Current state** as a closing summary in 10 lines or fewer: what shipped, what was deferred or dropped, open issues worth knowing about. List carried-over tasks by title under `Carried over:`. `/donatello:phase-new` reads this section when it plans the next phase.
+- Rewrite **Current state** as a closing summary in 10 lines or fewer: what shipped, what was deferred or dropped, open issues worth knowing about. List carried-over tasks by title under `Carried over:`, plus any `Deferred:` items from `overview.md`. `/donatello:phase-new` reads this section when it plans the next phase.
 - Make sure **How to verify** covers the phase as a whole, not just the last task.
 
 **If it's missing:** build it from `../phase-new/templates/walkthrough.md` (relative to this skill's directory, HTML comments removed):

@@ -37,12 +37,12 @@ Each task ends with a commit. As in phase 3, checks in Tasks 1–3 are reviewer 
 **Serves:** R7
 **Files:** `skills/phase-run/SKILL.md`, `skills/phase-archive/SKILL.md`, `templates/claude-block.md`
 
-- [ ] phase-run step 4 "Stop": add that if the task or spec looks wrong, suggest `/donatello:phase-discuss`
-- [ ] phase-run: one line stating it never edits `tasks.md` or `spec.md` beyond ticking boxes, and that reviewer notes implying a plan change go in its report
-- [ ] phase-archive step 3: `Carried over:` also lists `overview.md` items marked `Deferred:`
-- [ ] `templates/claude-block.md`: add `/donatello:phase-discuss` to Commands
-- [ ] Check: the block measures under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); `claude plugin validate .` passes
-- [ ] Commit: `feat: connect phase-discuss to phase-run and phase-archive`
+- [x] phase-run step 4 "Stop": add that if the task or spec looks wrong, suggest `/donatello:phase-discuss`
+- [x] phase-run: one line stating it never edits `tasks.md` or `spec.md` beyond ticking boxes, and that reviewer notes implying a plan change go in its report
+- [x] phase-archive step 3: `Carried over:` also lists `overview.md` items marked `Deferred:`
+- [x] `templates/claude-block.md`: add `/donatello:phase-discuss` to Commands
+- [x] Check: the block measures under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); `claude plugin validate .` passes
+- [x] Commit: `feat: connect phase-discuss to phase-run and phase-archive`
 
 ### Task 4: Docs and README
 **Serves:** R8
