@@ -49,13 +49,13 @@ Each task ends with a commit. As in phase 2, checks in Tasks 1–6 are reviewer 
 **Serves:** R6, R8, R9, NF2
 **Files:** `skills/ramble/SKILL.md`
 
-- [ ] Section "End", step 1 Tidy: uncommitted changes → checkpoint or discard, asked
-- [ ] Step 2 Learnings: draft ≤ 10 lines from the log and `git log main..ramble/<slug> --oneline` (know now / didn't work and why / still open); show for edit
-- [ ] Step 3 is a placeholder line pointing to "Skills to the catalog" (filled in Task 5)
-- [ ] Step 4 Outcome: the five choices and their effects and statuses as in R8's table; throwaway shows `git log main..ramble/<slug> --oneline | wc -l` and asks before `git worktree remove` and `git branch -D`; merge uses `git merge --squash` and asks for the commit message; PR uses `gh pr create`; promote runs phase-new with the notes path
-- [ ] Step 5 Close-out in R9's order, ending with the branch action; on failure of the branch action, report it and leave the notes as committed
-- [ ] Check: the reviewer walks each outcome against R8 and the order against R9, including a failing merge
-- [ ] Commit: `feat: add ramble wrap-up and outcomes`
+- [x] Section "End", step 1 Tidy: uncommitted changes → checkpoint or discard, asked
+- [x] Step 2 Learnings: draft ≤ 10 lines from the log and `git log main..ramble/<slug> --oneline` (know now / didn't work and why / still open); show for edit
+- [x] Step 3 is a placeholder line pointing to "Skills to the catalog" (filled in Task 5)
+- [x] Step 4 Outcome: the five choices and their effects and statuses as in R8's table; throwaway shows `git log main..ramble/<slug> --oneline | wc -l` and asks before `git worktree remove` and `git branch -D`; merge uses `git merge --squash` and asks for the commit message; PR uses `gh pr create`; promote runs phase-new with the notes path
+- [x] Step 5 Close-out in R9's order, ending with the branch action; on failure of the branch action, report it and leave the notes as committed
+- [x] Check: the reviewer walks each outcome against R8 and the order against R9, including a failing merge
+- [x] Commit: `feat: add ramble wrap-up and outcomes`
 
 ### Task 5: Skills to the catalog
 **Serves:** R7

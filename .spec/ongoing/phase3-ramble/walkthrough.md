@@ -2,13 +2,14 @@
 
 ## Current state
 
-Tasks 1–3 are done: `skills/ramble/SKILL.md` has frontmatter, entry points, Start, No argument (picker), Resume, and Ramble mode; `skills/ramble/templates/notes.md` exists.
-Next: Task 4, wrap-up. Task 6 gained a step: phase-run ignores `.spec/rambles/` in its clean check and task commits.
+Tasks 1–4 are done: `skills/ramble/SKILL.md` has frontmatter, entry points, Start, No argument (picker), Resume, Ramble mode, and End (step 3 is a placeholder); `skills/ramble/templates/notes.md` exists.
+Next: Task 5, skills to the catalog (must skip git commands for notes-only rambles). Task 6 gained a step: phase-run ignores `.spec/rambles/` in its clean check and task commits.
 
 ## How to verify
 
 - `claude plugin validate .` passes
 - Task 1: walk worktree, in-place, and non-git starts through the "Start" section of `skills/ramble/SKILL.md` against R2 and R3
+- Task 4: walk each outcome in "End" against R8 and the close-out order against R9 (worktree, in-place, notes-only, failing merge)
 - Task 3: every R4 bullet appears in "Ramble mode" (under ~30 lines)
 - Task 2: walk the picker (current, open, parked, orphan, abandoned, new; `end` outside a ramble) and Resume's read limit against R1 and R5
 
@@ -31,6 +32,14 @@ Next: Task 4, wrap-up. Task 6 gained a step: phase-run ignores `.spec/rambles/` 
 ### Task 3: Ramble mode
 - `skills/ramble/SKILL.md`: added "Ramble mode" (11 lines): main session only, teaching on, preferences relaxed and said once, main untouched except notes, `wip:` checkpoints with `git add <paths>`, log line format, skills at `.claude/skills/<id>/`
 - Found: in worktree mode, log appends leave the main checkout's notes file modified, which would trip phase-run's clean-tree check and land in its `git add -A`. Added a step to Task 6 to exclude `.spec/rambles/` there
+
+### Task 4: Wrap-up — Learnings, outcomes, close-out
+- `skills/ramble/SKILL.md`: added "End": Tidy, Learnings, step 3 placeholder, Outcome (five choices, asked before any git change), Close-out in R9 order
+- Main-side commands use `git -C <main checkout>`; close-out `cd`s to the main checkout before removing anything; worktree remove before `branch -D`; no `--force` unless asked
+- PR uses `gh pr create --head ramble/<slug>` and records the URL in a follow-up `docs: record PR for ramble <slug>` commit; promote records `promoted:` after phase-new returns, and with throwaway deletes only afterwards
+- Failed squash: reports `git status`; no `MERGE_HEAD`, so no `merge --abort`
+- Clean checks exclude `.spec/rambles/` (in-place notes are untracked by design); notes-only skips Tidy and Outcome and runs no git
+- Fix round: 8 review issues (untracked notes tripping the dirty check, branch deletion before worktree removal, PR head and URL, `-C` on merge, NF2 on promote + throwaway, keep's `closed` date, notes-only)
 
 ## Deviations from spec
 
