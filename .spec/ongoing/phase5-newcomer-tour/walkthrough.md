@@ -2,14 +2,16 @@
 
 ## Current state
 
-Tasks 1–5 are done: `/donatello:tour` is complete and in the block (~286 tokens, 14 to spare); the scout takes a focus path; onboard asks whether you're new, offers the tour on onboarded repos, and runs newcomer mode on non-onboarded ones.
-Next: Task 7 (docs and README); Task 6 (live fixture checks) needs Donald.
-Open: nothing blocking.
+Tasks 1–5 and 7 are done: `/donatello:tour` is complete and in the block (~286 tokens, 14 to spare); the scout takes a focus path; onboard asks whether you're new, offers the tour on onboarded repos, and runs newcomer mode on non-onboarded ones; SPECIFICATION, ARCHITECTURE, and README document it all.
+Everything so far was reviewed as text; nothing has run live.
+Next: Task 6 with Donald (live fixture checks). Riskiest to try first: newcomer mode on a non-onboarded fixture ("docs only", Open questions), and the tour on an onboarded repo reading no source files.
+Not released: plugin.json is still 0.2.0, so bump it before `/plugin update` will pick this up.
 Donatello agents weren't installed in this session; tasks ran on general-purpose agents (Haiku implementer, Sonnet reviewer) briefed with `agents/*.md`.
 
 ## How to verify
 
 - `claude plugin validate .` passes
+- Task 7: `grep -n "tour" README.md docs/*.md` covers the command, read-only, and onboard's newcomer question; block copies in README and ARCHITECTURE match `templates/claude-block.md`
 - Task 5: block under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); scout report format unchanged with a focus path
 - Task 4: walk a non-onboarded repo with "new", one "don't know", and "docs only" through onboard steps 4–7 against R5; onboarded resume and `--defaults` unaffected
 - Task 3: walk onboarded + new, onboarded + not new, and `--defaults` through onboard step 1 against R4
@@ -45,6 +47,13 @@ Donatello agents weren't installed in this session; tasks ran on general-purpose
 - `agents/scout.md`: description names `/donatello:tour`; a brief may name a focus path, which limits reads to it plus top-level docs and manifests; report format unchanged
 - Coordinator addition: the tour's not-onboarded Load passes the area as the scout's focus, so the scout runs once (Task 2 NOTE)
 - Reviewer NOTE: only ~14 tokens of block headroom remain
+
+### Task 7: Docs and README
+- SPECIFICATION: workflow 8 "Tour a repo", newcomer question in workflow 1, `skills/tour/` in the tree, the tour named as the one model-invocable skill
+- ARCHITECTURE: `tour` component, onboard newcomer mode, scout focus path, this phase's decisions, edge cases (no git, monorepo, area not found, no docs); block copy synced
+- README: "New to a repo?" section, tour command section, newcomer note in onboard, `skills/tour/` in the layout; block copy synced
+- Fix round: two "workflow skills are explicit-only" lines (README, SPECIFICATION) now name the tour as the exception
+- Reviewer NOTEs: the tour has no monorepo rule beyond `[area]` (documented as such); ARCHITECTURE's "~30 tokens" figure is an estimate
 
 ## Deviations from spec
 

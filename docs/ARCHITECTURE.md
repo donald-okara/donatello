@@ -4,7 +4,7 @@
 
 Donatello is a Claude Code plugin with no runtime code. It has four parts:
 
-1. **Workflow skills**: instructions Claude follows (`onboard`, `phase-new`, `phase-discuss`, `phase-run`, `phase-archive`, `skills`, `ramble`)
+1. **Workflow skills**: instructions Claude follows (`onboard`, `phase-new`, `phase-discuss`, `phase-run`, `phase-archive`, `skills`, `ramble`, `tour`)
 2. **Agents**: subagents with fixed models for legwork and review (`implementer`, `reviewer`, `scout`)
 3. **Templates**: the shape of the files the skills write
 4. **Data**: your preferences, the skill catalog (`catalog/skills.yaml`), and your own skill folders (`catalog/skills/`)
@@ -28,6 +28,7 @@ skills/
   phase-archive/SKILL.md
   ramble/SKILL.md
   ramble/templates/notes.md
+  tour/SKILL.md
   skills/SKILL.md
 agents/
   implementer.md
@@ -61,7 +62,8 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[--defaults]"`
 - **Reads:** the `donatello:scout` report on the target repo (not the repo directly), `preferences/`, the skill catalog (via the import's Candidates step), the list of enabled plugins
 - **Writes:** `docs/preferences.md` (general preferences), `.claude/rules/<category>.md` (preferences with `paths`), `docs/architecture.md`, `docs/requirements.md` (existing projects, only when behavior is clear from the code), phase 1 (via phase-new steps), the CLAUDE.md block, `.claude/skills/<id>/` and the plugin entries for chosen catalog skills (skills step, 6g), `.gitignore` lines for "just me" imports, and `.claude/settings.local.json` with the plugins you chose to disable
-- **Guardrails:** propose before writing; never overwrite; never duplicate (adopt existing docs for the architecture, requirements, and preferences roles, and drop preferences the project already states); resume if `.spec/` already exists; ask rather than guess when the project type is ambiguous (monorepos); skills step runs before plugin pruning so pruning never proposes an imported plugin; `--defaults` skips skill import
+- **Newcomer mode:** the first question is "Are you new to this repo?", defaulting to yes when there's no git repo or no commits, `user.email` is empty, or under 5% of commits are yours (always asked, so a wrong guess costs one answer). On a non-onboarded repo, "new" makes findings confirm-or-"don't know" in the interview, writes unresolved architecture questions under a final `## Open questions` section (at most 5 lines), keeps the project's rule on conflicts without asking, offers "docs only" or "docs + phase 1" at the proposal, and offers `/donatello:tour` at the wrap-up. On an onboarded repo, "new" gets a pointer to the tour and the usual resume mode; newcomer mode never runs there
+- **Guardrails:** propose before writing; never overwrite; never duplicate (adopt existing docs for the architecture, requirements, and preferences roles, and drop preferences the project already states); resume if `.spec/` already exists; ask rather than guess when the project type is ambiguous (monorepos); skills step runs before plugin pruning so pruning never proposes an imported plugin; `--defaults` skips the newcomer question and skill import
 
 ### `skills` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[add <ref> | remove <id> | list | import]"`
@@ -104,6 +106,15 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 - **Writes:** `.spec/rambles/<date>-<slug>.md` in the main checkout (status, closed, Learnings, Outcome); branch `ramble/<slug>` and worktree `../<repo>-ramble-<slug>`; `wip:` checkpoints on the ramble branch; on main, only the notes file, catalog adds, and the squash commit for a merge. Commit messages: `docs: start|resume|abandon|close|park ramble <slug>`, `docs: record PR for ramble <slug>`, `docs: record promotion of ramble <slug>`. Skill folders are copied to `$TMPDIR/donatello-ramble-<slug>/` and removed after the adds
 - **Guardrails:** main is touched only through the notes file and the commits above, and only from the main checkout on `main` (asks first if main isn't checked out there); the notes file is never staged on the branch; changes are staged by path, never `git add -A`; a slug is never reused; uncommitted changes are checkpointed or discarded only after a yes; merge, PR, and promote each need an explicit yes; worktrees are removed without `--force`; a failed branch action is reported and not retried; no implementer or reviewer agents
 
+### `tour` skill
+- **Frontmatter:** `argument-hint: "[area]"`; no `disable-model-invocation`, so Claude may start it on "show me around"-style requests (no `model`; it runs in the main session)
+- **Reads:** on an onboarded repo (Donatello block in `CLAUDE.md` or `AGENTS.md`): the architecture, requirements, and preferences docs at the block's paths, the file names and `paths` frontmatter of `.claude/rules/*.md`, each ongoing phase's `overview.md` and the "Current state" of its `walkthrough.md`, directory names in `.spec/archive/`, and ramble frontmatter. Otherwise, the `donatello:scout` report. No source file is read while loading; "deeper" may read specific files
+- **Writes:** nothing. No files, notes, or commits; chat only. It ends by saying nothing was changed
+- **Stops:** six, one at a time, each about 10 lines and ending "questions, deeper, or next?". Stop 5 is skipped on a non-onboarded repo. Stop 6's next step: onboarded, the Current state's next step then `/donatello:phase-run` (or `/donatello:phase-new` with no ongoing phase, or the overview's goal when there's no walkthrough); not onboarded, `/donatello:onboard`
+- **Area:** `$ARGUMENTS` limits every stop to that area. Uncovered by the docs: the scout is dispatched once with the area path as its focus. No match: say so and ask for another
+- **Dispatch:** `donatello:scout` (Haiku, read-only); a brief may name a focus path, which narrows what it reads but not the report format
+- **Guardrails:** read-only and chat-only; facts come only from the docs, the scout report, or files read for "deeper", and anything else is "unknown"; the only code reads are "deeper" reads
+
 ### Walkthrough upkeep (no skill)
 - Driven by the CLAUDE.md block, not a command, so it happens during normal work
 - On the first finished task the agent creates `walkthrough.md`. The CLAUDE.md block can't reference plugin paths, so it names the four sections inline; `skills/phase-new/templates/walkthrough.md` is the fuller version that `phase-archive` uses when it builds a missing walkthrough.
@@ -115,6 +126,8 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 | `implementer` | `haiku` | All except Agent | 40 | ≤ 15 lines: files changed, build/test result, blockers |
 | `reviewer` | `sonnet`, `effort: medium` | Read, Grep, Glob, Bash (git, tests) | 20 | `PASS`, or ≤ 10 issues as `file:line: problem` |
 | `scout` | `haiku` | Read, Grep, Glob, Bash (read-only commands) | 25 | ≤ 60 lines: stack, modules, build/test commands, observed conventions, existing docs |
+
+`scout` is dispatched by `onboard` and by `tour` (on a non-onboarded repo, or for an area the docs don't cover). A focused survey keeps the same report format; only the reading narrows.
 
 Shared rules in each agent's prompt:
 - Follow `docs/preferences.md` and any `.claude/rules/` that load
@@ -144,7 +157,7 @@ Shared rules in each agent's prompt:
 - After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
 - End of session: rewrite walkthrough.md "Current state"
 - Rambles: on `ramble/*`, read only the frontmatter, Question and last 5 Log entries of that ramble's notes in `.spec/rambles/` (frontmatter `branch` matches); follow ramble mode; `/donatello:ramble` resumes
-- Commands: /donatello:phase-new · /donatello:phase-discuss · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble
+- Commands: /donatello:phase-new · /donatello:phase-discuss · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble · /donatello:tour
 <!-- donatello:end -->
 ```
 
@@ -308,6 +321,26 @@ Shared rules in each agent's prompt:
 ### phase-run suggests, never edits the plan
 - **Why:** plan changes need the user's agreement and a recorded reason. Editing `tasks.md` and `spec.md` by hand mid-run is what phase-discuss replaces.
 
+### A separate tour, not an onboard mode
+- **Why:** onboard writes shared files and is already long; a read-only tour is safe to repeat and to run on any repo.
+- **Tradeoff:** one more command in the block and the README.
+
+### Chat only
+- **Why:** a shared doc would duplicate the architecture doc, and the docs plus the scout already hold the facts; repeating the tour is cheap.
+- **Tradeoff:** a newcomer who wants notes has to ask for them.
+
+### Model-invocable tour
+- **Why:** it writes nothing, so triggering on "show me around" is harmless and useful. It is the only workflow skill without `disable-model-invocation`.
+- **Tradeoff:** its description is always loaded (~30 tokens).
+
+### Newcomer default from git authorship
+- **Why:** it's the cheapest signal available, and the question is still asked, so a wrong guess costs one answer.
+- **Tradeoff:** shared or changed emails can skew the guess.
+
+### "Don't know" goes to Open questions
+- **Why:** the team can fill them in later, and the agents don't build on guesses.
+- **Tradeoff:** the architecture doc carries a short unresolved list until someone answers it.
+
 ---
 
 ## Edge Cases
@@ -371,3 +404,13 @@ Shared rules in each agent's prompt:
 | `phase-discuss`: every task ticked | Nothing unticked to edit; changes arrive as new `(revises Task M)` tasks, and requirement changes need a revisit task or a recorded "no change needed" |
 | `phase-discuss`: diff declined | Nothing written; the discussion is summarised in chat |
 | `phase-discuss`: consistency check fails | Fixed before the diff is shown |
+| Onboard: no git repo, no commits, or no `user.email` | Newcomer question defaults to yes; still asked |
+| Onboard: monorepo or several stacks | Asks which part to onboard before going further |
+| Onboard: "new" on an onboarded repo | Offers `/donatello:tour` or resume mode; no newcomer mode |
+| Onboard: `--defaults` | No newcomer question; output as before |
+| Tour: not a git repo | The tour reads no git history itself; git facts come only through the scout report, and anything it lacks is "unknown" |
+| Tour: monorepo or several stacks | No separate rule; an area argument limits every stop to that part |
+| Tour: area the docs don't cover | Scout dispatched once with the area path as focus |
+| Tour: area matches nothing | Says so and asks for another area |
+| Tour: no docs at all, not onboarded | Scout report is the only source; facts it lacks are "unknown" |
+| Tour: no ongoing phase | Stop 5 says so; stop 6 suggests `/donatello:phase-new` |

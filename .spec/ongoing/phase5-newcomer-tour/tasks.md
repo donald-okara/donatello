@@ -81,8 +81,8 @@ Each task ends with a commit. As in phases 3 and 4, checks in Tasks 1–5 are re
 **Serves:** R7
 **Files:** `docs/SPECIFICATION.md`, `docs/ARCHITECTURE.md`, `README.md`
 
-- [ ] SPECIFICATION: workflow 8 `/donatello:tour [area]` after workflow 7, without renumbering others; workflow 1 notes the newcomer question; `skills/tour/` in the directory tree
-- [ ] ARCHITECTURE: a `tour` component (frontmatter, reads, writes nothing, guardrails); onboard entry updated with the newcomer branches; this phase's lasting decisions; the edge cases from R7; block copy synced with `templates/claude-block.md`
-- [ ] README: the command in Commands, a short "New to a repo?" section, `skills/tour/` in the layout, block copy synced
-- [ ] Check: `grep -n "tour" README.md docs/*.md` covers the command, read-only, and onboard's newcomer question; block copies match the template
-- [ ] Commit: `docs: document /donatello:tour`
+- [x] SPECIFICATION: workflow 8 `/donatello:tour [area]` after workflow 7, without renumbering others; workflow 1 notes the newcomer question; `skills/tour/` in the directory tree
+- [x] ARCHITECTURE: a `tour` component (frontmatter, reads, writes nothing, guardrails); onboard entry updated with the newcomer branches; this phase's lasting decisions; the edge cases from R7; block copy synced with `templates/claude-block.md`
+- [x] README: the command in Commands, a short "New to a repo?" section, `skills/tour/` in the layout, block copy synced
+- [x] Check: `grep -n "tour" README.md docs/*.md` covers the command, read-only, and onboard's newcomer question; block copies match the template
+- [x] Commit: `docs: document /donatello:tour`

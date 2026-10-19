@@ -19,6 +19,7 @@ It's a set of skills, agents, and templates, not a program. Claude does the reas
 - [Requirements](#requirements)
 - [Install](#install)
 - [Quick start](#quick-start)
+- [New to a repo?](#new-to-a-repo)
 - [Commands](#commands)
 - [Ramble](#ramble)
 - [Revising a phase](#revising-a-phase)
@@ -107,15 +108,26 @@ To add skills later, `/donatello:skills import` offers the catalog entries for t
 
 ---
 
+## New to a repo?
+
+Run `/donatello:tour` in any repo, onboarded or not. It walks you through six stops in chat: what the project is, its modules, how to run it, how code is written here, where work stands, and where to start. Each stop ends with "questions, deeper, or next?"
+
+- It's read-only. It writes no files, notes, or commits, and says so at the end.
+- `/donatello:tour auth` limits every stop to one area.
+- In a repo without Donatello, it works from a survey by the `scout` agent, skips the "where work stands" stop, and points you to `/donatello:onboard`.
+- If you're joining a project that Donatello already set up, `/donatello:onboard` offers the tour when you say you're new.
+
+---
+
 ## Commands
 
-All commands run only when you type them. Claude never starts them on its own.
+All commands run only when you type them, except `/donatello:tour`, which Claude may also start when you ask to be shown around. It writes nothing.
 
 ### `/donatello:onboard [--defaults]`
 
 Sets up Donatello in the current project, new or existing.
 
-1. **Checks what's already there:** `CLAUDE.md`, `AGENTS.md`, existing docs, `.claude/rules/`, `.spec/`. If the project is already onboarded, it switches to **resume mode** and only offers what's missing.
+1. **Checks what's already there:** `CLAUDE.md`, `AGENTS.md`, existing docs, `.claude/rules/`, `.spec/`. If the project is already onboarded, it switches to **resume mode** and only offers what's missing. It also asks whether you're new to the repo (a guess from your git commits, which you confirm). If you are, the interview asks you to confirm each finding or mark it "don't know"; unanswered questions go under `Open questions` in the architecture doc, and conflicting preferences keep the project's rule.
 2. **Surveys the repo** with the `scout` agent (stack, modules, exact build and test commands, conventions, existing docs). The main session doesn't read your code.
 3. **Picks preferences** that match your stack and removes any that your project already states.
 4. **Interviews you** briefly: what's being built, open questions from the survey, which preferences to keep, and how to resolve conflicts.
@@ -219,6 +231,19 @@ Explores a question on a branch or in a worktree, with notes in `.spec/rambles/`
 /donatello:ramble            # picker: continue, resume, or start new
 /donatello:ramble end        # wrap up and choose an outcome
 ```
+
+### `/donatello:tour [area]`
+
+A read-only orientation in chat for someone new to a repo. See [New to a repo?](#new-to-a-repo).
+
+```
+/donatello:tour
+/donatello:tour auth         # limit every stop to one area
+```
+
+- Reads the project's docs, the ongoing phase's overview and "Current state", and ramble frontmatter. In a repo without Donatello, it runs the `scout` agent instead.
+- Reads source files only when you ask for "deeper" on a point.
+- Writes nothing, and says so at the end.
 
 ---
 
@@ -329,7 +354,7 @@ This is the entry point every session loads. It's wrapped in markers so Donatell
 - After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
 - End of session: rewrite walkthrough.md "Current state"
 - Rambles: on `ramble/*`, read only the frontmatter, Question and last 5 Log entries of that ramble's notes in `.spec/rambles/` (frontmatter `branch` matches); follow ramble mode; `/donatello:ramble` resumes
-- Commands: /donatello:phase-new · /donatello:phase-discuss · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble
+- Commands: /donatello:phase-new · /donatello:phase-discuss · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble · /donatello:tour
 <!-- donatello:end -->
 ```
 
@@ -500,7 +525,7 @@ Measured after installing from GitHub:
 
 What keeps it low:
 
-- Workflow skills are explicit-only, so they don't sit in the model's skill list.
+- Workflow skills except `/donatello:tour` are explicit-only, so they don't sit in the model's skill list (the tour's short description is the one exception).
 - The CLAUDE.md block rarely changes, which keeps the prompt cache warm. The walkthrough is deliberately not imported.
 - Resumes read about ten lines ("Current state"), not the whole phase.
 - Surveys, builds, tests, and diffs happen inside agents, and only short reports come back.
@@ -556,6 +581,7 @@ donatello/
 │   ├── phase-run/                # /donatello:phase-run
 │   ├── phase-archive/            # /donatello:phase-archive
 │   ├── ramble/                   # /donatello:ramble, plus the notes template
+│   ├── tour/                     # /donatello:tour (read-only orientation)
 │   └── skills/                   # /donatello:skills (list, add, remove, import)
 ├── agents/                       # scout, implementer, reviewer
 ├── catalog/

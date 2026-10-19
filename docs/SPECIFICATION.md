@@ -46,6 +46,8 @@ donatello/
 │   ├── ramble/
 │   │   ├── SKILL.md              # /donatello:ramble (explore on a branch, notes, wrap-up)
 │   │   └── templates/            # notes.md: the notes file written to .spec/rambles/
+│   ├── tour/
+│   │   └── SKILL.md              # /donatello:tour [area] (read-only, chat-only orientation)
 │   └── skills/
 │       └── SKILL.md              # /donatello:skills (catalog list, add, remove, import)
 ├── catalog/
@@ -114,7 +116,7 @@ project/
 Works on both new and existing projects.
 
 1. **Inspect** the repo by dispatching `donatello:scout`, which reads README, manifests (`build.gradle*`, `package.json`, `pyproject.toml`, …), existing `CLAUDE.md`, `docs/`, `.spec/`, and git history, and returns a short summary. The main session doesn't read the repo itself.
-2. **Interview** the user, conversationally and briefly: what's being built, current state, where it's going, which preferences apply. Skippable: "use defaults" scaffolds immediately with what was inferred.
+2. **Interview** the user, conversationally and briefly: what's being built, current state, where it's going, which preferences apply. Skippable: "use defaults" scaffolds immediately with what was inferred. First, unless `--defaults`, it asks "Are you new to this repo?". The default comes from git authorship (no commits, an empty `user.email`, or under 5% of commits by you means yes), and the answer is always confirmed. "New" on a non-onboarded repo switches on newcomer mode: findings are shown to confirm or mark "don't know", unresolved ones go to an `## Open questions` section of the architecture doc, conflicting preferences keep the project's rule, and the wrap-up offers "docs only" or "docs + phase 1" and points to `/donatello:tour`. On an already onboarded repo, "new" gets a pointer to the tour, never newcomer mode.
 3. **Propose** a phase breakdown (phase 1 in detail, later phases as one-liners). The user approves or edits before anything is written.
 4. **Write**:
    - `docs/preferences.md` from the relevant general files in `preferences/`, tailored per the interview
@@ -214,6 +216,18 @@ Changes the ongoing phase's plan through a conversation, then applies one diff t
    - A deferral becomes a `(deferred)` stub and a `Deferred:` line under the overview's Out of Scope. If `walkthrough.md` exists, its "Current state" is rewritten; "Deviations from spec" is never touched.
 4. **Check and apply:** before showing anything, it checks that no ticked task's text changed, that heading numbers are unique and every `Serves:` ID exists in `spec.md`, that every live requirement is served by a live task, and that the dependency sketch lists exactly the live tasks. It shows the whole change as one diff and writes nothing until you approve. On approval it stages and commits only the phase directory (`docs: revise phase <N> plan (<summary>)`), leaving other uncommitted changes as they are. On decline it writes nothing and summarises the discussion in chat.
 
+### 8. Tour a repo — `/donatello:tour [area]`
+
+A read-only orientation for someone new to a repo, given in six stops (what it is, the map, how to run it, how code is written, where work stands, where to start). It writes nothing: no files, notes, or commits.
+
+1. **Load:** on an onboarded repo (Donatello block in `CLAUDE.md` or `AGENTS.md`), reads only the architecture, requirements, and preferences docs the block names, `.claude/rules` names and paths, each ongoing phase's overview and walkthrough "Current state", archived phase names, and ramble frontmatter. Otherwise it dispatches `donatello:scout` and works from its report. No source files are read while loading.
+2. **Stops:** one at a time, each about 10 lines, ending "questions, deeper, or next?". Stop 5 (where work stands) is skipped on a non-onboarded repo. Stop 6 points to `/donatello:phase-run` (or `/donatello:phase-new` with no ongoing phase) when onboarded, and to `/donatello:onboard` when not.
+3. **Area:** with an argument, every stop is limited to that area. If the loaded docs don't cover it, the scout is dispatched with that path as its focus. If nothing matches, it says so and asks for another area.
+4. **Navigation:** "next", "skip to <stop>", and "deeper". "Deeper" may read specific files, which are the only code reads in the tour.
+5. **Facts:** only from the docs, the scout report, or files read for "deeper"; anything else is "unknown".
+
+The tour is model-invocable (it leaves model invocation on), since it writes nothing and triggering on "show me around" is harmless.
+
 ---
 
 ## Key Behaviors
@@ -223,7 +237,7 @@ Changes the ongoing phase's plan through a conversation, then applies one diff t
 - Imports preferences with `@docs/preferences.md` (always relevant, so always loaded)
 - Points to `.spec/ongoing/` as current work and tells the agent to keep `tasks.md` and `walkthrough.md` up to date
 - Rambles: on a `ramble/*` branch, the agent reads only the frontmatter, Question, and last 5 Log entries of that ramble's notes in `.spec/rambles/` (matched by `branch`) and follows ramble mode; `/donatello:ramble` resumes
-- Lists `/donatello:ramble` among the commands
+- Lists `/donatello:ramble` and `/donatello:tour` among the commands
 - On resume, the agent reads only the walkthrough's "Current state" section, not the whole file
 - Target: under 300 tokens for the block itself
 
@@ -260,7 +274,7 @@ Changes the ongoing phase's plan through a conversation, then applies one diff t
 
 ### Token discipline
 Built into the workflow rather than left to habit:
-- Workflow skills are explicit-only, so they cost nothing in the skill listing; long detail lives in supporting files loaded on demand
+- Workflow skills are explicit-only, so they cost nothing in the skill listing (except `tour`, whose short description is listed); long detail lives in supporting files loaded on demand
 - Always-loaded context is capped: CLAUDE.md block < 300 tokens, `docs/preferences.md` ≤ 100 lines; anything file-specific goes to path-scoped rules
 - The CLAUDE.md block rarely changes, so the prompt cache stays warm; the walkthrough is deliberately not imported
 - On resume, only the walkthrough's "Current state" is read, which makes `/clear` between tasks cheap
@@ -269,7 +283,7 @@ Built into the workflow rather than left to habit:
 - Onboard offers to disable plugins irrelevant to the project, since every enabled plugin's skill descriptions are listed every turn
 
 ### Skills
-- Workflow skills (onboard, phase-new, phase-discuss, phase-run, phase-archive, skills, ramble) are explicit-only (`disable-model-invocation: true`); they run when you type them
+- Workflow skills (onboard, phase-new, phase-discuss, phase-run, phase-archive, skills, ramble) are explicit-only (`disable-model-invocation: true`); they run when you type them. `tour` is the exception: it writes nothing, so Claude may start it on "show me around"-style requests
 - Your own domain skills (e.g. Compose patterns) live in `catalog/skills/<id>/`, not in `skills/`, so they don't load in every project. `/donatello:skills import` and onboard copy the chosen ones into the project's `.claude/skills/<id>/`, the same way preferences are copied
 - Third-party skills are referenced in `catalog/skills.yaml` (Android CLI skills, plugins, and GitHub skill folders pinned to a commit) and installed through their own channels; Donatello doesn't wrap or mirror them
 
