@@ -26,12 +26,12 @@ Each task ends with a commit. As in phase 3, checks in Tasks 1–3 are reviewer 
 **Serves:** R3, R4, R5, R6, NF2
 **Files:** `skills/phase-discuss/SKILL.md`
 
-- [ ] Section "3. Propose": unticked task operations; frozen ticked tasks with `(revises Task <M>)` rework tasks; numbering rule (next free number, gaps kept, sketch updated); follow "Writing tasks" in `../phase-new/SKILL.md` without repeating it
-- [ ] Requirement changes: next free R-number for additions, numbers of dropped ones not reused; list every task citing a changed requirement and handle ticked vs unticked per R4
-- [ ] Recording: dated `design.md` entry for requirement or scope changes; `Deferred:` lines in `overview.md`; rewrite walkthrough Current state if it exists; never touch Deviations from spec
-- [ ] Section "4. Check and apply": the four consistency checks from R6, one diff, apply on approval, summary only on decline; commit with `git add <phase dir>` and `docs: revise phase <N> plan (<summary>)`
-- [ ] Check: the reviewer walks a task split, a requirement change across a ticked and an unticked task, a deferral, and a declined diff against R3–R6
-- [ ] Commit: `feat: add plan revision to /donatello:phase-discuss`
+- [x] Section "3. Propose": unticked task operations; frozen ticked tasks with `(revises Task <M>)` rework tasks; numbering rule (next free number, gaps kept, sketch updated); follow "Writing tasks" in `../phase-new/SKILL.md` without repeating it
+- [x] Requirement changes: next free R-number for additions, numbers of dropped ones not reused; list every task citing a changed requirement and handle ticked vs unticked per R4
+- [x] Recording: dated `design.md` entry for requirement or scope changes; `Deferred:` lines in `overview.md`; rewrite walkthrough Current state if it exists; never touch Deviations from spec
+- [x] Section "4. Check and apply": the four consistency checks from R6, one diff, apply on approval, summary only on decline; commit with `git add <phase dir>` and `docs: revise phase <N> plan (<summary>)`
+- [x] Check: the reviewer walks a task split, a requirement change across a ticked and an unticked task, a deferral, and a declined diff against R3–R6
+- [x] Commit: `feat: add plan revision to /donatello:phase-discuss`
 
 ### Task 3: Integration
 **Serves:** R7

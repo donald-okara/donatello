@@ -24,3 +24,28 @@ Ticked tasks are frozen: their text never changes, and rework becomes a new task
 - If a requested change contradicts the overview's goal, say so and point to the goal.
 - If the request is really new work rather than a revision (it's unrelated to the phase's goal), say that it belongs in a new phase, and offer to record it under `overview.md` "Out of Scope" as a `Deferred:` line rather than adding it to `tasks.md`.
 - Keep the discussion in chat. Nothing goes into the phase files until section 3.
+
+## 3. Propose
+
+Build one proposal from the discussion. Ticked tasks are never edited, split, or deleted.
+
+- **Unticked tasks:** edit, split, merge, delete, reorder, or defer. New and changed tasks follow "Writing tasks" in `../phase-new/SKILL.md` (relative to this skill's directory); don't restate those rules here.
+- **Rework:** a change to a ticked task is a new task titled `Task <N>: <title> (revises Task <M>)`.
+- **Numbers:** a new task takes the next free number, one above the highest heading number in `tasks.md`. Numbers are never reused or renumbered. Update the dependency sketch at the top of `tasks.md` to the new order, listing only live tasks.
+- **Removed tasks:** a deleted task keeps its heading as a stub, `### Task <N>: <title> (removed: <reason>)`; a deferred one becomes `### Task <N>: <title> (deferred)`. Stubs have no checkboxes or body and are left out of the sketch, so their numbers stay in the file.
+- **Requirements:** an added requirement takes the next free R-number, one above the highest heading number in `spec.md`. A dropped one keeps its heading as `### R<N>. <name> (dropped <YYYY-MM-DD>)` with no bullets, so its number is never reused. List every task whose `**Serves:**` cites a changed or dropped requirement. Revise the unticked ones in the diff so they stop citing a dropped one. A ticked task keeps its citation (its text is frozen), so for each one propose a revisit task, or record "no change needed" in the `design.md` entry if the user agrees.
+- **Record:** a requirement or scope change adds a dated `design.md` entry, `### <title> (<YYYY-MM-DD>)` with Decision / Why / Tradeoff, citing R-numbers. A task-only reshape adds nothing beyond the change itself.
+- **Deferrals:** turn the task into a `(deferred)` stub in `tasks.md` and add `Deferred: Task <N> <title>: <one-line reason>` under `overview.md` "Out of Scope". Any write offered during Discuss, including a `Deferred:` line, is part of this proposal.
+- **Walkthrough:** if `walkthrough.md` exists, rewrite its Current state in 10 lines or fewer to match the new plan. Never touch "Deviations from spec".
+
+## 4. Check and apply
+
+1. **Check** the proposal before showing it, and fix any failure first:
+   - No ticked task's text has changed.
+   - Every heading number in `tasks.md` is unique, and every `**Serves:**` ID has a heading in `spec.md`. A ticked task may still cite a dropped requirement; its stub heading satisfies this, and the citation is the "no change needed" case.
+   - Every live requirement (not a dropped stub) is served by at least one live task (ticked or not). Stubs have no boxes and don't count as serving anything.
+   - The dependency sketch lists exactly the live tasks: no stubs, and none missing.
+2. **Show** the whole change as one diff across the phase files, with a one-line summary of each change above it.
+3. **Ask** for approval. Write nothing until the user answers.
+   - **Approved:** apply the diff, then run `git add <phase dir>` and `git commit -m "docs: revise phase <N> plan (<summary>)" -- <phase dir>`. The pathspec makes the commit take only the phase directory, even if other changes are already staged; never use `git add -A`. Uncommitted changes elsewhere stay as they are.
+   - **Declined:** write nothing. Summarise the discussion in chat.
