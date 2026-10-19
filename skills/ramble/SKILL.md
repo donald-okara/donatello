@@ -49,3 +49,31 @@ Create `.spec/rambles/` if needed and write the notes file with `mode: notes-onl
 ### Finish
 
 Tell the user the branch, the worktree path or "in place", and the notes path. Then enter ramble mode (section "Ramble mode").
+
+## No argument
+
+Runs only with no argument, or with `end` outside a ramble (then the picker lists only open and parked rambles, and the choice goes to section "End"). A topic never reaches this section.
+
+Find the notes from any checkout through the main checkout: the first entry of `git worktree list --porcelain`, then its `.spec/rambles/`.
+
+1. **Current ramble:** if the branch is `ramble/<slug>`, or the top-level path matches the `worktree` field of a notes file, offer **continue `<slug>`** first. Choosing it goes to "Resume". If that branch has no notes file, treat it as an orphan branch below instead.
+2. **Picker:** otherwise, read the frontmatter of each file in `.spec/rambles/` and list, in order:
+   - **open:** slug, `started` date, question, and the time on the last Log line.
+   - **parked:** the same fields.
+   - **orphan branch:** each `ramble/*` branch from `git branch --list 'ramble/*'` with no notes file. Choosing one creates its notes file first in the main checkout's `.spec/rambles/` (question asked, `mode` from `git worktree list`: `worktree` if it has a worktree, else `in-place`), then resumes it. Commit rule per mode: a **worktree** orphan's notes are committed on main as `docs: start ramble <slug>`; an **in-place** orphan's notes stay untracked until `end`. Commits run with `git -C <main checkout>` on `main`; if main isn't checked out there, ask first.
+   - **mark abandoned:** an open notes file whose branch is gone (`git show-ref --verify --quiet refs/heads/ramble/<slug>` fails). Choosing it sets `status: abandoned` and `closed` to today in the main checkout's notes file. If the file is tracked (`git -C <main checkout> ls-files --error-unmatch <path>` succeeds), commit only that file with `git -C <main checkout>` on `main` as `docs: abandon ramble <slug>`; if main isn't checked out there, ask first. If it is untracked (an in-place ramble), set the fields without committing and tell the user the file is untracked and left for them to keep or delete.
+   - **new ramble:** asks what to explore, then goes to "Start".
+3. Ask which entry the user wants, by number. Don't pick for them.
+
+Nothing to list (no notes, no orphans): go straight to "new ramble".
+
+## Resume
+
+1. Read only the notes frontmatter, the Question, and the last 5 Log bullets. Don't read the rest of the file.
+2. **Where to work:**
+   - `worktree` set and the path exists: work there by absolute path, and say so in one line.
+   - `worktree` set but the path is gone: say so, and offer `git worktree add <path> ramble/<slug>` to recreate it.
+   - In place (`mode: in-place`): if the current branch isn't `ramble/<slug>`, require a clean tree (`git status --porcelain` empty; else offer stash or stop), then `git switch ramble/<slug>`.
+   - Notes-only: nothing to switch.
+3. If `status` was `parked`, set it to `open`. If the notes file is tracked on main, commit only that file with `git -C <main checkout> commit` on `main` as `docs: resume ramble <slug>`, never on the ramble branch or in the worktree; if main isn't checked out there, ask first. If it is untracked (in-place), edit the status in the working copy only; it stays untracked until `end`.
+4. Restate the question in one line and say the ramble is resumed. Then enter ramble mode (section "Ramble mode").

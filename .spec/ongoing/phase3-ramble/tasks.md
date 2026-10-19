@@ -29,11 +29,11 @@ Each task ends with a commit. As in phase 2, checks in Tasks 1–6 are reviewer 
 **Serves:** R1, R5
 **Files:** `skills/ramble/SKILL.md`
 
-- [ ] Section "No argument": detect the current ramble (branch `ramble/*`, or a worktree path matching a notes file's `worktree`) and offer "continue" first; otherwise list open, then parked, then orphan branches (`git branch --list 'ramble/*'` with no notes file), then "new ramble"; offer "mark abandoned" for an open notes file whose branch is gone
-- [ ] Section "Resume": read only the frontmatter, Question, and the last 5 Log bullets; move into the worktree if there is one (or `git switch` in place, with the clean-tree check); restate the question and continue in ramble mode
-- [ ] Topic argument skips the picker and goes to "Start"
-- [ ] Check: the reviewer walks the picker for open, parked, orphan, and abandoned cases and the resume read limits against R1 and R5
-- [ ] Commit: `feat: add ramble picker and resume`
+- [x] Section "No argument": detect the current ramble (branch `ramble/*`, or a worktree path matching a notes file's `worktree`) and offer "continue" first; otherwise list open, then parked, then orphan branches (`git branch --list 'ramble/*'` with no notes file), then "new ramble"; offer "mark abandoned" for an open notes file whose branch is gone
+- [x] Section "Resume": read only the frontmatter, Question, and the last 5 Log bullets; move into the worktree if there is one (or `git switch` in place, with the clean-tree check); restate the question and continue in ramble mode
+- [x] Topic argument skips the picker and goes to "Start"
+- [x] Check: the reviewer walks the picker for open, parked, orphan, and abandoned cases and the resume read limits against R1 and R5
+- [x] Commit: `feat: add ramble picker and resume`
 
 ### Task 3: Ramble mode
 **Serves:** R4
