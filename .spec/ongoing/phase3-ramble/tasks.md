@@ -61,12 +61,12 @@ Each task ends with a commit. As in phase 2, checks in Tasks 1–6 are reviewer 
 **Serves:** R7
 **Files:** `skills/ramble/SKILL.md`
 
-- [ ] Replace the Task 4 placeholder with "Skills to the catalog": detect `SKILL.md` folders new on the branch (`git diff --name-only main...HEAD` plus `git ls-files --others --exclude-standard`), show id / description / file count, ask add or skip for each
-- [ ] Add "draft a skill from these Learnings": write a `SKILL.md` with `name` and `description` frontmatter and a body from Learnings and log; show for edit; treat as found
-- [ ] Copy chosen folders to `$TMPDIR/donatello-ramble-<slug>/<id>/` before any branch action
-- [ ] In close-out step 2 (after returning to main), follow `add` in `../skills/SKILL.md` with each temp folder, then remove `$TMPDIR/donatello-ramble-<slug>/`; record `skill added: <id>` in Outcome
-- [ ] Check: the reviewer walks a throwaway ramble inside a project and one inside the Donatello repo, confirming the catalog change lands on main in both
-- [ ] Commit: `feat: send ramble skills to the catalog`
+- [x] Replace the Task 4 placeholder with "Skills to the catalog": detect `SKILL.md` folders new on the branch (`git diff --name-only main...HEAD` plus `git ls-files --others --exclude-standard`), show id / description / file count, ask add or skip for each
+- [x] Add "draft a skill from these Learnings": write a `SKILL.md` with `name` and `description` frontmatter and a body from Learnings and log; show for edit; treat as found
+- [x] Copy chosen folders to `$TMPDIR/donatello-ramble-<slug>/<id>/` before any branch action
+- [x] In close-out step 2 (after returning to main), follow `add` in `../skills/SKILL.md` with each temp folder, then remove `$TMPDIR/donatello-ramble-<slug>/`; record `skill added: <id>` in Outcome
+- [x] Check: the reviewer walks a throwaway ramble inside a project and one inside the Donatello repo, confirming the catalog change lands on main in both
+- [x] Commit: `feat: send ramble skills to the catalog`
 
 ### Task 6: Phase integration and CLAUDE.md block
 **Serves:** R5, R10, NF1

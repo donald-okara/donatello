@@ -96,11 +96,11 @@ Runs on `end` from inside a ramble, or from the picker when `end` was given outs
 
 Notes always go in the main checkout's `.spec/rambles/`. Git commands that touch main run with `git -C <main checkout>` on `main`; if main isn't checked out there, ask first. An in-place ramble's notes file is untracked, so `git status` shows it as `??`. That is expected; the checks below exclude `.spec/rambles/`.
 
-**Notes-only (not a git repo):** skip steps 1 and 4. Step 2 draws from the Log alone. Close-out writes Learnings, sets `status: closed` and `closed`, and stops: no git commands and no Outcome line.
+**Notes-only (not a git repo):** skip steps 1 and 4. Step 2 draws from the Log alone. Step 3 offers only drafting. Close-out runs any catalog adds, writes Learnings, sets `status: closed` and `closed`, and stops: no git commands of its own, no branch action, and no outcome choice (an added skill is still recorded in Outcome).
 
-1. **Tidy:** run `git status --porcelain -- . ':!.spec/rambles'` in the ramble's checkout. If it shows changes, ask **checkpoint** (`wip: <what>` commit, staging the listed paths with `git add <paths>`) or **discard** (list the files, then ask again). If the user has already chosen throwaway, skip the checkpoint offer and say the listed changes will be discarded with the branch. Never drop changes silently.
+1. **Tidy:** first run steps 1 and 2 of "Skills to the catalog" (find and stage), so any skill folder is copied to temp before a discard can delete it. Then run `git status --porcelain -- . ':!.spec/rambles'` in the ramble's checkout. If it shows changes, ask **checkpoint** (`wip: <what>` commit, staging the listed paths with `git add <paths>`) or **discard** (list the files, then ask again). If the user has already chosen throwaway, skip the checkpoint offer and say the listed changes will be discarded with the branch. Never drop changes silently.
 2. **Learnings:** draft at most 10 lines from the Log and `git log main..ramble/<slug> --oneline`: what you now know; what didn't work and why; what's still open. Show the draft and let the user edit it. Save it to the notes file's Learnings section; it's committed in close-out.
-3. **Skills to the catalog:** follow section "Skills to the catalog" (added in Task 5).
+3. **Skills to the catalog:** follow section "Skills to the catalog" below, from its ask step (the folders were staged in step 1).
 4. **Outcome:** ask for one choice and its details. Nothing is changed in git yet.
    - **Throwaway:** show the count from `git log main..ramble/<slug> --oneline | wc -l` and any uncommitted files, then ask yes. Status `closed`; Outcome `throwaway`.
    - **Keep:** the branch and worktree stay. Status `parked`; `closed` stays empty. Outcome `kept`.
@@ -109,7 +109,7 @@ Notes always go in the main checkout's `.spec/rambles/`. Git commands that touch
    - **Promote to phase:** ask whether the branch should also be thrown away. If yes, show the throwaway count and ask yes now, but delete only after `phase-new` returns. Status `closed`; Outcome `promoted: phase<N>-<slug>`, added after `phase-new` returns.
 5. **Close-out,** in this order:
    1. Leave the ramble's checkout first: `cd` to the main checkout by absolute path. Removing a worktree the session is inside breaks the session. In place, run `git switch main` after the clean-tree check (same exclusion as step 1; stop on any other change).
-   2. Run the catalog adds from step 3.
+   2. Run the catalog adds from section "Skills to the catalog", then remove its temp folder. If the clone is the main checkout (the Donatello repo) and the user declines that add's commit, the catalog change stays uncommitted on main: report it. If the outcome is merge and such a change is uncommitted, ask the user to commit it before the squash, since a squash touching the same paths (e.g. `catalog/skills.yaml`) fails against a dirty tree.
    3. Write Learnings and Outcome into the notes. Set `status`. Set `closed` to today (`date +%F`), except for keep, which leaves it empty.
    4. Commit the notes on main: `git -C <main checkout> add .spec/rambles/<file>` and `git -C <main checkout> commit -m "docs: close ramble <slug>"` (`docs: park ramble <slug>` for keep). The untracked in-place notes come along with the switch.
    5. Run the branch action for the chosen outcome. If a step fails, report it and leave the notes as committed; don't retry or resolve it without asking.
@@ -118,3 +118,13 @@ Notes always go in the main checkout's `.spec/rambles/`. Git commands that touch
       - **Merge:** `git -C <main checkout> merge --squash ramble/<slug>`, then `git -C <main checkout> commit -m "<message>"`, then remove the worktree and branch as in throwaway. If the squash conflicts, there is no `MERGE_HEAD`, so `git merge --abort` won't work: report the state from `git -C <main checkout> status`, and don't resolve it without asking.
       - **PR:** `git push -u origin ramble/<slug>`, then from the main checkout `gh pr create --head ramble/<slug> --title "<title>" --body "<Learnings>"` (`--head` is required, or `gh` picks `main`). Then add `pr: <url>` to Outcome and commit on main as `docs: record PR for ramble <slug>`. Branch and worktree kept.
       - **Promote:** run `phase-new` with the notes path as context. If the user also chose throwaway, run the throwaway removal now. Then add `promoted: phase<N>-<slug>` to Outcome and commit on main as `docs: record promotion of ramble <slug>`.
+
+## Skills to the catalog
+
+Find and stage run in End step 1, before Tidy can discard anything. Ask and draft run in End step 3, and the adds in close-out step 2. Notes-only rambles skip find and stage; only drafting is offered.
+
+1. **Find:** in a git ramble, run `git diff --name-only --diff-filter=A main...HEAD` and `git ls-files --others --exclude-standard` in the ramble's checkout. Keep the `SKILL.md` paths outside `.spec/rambles/`. Each folder is a candidate: id (folder name), description (from frontmatter), and file count.
+2. **Stage:** copy every candidate folder to `$TMPDIR/donatello-ramble-<slug>/<id>` (`mkdir -p` the parent, then `cp -R`). Nothing is removed from the checkout here.
+3. **Ask:** for each staged candidate, **add to catalog** or **skip**. Don't pick for them. Skipped copies are removed with the temp folder at close-out.
+4. **Draft (optional):** offer **draft a skill from these Learnings**. Write `SKILL.md` into `$TMPDIR/donatello-ramble-<slug>/<id>/` with `name` and `description` frontmatter and a body from the Learnings and Log, show it for edit, and treat it as a chosen candidate.
+5. **Add (close-out step 2):** after returning to main, follow the `add` section in `../skills/SKILL.md` with each chosen temp folder as the ref. Then `rm -rf $TMPDIR/donatello-ramble-<slug>`, whether or not the adds succeeded. A refused or failed add is reported and doesn't stop close-out. Each added id goes in Outcome as `skill added: <id>` (close-out step 3).
