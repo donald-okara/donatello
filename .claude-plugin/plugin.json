@@ -1,6 +1,6 @@
 {
   "name": "donatello",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Spec-driven project workflow: onboard a project, plan phases, run tasks with Opus/Sonnet/Haiku routing, and archive with a walkthrough.",
   "author": {
     "name": "Donald Okara"
