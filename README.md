@@ -69,11 +69,17 @@ Donatello is its own plugin marketplace. Inside Claude Code:
 
 Then restart Claude Code or start a new session, and type `/donatello:` to see the commands.
 
-**Update** to the latest version:
+**Update** to the latest version. It takes two steps:
 
 ```
 /plugin marketplace update donatello
+/plugin update donatello@donatello
 ```
+
+1. `marketplace update` fetches the new code into the marketplace copy.
+2. `plugin update` installs it into your plugin cache. If it says Donatello is already current, run `/plugin uninstall donatello@donatello` and then `/plugin install donatello@donatello`.
+
+Then start a new session.
 
 **Uninstall:** `/plugin uninstall donatello@donatello`. The files Donatello wrote into your projects (`docs/`, `.spec/`, the CLAUDE.md block) are ordinary files and stay where they are.
 
@@ -504,7 +510,7 @@ After a fix round and a Sonnet retry, `phase-run` stops and shows you the issues
 Yes. `phase-new` asks if a phase is already ongoing, and `phase-run` / `phase-archive` ask which one when there are several.
 
 **The commands don't show up.**
-Make sure the plugin is installed and enabled (`/plugin`), then start a new session.
+Make sure the plugin is installed and enabled (`/plugin`), then start a new session. If a newer command is missing after an update, you probably ran only the first of the two [update](#install) steps: `/plugin marketplace update donatello` fetches the code, but the old cached copy stays in use until `/plugin update donatello@donatello` (or an uninstall and reinstall).
 
 **My project isn't Android.**
 Onboard works on any stack. The scout reads `package.json`, `pyproject.toml`, Gradle files, and more. Only preferences whose `applies-to` matches your stack are offered, so a web project gets just the general ones until you add your own.

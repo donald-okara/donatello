@@ -16,6 +16,7 @@ Donatello is **a set of skills, agents, and templates, not a program.** Claude d
 - A Claude Code plugin *and* its own marketplace (`.claude-plugin/marketplace.json` with `source: "./"`)
 - Holds workflow skills, subagents, phase templates, and your preferences
 - Installed once per machine: `/plugin marketplace add donald-okara/donatello` → `/plugin install donatello@donatello`
+- Updated in two steps: `/plugin marketplace update donatello` → `/plugin update donatello@donatello` (or uninstall and reinstall if it reports current), then a new session
 
 **2. Per-project structure**
 - Created by `/donatello:onboard` in any project
