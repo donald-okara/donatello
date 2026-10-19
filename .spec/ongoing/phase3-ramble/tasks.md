@@ -19,11 +19,11 @@ Each task ends with a commit. As in phase 2, checks in Tasks 1–6 are reviewer 
 **Serves:** R2, R3
 **Files:** `skills/ramble/SKILL.md`, `skills/ramble/templates/notes.md`
 
-- [ ] Create `skills/ramble/templates/notes.md`: frontmatter `status: open`, `mode`, `branch`, `worktree`, `started`, `closed` (empty); headings `## Question`, `## Log`, `## Learnings`, `## Outcome`, with HTML-comment guidance (Log: terse timestamped one-liners, no code; Learnings: ≤ 10 lines, written at wrap-up)
-- [ ] Create `skills/ramble/SKILL.md` with frontmatter `name: ramble`, a one-line `description`, `argument-hint: "[topic | end]"`, `disable-model-invocation: true`, and a short intro listing the three entry points (no argument, topic, `end`)
-- [ ] Section "Start": slug rule and collision check from R2; ask worktree / in place; the exact git commands for each mode; clean-tree check with stash / worktree / stop; notes file created in the main checkout's `.spec/rambles/` from the template (comments removed); commit `docs: start ramble <slug>` on main in worktree mode only; notes-only fallback outside git
-- [ ] Check: the reviewer walks both modes and the non-git case through the text against R2 and R3
-- [ ] Commit: `feat: start rambles with /donatello:ramble`
+- [x] Create `skills/ramble/templates/notes.md`: frontmatter `status: open`, `mode`, `branch`, `worktree`, `started`, `closed` (empty); headings `## Question`, `## Log`, `## Learnings`, `## Outcome`, with HTML-comment guidance (Log: terse timestamped one-liners, no code; Learnings: ≤ 10 lines, written at wrap-up)
+- [x] Create `skills/ramble/SKILL.md` with frontmatter `name: ramble`, a one-line `description`, `argument-hint: "[topic | end]"`, `disable-model-invocation: true`, and a short intro listing the three entry points (no argument, topic, `end`)
+- [x] Section "Start": slug rule and collision check from R2; ask worktree / in place; the exact git commands for each mode; clean-tree check with stash / worktree / stop; notes file created in the main checkout's `.spec/rambles/` from the template (comments removed); commit `docs: start ramble <slug>` on main in worktree mode only; notes-only fallback outside git
+- [x] Check: the reviewer walks both modes and the non-git case through the text against R2 and R3
+- [x] Commit: `feat: start rambles with /donatello:ramble`
 
 ### Task 2: Picker and resume
 **Serves:** R1, R5
