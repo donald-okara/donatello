@@ -4,7 +4,7 @@
 
 Tasks 1–3 are done: `skills/phase-discuss/SKILL.md` is complete; phase-run suggests it at Stop and never edits the plan; phase-archive carries over `Deferred:` items; the block lists the command (~282 tokens).
 Next: Task 4, docs and README (sync the block copies).
-Open (needs Donald's call, not edited by phase-run): removed tasks and dropped requirements now stay as heading stubs (see Deviations). spec.md R3/R5 and design.md still say "gaps"; phase-archive should skip `(dropped)` requirement stubs when promoting.
+Plan revised (Donald approved heading stubs): spec R3–R5 and R7, design, and a new Task 6 (phase-archive skips dropped stubs).
 
 ## How to verify
 
@@ -35,4 +35,4 @@ Open (needs Donald's call, not edited by phase-run): removed tasks and dropped r
 
 ## Deviations from spec
 
-- R3 / R5: removed and deferred tasks keep their heading as a stub (`(removed: <reason>)` / `(deferred)`, no boxes, out of the sketch) instead of leaving gaps; dropped requirements keep `### R<N>. <name> (dropped <date>)`; `Deferred:` lines carry the task number. Needed so the next free number can be read from the files. Coordinator's choice during the fix round; not yet confirmed by Donald.
+None. (Heading stubs started as a deviation in Task 2; Donald approved them, and the spec and design now describe them.)

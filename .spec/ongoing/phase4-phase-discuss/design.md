@@ -11,9 +11,9 @@
 **Tradeoff:** a phase can grow revisit tasks instead of tidy edits.
 
 ### Task numbers are never reused or renumbered
-**Decision:** new tasks take the next free number; removed numbers stay as gaps; order is expressed by the dependency sketch.
+**Decision:** new tasks take the next free number; removed and deferred tasks and dropped requirements stay as heading stubs; order is expressed by the dependency sketch.
 **Why:** commits, the walkthrough, and reviewer notes cite task numbers.
-**Tradeoff:** gaps in numbering.
+**Tradeoff:** stub headings accumulate in `tasks.md` and `spec.md`.
 
 ### Where the reason goes
 **Decision:** requirement and scope changes get a dated `design.md` entry (Decision / Why / Tradeoff, citing R-numbers); task reshaping is recorded only in the commit message; "Deviations from spec" stays for results that differ from the spec.
@@ -21,7 +21,7 @@
 **Tradeoff:** task-only changes leave no in-file trace beyond git history.
 
 ### Deferred work lives in the overview
-**Decision:** deferred tasks are removed from `tasks.md` and listed in `overview.md` Out of Scope as "Deferred: …"; phase-archive adds them to `Carried over:`.
+**Decision:** deferred tasks become `(deferred)` stubs in `tasks.md` and are listed in `overview.md` Out of Scope as "Deferred: Task <N> …"; phase-archive adds them to `Carried over:`.
 **Why:** a walkthrough may not exist yet when you revise, but the overview always does, and phase-new already reads `Carried over:`.
 
 ### Commit only the phase files
@@ -31,3 +31,8 @@
 ### phase-run suggests, never edits the plan
 **Decision:** phase-run's Stop step suggests `/donatello:phase-discuss`; plan-change hints from reviews go into its report, not into `tasks.md`.
 **Why:** plan changes need your agreement and a recorded reason; this phase-3 run edited `tasks.md` and `spec.md` by hand mid-run, which is what this command replaces.
+
+### Heading stubs instead of gaps (2026-10-19)
+**Decision:** removed or deferred tasks keep `### Task <N>: <title> (removed: <reason>)` / `(deferred)` headings with no boxes; dropped requirements keep `### R<N>. <name> (dropped <date>)`; phase-archive skips dropped stubs when promoting (R3, R4, R5, R7).
+**Why:** with plain gaps, removing the highest-numbered task or requirement erased any trace of its number, so the next one would reuse it. Found in Task 2's review.
+**Tradeoff:** stub headings stay in the files; they have no boxes, so phase-run and phase-archive skip them.

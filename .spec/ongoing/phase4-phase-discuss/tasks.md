@@ -7,6 +7,7 @@ Each task ends with a commit. As in phase 3, checks in Tasks 1–3 are reviewer 
    └─> 2. phase-discuss: changes, checks, apply
           └─> 3. Integration: phase-run, phase-archive, block
                  ├─> 4. Docs and README
+                 ├─> 6. phase-archive skips dropped requirement stubs
                  └─> 5. Fixture verification (needs Donald)
 ```
 
@@ -64,3 +65,11 @@ Each task ends with a commit. As in phase 3, checks in Tasks 1–3 are reviewer 
 - [ ] Two ongoing phases → asks which; on a `ramble/*` branch → refuses
 - [ ] Log anything unexpected in this phase's `walkthrough.md` and fix the skill text
 - [ ] Commit: `fix: adjust phase-discuss from fixture trial` (only if fixes were needed)
+
+### Task 6: phase-archive skips dropped requirement stubs
+**Serves:** R7
+**Files:** `skills/phase-archive/SKILL.md`
+
+- [ ] Step 4 "Requirements → the requirements doc": skip `spec.md` headings marked `(dropped <date>)`; never promote them
+- [ ] Check: the reviewer confirms the promote step ignores dropped stubs and still promotes the rest; `claude plugin validate .` passes
+- [ ] Commit: `fix: skip dropped requirements when archiving`
