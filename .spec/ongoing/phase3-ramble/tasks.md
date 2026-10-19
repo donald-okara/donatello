@@ -72,12 +72,12 @@ Each task ends with a commit. As in phase 2, checks in Tasks 1–6 are reviewer 
 **Serves:** R5, R10, NF1
 **Files:** `skills/phase-new/SKILL.md`, `skills/phase-run/SKILL.md`, `templates/claude-block.md`
 
-- [ ] phase-new step 1: read the Learnings of closed rambles per R10 (closed after the newest archive date, at most 5); when given a ramble notes path, read that file in full
-- [ ] phase-run: before picking a task, stop with "this is a ramble branch; end it with `/donatello:ramble end` or switch to main" when the branch is `ramble/*`
-- [ ] phase-run: the clean-tree check ignores changes under `.spec/rambles/` (worktree rambles keep appending to their notes in the main checkout), and the task commit stages everything except `.spec/rambles/` (`git add -A -- . ':!.spec/rambles'`)
-- [ ] `templates/claude-block.md`: add the ramble line and `/donatello:ramble` to Commands
-- [ ] Check: the block measures under 300 tokens (chars / 4); the reviewer confirms phase-new's read limits and phase-run's guard
-- [ ] Commit: `feat: connect rambles to phases`
+- [x] phase-new step 1: read the Learnings of closed rambles per R10 (closed after the newest archive date, at most 5); when given a ramble notes path, read that file in full
+- [x] phase-run: before picking a task, stop with "this is a ramble branch; end it with `/donatello:ramble end` or switch to main" when the branch is `ramble/*`
+- [x] phase-run: the clean-tree check ignores changes under `.spec/rambles/` (worktree rambles keep appending to their notes in the main checkout), and the task commit stages everything except `.spec/rambles/` (`git add -A -- . ':!.spec/rambles'`)
+- [x] `templates/claude-block.md`: add the ramble line and `/donatello:ramble` to Commands
+- [x] Check: the block measures under 300 tokens (chars / 4); the reviewer confirms phase-new's read limits and phase-run's guard
+- [x] Commit: `feat: connect rambles to phases`
 
 ### Task 7: Docs and README
 **Serves:** R11

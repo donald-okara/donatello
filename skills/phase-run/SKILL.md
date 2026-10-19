@@ -14,7 +14,8 @@ You coordinate; the agents do the work. Arguments: `$ARGUMENTS` (a task number, 
 ## 1. Set up
 
 - **Phase:** the single directory in `.spec/ongoing/`. If there are several, ask which one. If there are none, suggest `/donatello:phase-new` and stop.
-- **Clean tree:** run `git status --porcelain`. If there are uncommitted changes, stop and ask the user to commit or stash them first; otherwise the review and commit would pick them up. If this isn't a git repo, skip commits throughout and give the reviewer the list of files the implementer reported instead.
+- **Ramble branch:** if the current branch is `ramble/*`, stop with "this is a ramble branch; end it with `/donatello:ramble end` or switch to main".
+- **Clean tree:** run `git status --porcelain -- . ':!.spec/rambles'`. If there are uncommitted changes, stop and ask the user to commit or stash them first; otherwise the review and commit would pick them up. Changes under `.spec/rambles/` are ignored, since worktree rambles append to their notes in the main checkout. If this isn't a git repo, skip commits throughout and give the reviewer the list of files the implementer reported instead.
 - **Task:** the one named, or else the first task in `tasks.md` with unticked boxes whose dependencies (see the sketch at the top) are done. Note its number and the requirement IDs in its `**Serves:**` line.
 
 ## 2. Implement
@@ -48,7 +49,7 @@ After a PASS:
    - **How to verify:** add or update the task's Check.
    - **Deviations from spec:** add only results that differ from `spec.md`. Mismatches between the task text and the spec (where the code follows the spec) go in that task's Changes entry instead.
    - **Current state:** rewrite it in 10 lines or fewer: what's done, what's next, anything open.
-3. **Commit** everything (`git add -A`; the tree was clean before the task) using the task's `Commit:` line as the message.
+3. **Commit** everything except `.spec/rambles/` (`git add -A -- . ':!.spec/rambles'`; the tree was clean before the task) using the task's `Commit:` line as the message.
 
 ## 6. Continue or stop
 

@@ -6,5 +6,6 @@
 - Current work: .spec/ongoing/. Read the active phase's overview, spec, tasks, and the "Current state" section of walkthrough.md
 - After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
 - End of session: rewrite walkthrough.md "Current state"
-- Commands: /donatello:phase-new · /donatello:phase-run · /donatello:phase-archive
+- Rambles: on `ramble/*`, read only the frontmatter, Question and last 5 Log entries of that ramble's notes in `.spec/rambles/` (frontmatter `branch` matches); follow ramble mode; `/donatello:ramble` resumes
+- Commands: /donatello:phase-new · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble
 <!-- donatello:end -->

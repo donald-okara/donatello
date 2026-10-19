@@ -89,6 +89,6 @@
 
 ## Non-Functional Requirements
 
-- **NF1. Token cost:** explicit-only, so always-on cost rises by ~50 tokens; the block line adds ≤ 30 tokens; resume never reads the whole log
+- **NF1. Token cost:** explicit-only, so always-on cost rises by ~50 tokens; the CLAUDE.md block stays under 300 tokens; resume never reads the whole log
 - **NF2. Safety:** no branch or worktree is deleted without showing unmerged commits and a yes; nothing is merged, pushed, or added to the catalog without a yes
 - **NF3. Portability:** `git` and `gh` only; works on macOS and Linux

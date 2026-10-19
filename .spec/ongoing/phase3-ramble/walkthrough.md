@@ -2,13 +2,14 @@
 
 ## Current state
 
-Tasks 1–5 are done: `skills/ramble/SKILL.md` is complete (Start, picker, Resume, Ramble mode, End, Skills to the catalog); `skills/ramble/templates/notes.md` exists.
-Next: Task 6, phase integration (includes excluding `.spec/rambles/` from phase-run's clean check and commits). Task 6 gained a step: phase-run ignores `.spec/rambles/` in its clean check and task commits.
+Tasks 1–6 are done: `skills/ramble/SKILL.md` is complete; phase-new reads and uses ramble Learnings; phase-run refuses on `ramble/*` and ignores `.spec/rambles/`; the CLAUDE.md block has the ramble line (~273 tokens total).
+Next: Task 7, docs and README. Then Task 8 (live fixture checks) with Donald. Task 6 gained a step: phase-run ignores `.spec/rambles/` in its clean check and task commits.
 
 ## How to verify
 
 - `claude plugin validate .` passes
 - Task 1: walk worktree, in-place, and non-git starts through the "Start" section of `skills/ramble/SKILL.md` against R2 and R3
+- Task 6: block under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); phase-new step 1 read limits and step 4 use of Learnings; phase-run's ramble guard and `.spec/rambles` pathspecs
 - Task 5: walk a throwaway worktree ramble, an in-place one, one inside the Donatello repo, and a notes-only one; the skill reaches the clone's catalog on main each time
 - Task 4: walk each outcome in "End" against R8 and the close-out order against R9 (worktree, in-place, notes-only, failing merge)
 - Task 3: every R4 bullet appears in "Ramble mode" (under ~30 lines)
@@ -50,6 +51,12 @@ Next: Task 6, phase integration (includes excluding `.spec/rambles/` from phase-
 - Fix round: 2 review issues (discard before detection; declined commit vs squash)
 - Reviewer NOTE: abandoning `end` after staging leaves `$TMPDIR/donatello-ramble-<slug>/`; a later `end` overwrites it
 
+### Task 6: Phase integration and CLAUDE.md block
+- `skills/phase-new/SKILL.md`: step 1 reads Learnings of rambles closed after the newest archive date (max 5), or a promoted ramble's full notes; step 4 folds them into overview (goal / out of scope) and design (decisions), naming the ramble
+- `skills/phase-run/SKILL.md`: stops on `ramble/*`; clean check `git status --porcelain -- . ':!.spec/rambles'`; commit `git add -A -- . ':!.spec/rambles'`
+- `templates/claude-block.md`: ramble line with an explicit read bound and the notes location; `/donatello:ramble` in Commands
+- Fix round (phase-new didn't use the Learnings; line over 30 tokens), then escalated to Sonnet: shortening the line kept dropping the read bound or the notes location. Stopped and asked Donald, who approved the reviewer's wording and relaxing NF1's per-line cap
+
 ## Deviations from spec
 
-None
+- NF1: the block's ramble line is ~50 tokens, not ≤ 30; the line has to state the notes location, the R5 read bound, and resume. NF1 now caps the whole block (< 300 tokens, ~273 measured) instead. Approved by Donald.

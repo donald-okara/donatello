@@ -16,6 +16,7 @@ If `/donatello:onboard` sent you here for phase 1, skip step 1 (onboard already 
 - Read the preferences, architecture, and requirements docs at the paths the Donatello block in `CLAUDE.md` names (defaults: `docs/preferences.md`, `docs/architecture.md`, `docs/requirements.md`), each one only if it exists. The rest of this skill calls them by role ("the preferences doc").
 - Read every `.claude/rules/*.md` too. Those rules load on their own only when code files are touched, and planning touches none, but tasks must follow them (e.g. UI setup order, preview requirements).
 - List the directory names in `.spec/ongoing/` and `.spec/archive/`. Don't read old phases in full. For the most recent archived phase, read only its walkthrough's "Current state" and "Deviations from spec".
+- Rambles: read the frontmatter of each `.spec/rambles/*.md`. For each one with `status: closed` and a `closed` date after the newest `.spec/archive/` directory date (all of them if there is no archive), read its Learnings. Use at most the 5 most recent. If given a ramble notes path (a promote), read that file in full.
 - If `CLAUDE.md` (or `AGENTS.md`) has no Donatello block, the project isn't onboarded. Suggest `/donatello:onboard` and stop unless the user wants to continue anyway.
 - If a phase is already in `.spec/ongoing/`, say so and ask whether to start another one in parallel or finish that one first.
 
@@ -34,9 +35,9 @@ If `/donatello:onboard` sent you here for phase 1, skip step 1 (onboard already 
 
 Copy each template from `templates/` (relative to this skill's directory), fill it in, and **remove every HTML comment**; the comments are guidance for you, not content. Don't create `walkthrough.md`; it's created when the first task is finished.
 
-- **overview.md**: goal, deliverables, out of scope, success criteria. Intent only.
+- **overview.md**: goal, deliverables, out of scope, success criteria. Intent only. If rambles were read in step 1 (their Learnings, or the full notes on a promote), name each ramble in the goal or out of scope.
 - **spec.md**: requirements state behavior, not implementation steps, and are numbered R1, R2, ... Every requirement has a **Check** a reviewer can run or look at.
-- **design.md**: only decisions actually made so far, as Decision / Why / Tradeoff. If none yet, leave a single line: `No decisions yet.`
+- **design.md**: only decisions actually made so far, as Decision / Why / Tradeoff. Record what the read Learnings settled as decisions, naming the ramble. If none yet, leave a single line: `No decisions yet.`
 - **tasks.md**: follow the rules below.
 
 ### Writing tasks
