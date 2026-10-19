@@ -29,11 +29,11 @@ Each task ends with a commit. As in phases 3 and 4, checks in Tasks 1–5 are re
 **Serves:** R3, NF2
 **Files:** `skills/tour/SKILL.md`
 
-- [ ] Area handling: with `$ARGUMENTS`, limit every stop to that area; if the loaded docs don't cover it, dispatch the scout with a brief naming the focus path
-- [ ] Navigation: "next", "skip to <stop>", "deeper" (may read specific files to answer; the only code reads)
-- [ ] Guardrail: never write, edit, or commit; end of tour states nothing was changed
-- [ ] Check: the reviewer walks `/donatello:tour auth` where docs cover auth, and where they don't (scout dispatched with focus), against R3
-- [ ] Commit: `feat: add area focus to /donatello:tour`
+- [x] Area handling: with `$ARGUMENTS`, limit every stop to that area; if the loaded docs don't cover it, dispatch the scout with a brief naming the focus path
+- [x] Navigation: "next", "skip to <stop>", "deeper" (may read specific files to answer; the only code reads)
+- [x] Guardrail: never write, edit, or commit; end of tour states nothing was changed
+- [x] Check: the reviewer walks `/donatello:tour auth` where docs cover auth, and where they don't (scout dispatched with focus), against R3
+- [x] Commit: `feat: add area focus to /donatello:tour`
 
 ### Task 3: onboard — newcomer question, onboarded branch
 **Serves:** R4

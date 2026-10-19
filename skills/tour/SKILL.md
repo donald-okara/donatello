@@ -27,9 +27,18 @@ Give one stop at a time. Each is at most about 10 lines and ends with "questions
 2. **Map:** modules, stack, and how they connect.
 3. **Run it:** the exact build and test commands.
 4. **How code is written here:** a short summary of the preferences, and which `.claude/rules` apply to which paths. Not onboarded: the scout's conventions.
-5. **Where work stands:** the ongoing phase and its Current state, the names of archived phases, and open rambles. Skip this stop when not onboarded.
+5. **Where work stands:** the ongoing phase and its Current state, the names of archived phases, and open rambles. Skip this stop when not onboarded. No ongoing phase: say so.
 6. **Where to start:** 3 to 5 files to read first, then the next step.
-   - Onboarded: the next step from the Current state, then `/donatello:phase-run`, which takes the next unticked task.
+   - Onboarded: the next step from the Current state, then `/donatello:phase-run`, which takes the next unticked task. No ongoing phase: suggest `/donatello:phase-new`. No `walkthrough.md` yet: use the overview's goal in place of the Current state, and point to `/donatello:phase-run`.
    - Not onboarded: `/donatello:onboard`.
 
 Facts come only from the docs, the scout report, or files read for "deeper". Anything else is "unknown", not a guess.
+
+## 3. Area and navigation
+
+- **Area:** with `$ARGUMENTS`, limit every stop to that area (a module, path, or feature name). If the loaded docs don't cover it, dispatch the `donatello:scout` agent with a brief naming that path as its focus, and work from that report. If nothing matches the area, say so and ask for another.
+- **Navigation:** "next" moves on, "skip to <stop>" jumps, and "deeper" may read specific files to answer the question. Those reads are the only code reads in the tour.
+
+## 4. Read-only
+
+The tour never writes, edits, or commits any file. Close a finished tour by saying that nothing was changed.
