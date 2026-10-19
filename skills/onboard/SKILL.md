@@ -21,7 +21,9 @@ Paths below that start with `../` are relative to this skill's directory.
 
 Look for `CLAUDE.md` (and whether it has `<!-- donatello:start -->`), `AGENTS.md`, `docs/preferences.md`, `docs/architecture.md`, `docs/requirements.md`, `.claude/rules/`, and `.spec/`. Match names case-insensitively: `docs/ARCHITECTURE.md` counts as `docs/architecture.md`.
 
-- **Already onboarded** (block or `.spec/` present): switch to resume mode. Report what exists and what's missing, then offer only the missing pieces (including skill candidates from step 3), a preferences refresh (shown as a diff against the current Donatello preferences, deduplicated as in step 3), or a block update. Don't redo anything that exists. The doc paths are the ones the existing block names.
+**Ask whether they're new.** Unless `--defaults`, ask "Are you new to this repo?" once, before the branches below. Default to yes when there's no git repo or no commits, or when `git log --author="$(git config user.email)" --oneline | wc -l` is under 5% of `git rev-list --count HEAD`; otherwise default to no. Ask even with a default, so a wrong guess costs one answer. A yes carries forward as newcomer mode in steps 4–7.
+
+- **Already onboarded** (block or `.spec/` present): if the user is new, say the repo is already set up and offer `/donatello:tour` (recommended) or resume mode. Before resume mode, warn that the preferences refresh and block update change shared, committed files. Otherwise switch to resume mode: report what exists and what's missing, then offer only the missing pieces (including skill candidates from step 3), a preferences refresh (shown as a diff against the current Donatello preferences, deduplicated as in step 3), or a block update. Don't redo anything that exists. The doc paths are the ones the existing block names. With `--defaults`, skip the question and go straight to resume mode.
 - **Only `AGENTS.md`, no `CLAUDE.md`**: ask whether the block goes into `AGENTS.md` or a new `CLAUDE.md`.
 
 ## 2. Survey with the scout

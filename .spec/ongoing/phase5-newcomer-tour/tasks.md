@@ -39,11 +39,11 @@ Each task ends with a commit. As in phases 3 and 4, checks in Tasks 1–5 are re
 **Serves:** R4
 **Files:** `skills/onboard/SKILL.md`
 
-- [ ] Step 1: after the existing checks, unless `--defaults`, ask "Are you new to this repo?" with the git-authorship default from R4 (yes when no git, 0 commits, or under 5% of all commits by `git config user.email`)
-- [ ] "Already onboarded" bullet: if new, say the repo is set up and offer `/donatello:tour` (recommended) or resume mode; before resume mode, warn that preferences refresh and block update change shared, committed files
-- [ ] State that "not new" and `--defaults` keep today's behavior
-- [ ] Check: the reviewer walks onboarded + new, onboarded + not new, and `--defaults` against R4
-- [ ] Commit: `feat: ask newcomers in /donatello:onboard`
+- [x] Step 1: after the existing checks, unless `--defaults`, ask "Are you new to this repo?" with the git-authorship default from R4 (yes when no git, 0 commits, or under 5% of all commits by `git config user.email`)
+- [x] "Already onboarded" bullet: if new, say the repo is set up and offer `/donatello:tour` (recommended) or resume mode; before resume mode, warn that preferences refresh and block update change shared, committed files
+- [x] State that "not new" and `--defaults` keep today's behavior
+- [x] Check: the reviewer walks onboarded + new, onboarded + not new, and `--defaults` against R4
+- [x] Commit: `feat: ask newcomers in /donatello:onboard`
 
 ### Task 4: onboard — newcomer mode
 **Serves:** R5, NF2
