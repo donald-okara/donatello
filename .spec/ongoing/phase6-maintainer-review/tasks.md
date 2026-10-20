@@ -16,11 +16,11 @@ Each task ends with a commit. As in phases 3–5, checks in Tasks 1–4 are revi
 **Serves:** R1, R2
 **Files:** `skills/phase-review/SKILL.md`
 
-- [ ] Frontmatter: `name: phase-review`, a one-line `description` ("Record a maintainer's review of a finished phase: brief, verdict, comments, appended to review.md"), `argument-hint: "[phase]"`, `disable-model-invocation: true`; a short intro saying the review is a record and nothing is acted on
-- [ ] Section "1. Load": phase selection and ramble-branch stop per R1, worded like `skills/phase-archive/SKILL.md` step 1; unticked tasks → list and ask "review anyway / stop", remember partial
-- [ ] Section "2. Brief": the parts from R2, in that order, about 15 lines; the git commands for the commit list; skip the commit list outside git; show the latest earlier round if `review.md` exists; one rule line: no source, no diffs, no agents
-- [ ] Check: the reviewer walks no phase, two phases, a ramble branch, an unticked task, and a phase with an earlier round against R1 and R2
-- [ ] Commit: `feat: add /donatello:phase-review`
+- [x] Frontmatter: `name: phase-review`, a one-line `description` ("Record a maintainer's review of a finished phase: brief, verdict, comments, appended to review.md"), `argument-hint: "[phase]"`, `disable-model-invocation: true`; a short intro saying the review is a record and nothing is acted on
+- [x] Section "1. Load": phase selection and ramble-branch stop per R1, worded like `skills/phase-archive/SKILL.md` step 1; unticked tasks → list and ask "review anyway / stop", remember partial
+- [x] Section "2. Brief": the parts from R2, in that order, about 15 lines; the git commands for the commit list; skip the commit list outside git; show the latest earlier round if `review.md` exists; one rule line: no source, no diffs, no agents
+- [x] Check: the reviewer walks no phase, two phases, a ramble branch, an unticked task, and a phase with an earlier round against R1 and R2
+- [x] Commit: `feat: add /donatello:phase-review`
 
 ### Task 2: phase-review — verdict, record, commit
 **Serves:** R3, R4, R5, NF2
