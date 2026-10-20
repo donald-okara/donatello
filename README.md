@@ -9,7 +9,7 @@ It's a set of skills, agents, and templates, not a program. Claude does the reas
    set up once          build task by task         record the review          close the phase             plan the next one
 ```
 
-> **Status:** v0.1.0. The four workflow commands and three agents work and have been tested on fixture projects. Trials on real projects are still in progress (see `.spec/ongoing/phase1-plugin-mvp/`), so expect rough edges. `/donatello:skills` and the skill import step in onboard are new in phase 2; their live checks are still pending.
+> **Status:** v0.4.0. The core workflow (onboard, phase-new, phase-run, phase-archive), `/donatello:skills`, and the three agents have been tested on fixture projects, and a first run on a real greenfield project went well. Trials on existing projects are still in progress, so expect rough edges there. The newer commands (`/donatello:ramble`, `/donatello:phase-discuss`, `/donatello:tour` with onboard's newcomer mode, and `/donatello:phase-review`) still have their live fixture checks pending (see `.spec/ongoing/`).
 
 ---
 
