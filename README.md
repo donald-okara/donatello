@@ -9,7 +9,7 @@ It's a set of skills, agents, and templates, not a program. Claude does the reas
    set up once          build task by task         record the review          close the phase             plan the next one
 ```
 
-> **Status:** v0.4.0. The core workflow (onboard, phase-new, phase-run, phase-archive) and the three agents have been tested on fixture projects, and a first run on a real greenfield project went well, including onboard's skill import. Trials on existing projects are still in progress, so expect rough edges there. `/donatello:skills` and the newer commands (`/donatello:ramble`, `/donatello:phase-discuss`, `/donatello:tour` with onboard's newcomer mode, and `/donatello:phase-review`) still have their live fixture checks pending (see `.spec/ongoing/`).
+> **Status:** v0.4.0. The core workflow (onboard, phase-new, phase-run, phase-archive) and the three agents have been tested on fixture projects, and a first run on a real greenfield project went well, including onboard's skill import. Trials on existing projects are still in progress, so expect rough edges there. `/donatello:skills` and the newer commands (`/donatello:ramble`, `/donatello:phase-discuss`, `/donatello:tour` with onboard's newcomer mode, and `/donatello:phase-review`) still have their live fixture checks pending (see the phase walkthroughs and tasks in `.spec/`).
 
 ---
 
