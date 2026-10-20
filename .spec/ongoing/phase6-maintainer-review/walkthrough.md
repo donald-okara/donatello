@@ -4,7 +4,7 @@
 
 Tasks 1–4 done: `/donatello:phase-review` built, wired into `phase-archive` (soft gate) and `phase-run`, listed in the block, and documented in SPECIFICATION, ARCHITECTURE, and README.
 Next: Task 5, fixture verification (interactive, needs Donald).
-Open: README Quick start and token-cost table don't mention the review yet; the SPECIFICATION line "Lists /donatello:ramble and /donatello:tour among the commands" could name phase-review too. The block is at ~293 of 300 tokens.
+Open: the block is at ~293 of 300 tokens. Released as 0.4.0.
 
 ## How to verify
 
@@ -35,7 +35,7 @@ Open: README Quick start and token-cost table don't mention the review yet; the 
 - `docs/SPECIFICATION.md`: workflow 9 "Review a phase"; archive gate in workflow 4 step 1; phase-review in the explicit-only list and the directory tree
 - `docs/ARCHITECTURE.md`: `phase-review` component; archive entry updated with the gate; five decisions; edge-case rows (no git, unticked, no `user.name`, several rounds, ramble branch, no or several phases); block copy synced
 - `README.md`: command section between phase-run and phase-archive; flow diagram; "How a phase works"; archive steps renumbered; layout tree; block copy synced
-- NOTE: optional follow-ups not done: Quick start step and token-cost row for phase-review; SPECIFICATION:252 command-list wording
+- Follow-up: Quick start step and token-cost row for phase-review; SPECIFICATION command-list wording
 
 ## Deviations from spec
 

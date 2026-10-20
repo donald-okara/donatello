@@ -98,9 +98,11 @@ In the project you want to work on:
 2. **Run the first task:** `/donatello:phase-run`
    Haiku implements the next task, Sonnet reviews it, and the task gets ticked, recorded in the walkthrough, and committed.
 3. **Keep going:** `/donatello:phase-run` again, or `/donatello:phase-run --all` to run every remaining task, stopping only when something needs you.
-4. **Close the phase:** `/donatello:phase-archive`
-   Finalizes the walkthrough, promotes decisions and requirements into the project docs (after showing you the diff), and moves the phase to the archive.
-5. **Plan the next one:** `/donatello:phase-new "offline sync"`
+4. **Review the phase:** `/donatello:phase-review`
+   Briefs you on what the phase delivered, takes your verdict (approved or changes requested) and comments, and records them in the phase's `review.md`.
+5. **Close the phase:** `/donatello:phase-archive`
+   Finalizes the walkthrough, promotes decisions and requirements into the project docs (after showing you the diff), and moves the phase to the archive. It asks first if the phase isn't approved.
+6. **Plan the next one:** `/donatello:phase-new "offline sync"`
 
 You can `/clear` between any of these steps; the next session picks up from the walkthrough.
 
@@ -537,6 +539,7 @@ Measured after installing from GitHub:
 | `/donatello:onboard` when invoked | ~2.1k |
 | `/donatello:phase-new` | ~1.5k |
 | `/donatello:phase-run` | ~1.3k |
+| `/donatello:phase-review` | ~1.0k |
 | `/donatello:phase-archive` | ~1.2k |
 | Each agent definition | ~0.5–0.8k |
 

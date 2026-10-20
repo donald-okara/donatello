@@ -249,7 +249,7 @@ Records a maintainer's review of a finished phase in `<phase>/review.md`. It's a
 - Imports preferences with `@docs/preferences.md` (always relevant, so always loaded)
 - Points to `.spec/ongoing/` as current work and tells the agent to keep `tasks.md` and `walkthrough.md` up to date
 - Rambles: on a `ramble/*` branch, the agent reads only the frontmatter, Question, and last 5 Log entries of that ramble's notes in `.spec/rambles/` (matched by `branch`) and follows ramble mode; `/donatello:ramble` resumes
-- Lists `/donatello:ramble` and `/donatello:tour` among the commands
+- Lists the workflow commands, including `/donatello:phase-review`, `/donatello:ramble`, and `/donatello:tour`
 - On resume, the agent reads only the walkthrough's "Current state" section, not the whole file
 - Target: under 300 tokens for the block itself
 
