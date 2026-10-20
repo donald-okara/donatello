@@ -24,7 +24,16 @@ Read `<phase>/tasks.md`. If any boxes are unticked, list those tasks by number a
 
 Don't continue until the user chooses.
 
-## 3. Finalize the walkthrough
+## 3. Check the review
+
+Read the last `## Review` heading in `<phase>/review.md`, if the file exists. Its verdict decides:
+- **Missing file or no round:** say the phase is "not reviewed" and ask: **archive anyway** or **stop**.
+- **Latest verdict is changes requested:** say so, with that round's number, and ask: **archive anyway** or **stop**.
+- **Latest verdict is approved** (partial or not): continue without asking.
+
+Don't continue until the user chooses where asked. Remember the round number and outcome for the wrap-up.
+
+## 4. Finalize the walkthrough
 
 **If `<phase>/walkthrough.md` exists:**
 - Rewrite **Current state** as a closing summary in 10 lines or fewer: what shipped, what was deferred or dropped, open issues worth knowing about. List carried-over tasks by title under `Carried over:`, plus any `Deferred:` items from `overview.md`. `/donatello:phase-new` reads this section when it plans the next phase.
@@ -35,7 +44,7 @@ Don't continue until the user chooses.
 - **How to verify:** collect each task's Check line, and ask the user if there's anything to add.
 - Then write Current state as above.
 
-## 4. Promote what outlives the phase
+## 5. Promote what outlives the phase
 
 Prepare both changes, then show them together as one diff:
 
@@ -44,11 +53,11 @@ Prepare both changes, then show them together as one diff:
 
 Apply the changes only after approval. Promote nothing for a phase that delivered no lasting behavior or decisions, and say so.
 
-## 5. Move to the archive
+## 6. Move to the archive
 
 1. Get today's date with `date +%F`.
 2. Move with **literal paths**, never computed in a subshell: `git mv .spec/ongoing/<dir> .spec/archive/<YYYY-MM-DD>-<dir>`. Create `.spec/archive/` first if needed. Outside a git repo, use `mv` and mention that history isn't tracked.
 
-## 6. Wrap up
+## 7. Wrap up
 
-Report in a few lines: where the phase now lives, what was promoted, and any carried-over tasks. Suggest `/donatello:phase-new` for the next phase. Offer to commit with `docs: archive phase <N> (<slug>)`; commit only if the user agrees.
+Report in a few lines: where the phase now lives, what was promoted, any carried-over tasks, and one review line: `Review: approved (round <n>)`, `Review: none`, or `Review: changes requested (round <n>), archived anyway`. Suggest `/donatello:phase-new` for the next phase. Offer to commit with `docs: archive phase <N> (<slug>)`; commit only if the user agrees.

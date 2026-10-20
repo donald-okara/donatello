@@ -37,12 +37,12 @@ Each task ends with a commit. As in phases 3–5, checks in Tasks 1–4 are revi
 **Serves:** R6, R7
 **Files:** `skills/phase-archive/SKILL.md`, `skills/phase-run/SKILL.md`, `templates/claude-block.md`
 
-- [ ] `phase-archive`: new step after "2. Check the tasks" (renumber the steps after it) reading the last `## Review` heading in `<phase>/review.md`, with the three cases from R6; don't continue until the user chooses
-- [ ] `phase-archive` wrap-up: add the review line from R6
-- [ ] `phase-run` step 6: when every task is ticked, suggest `/donatello:phase-review`, then `/donatello:phase-archive`
-- [ ] `templates/claude-block.md`: add `/donatello:phase-review` to Commands, after `phase-run`
-- [ ] Check: the reviewer walks archive with no `review.md`, changes requested, and approved against R6; the block measures under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); `claude plugin validate .` passes
-- [ ] Commit: `feat: connect phase-review to phase-run and phase-archive`
+- [x] `phase-archive`: new step after "2. Check the tasks" (renumber the steps after it) reading the last `## Review` heading in `<phase>/review.md`, with the three cases from R6; don't continue until the user chooses
+- [x] `phase-archive` wrap-up: add the review line from R6
+- [x] `phase-run` step 6: when every task is ticked, suggest `/donatello:phase-review`, then `/donatello:phase-archive`
+- [x] `templates/claude-block.md`: add `/donatello:phase-review` to Commands, after `phase-run`
+- [x] Check: the reviewer walks archive with no `review.md`, changes requested, and approved against R6; the block measures under 300 tokens (`sed -n '/donatello:start/,/donatello:end/p' templates/claude-block.md | wc -c` / 4); `claude plugin validate .` passes
+- [x] Commit: `feat: connect phase-review to phase-run and phase-archive`
 
 ### Task 4: Docs and README
 **Serves:** R8

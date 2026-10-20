@@ -57,4 +57,4 @@ After a PASS:
 
 - Without `--all`: report in 3–4 lines (task done, review result, escalation if any, the next task) and stop.
 - With `--all`: go back to step 1 for the next task. Stop when the phase is done, or when any step needs the user.
-- When every task is ticked, suggest `/donatello:phase-archive`.
+- When every task is ticked, suggest `/donatello:phase-review` for the maintainer's review, then `/donatello:phase-archive`.
