@@ -36,11 +36,13 @@ donatello/
 │   │   └── SKILL.md              # /donatello:onboard
 │   ├── phase-new/
 │   │   ├── SKILL.md              # /donatello:phase-new
-│   │   └── templates/            # overview, design, spec, tasks, walkthrough
+│   │   └── templates/            # overview, design, spec, tasks, walkthrough, review
 │   ├── phase-discuss/
 │   │   └── SKILL.md              # /donatello:phase-discuss (revise an ongoing phase's plan)
 │   ├── phase-run/
 │   │   └── SKILL.md              # /donatello:phase-run
+│   ├── phase-review/
+│   │   └── SKILL.md              # /donatello:phase-review (brief, verdict, comments into review.md)
 │   ├── phase-archive/
 │   │   └── SKILL.md              # /donatello:phase-archive
 │   ├── ramble/
@@ -170,7 +172,7 @@ The catalog (`catalog/skills.yaml` in this repo) lists skills that onboard and `
 
 ### 4. Archive a phase — `/donatello:phase-archive [phase]`
 
-1. Check `tasks.md`: if items are unchecked, list them and ask whether to archive anyway, carry them into the next phase, or stop.
+1. Check `tasks.md`: if items are unchecked, list them and ask whether to archive anyway, carry them into the next phase, or stop. Then check the last `## Review` heading in `review.md`: if there is no review or the latest verdict is changes requested, it says so and asks whether to archive anyway or stop; an approved review continues without asking. The gate is soft: it never blocks.
 2. Finalize `walkthrough.md`: rewrite "Current state" as a closing summary (what shipped, what was deferred, where carried-over tasks went) and make sure "How to verify" is complete. `Carried over:` also lists the `Deferred:` items in `overview.md`.
 3. Promote what outlives the phase, showing the diff for approval:
    - durable decisions from `design.md` → `docs/architecture.md`
@@ -228,6 +230,16 @@ A read-only orientation for someone new to a repo, given in six stops (what it i
 
 The tour is model-invocable (it leaves model invocation on), since it writes nothing and triggering on "show me around" is harmless.
 
+### 9. Review a phase — `/donatello:phase-review [phase]`
+
+Records a maintainer's review of a finished phase in `<phase>/review.md`. It's a record: no tasks, plan files, or code change, and no agents run.
+
+1. **Load:** uses the named phase or the one in `.spec/ongoing/` (asks when there are several). Refuses on a `ramble/*` branch. Reads `tasks.md`; if any boxes are unticked, asks **review anyway** (the round is recorded as `(partial)`) or **stop**.
+2. **Brief:** about 15 lines in chat: the goal and success criteria from `overview.md`, the verification, deviations, and current state from `walkthrough.md`, the commits by task from git (skipped outside a git repo), and the latest earlier round if `review.md` exists. No source files or diffs are read.
+3. **Verdict and comments:** the maintainer gives **approved** or **changes requested**, then any number of comments, including none. Each comment is recorded as one bullet in the maintainer's words. Claude adds none of its own.
+4. **Record:** creates `review.md` from the template if missing, numbers the round after the highest existing one, and dates it. It shows the round and writes only after approval, appending it and leaving earlier rounds unchanged. The reviewer name comes from `git config user.name`, asked when unset.
+5. **Wrap up:** offers to commit `docs: review phase <N> (<verdict>)` with a pathspec limited to the phase directory. The next step is `/donatello:phase-archive` when approved, or `/donatello:phase-discuss` or `/donatello:phase-run` when changes are requested.
+
 ---
 
 ## Key Behaviors
@@ -283,7 +295,7 @@ Built into the workflow rather than left to habit:
 - Onboard offers to disable plugins irrelevant to the project, since every enabled plugin's skill descriptions are listed every turn
 
 ### Skills
-- Workflow skills (onboard, phase-new, phase-discuss, phase-run, phase-archive, skills, ramble) are explicit-only (`disable-model-invocation: true`); they run when you type them. `tour` is the exception: it writes nothing, so Claude may start it on "show me around"-style requests
+- Workflow skills (onboard, phase-new, phase-discuss, phase-run, phase-review, phase-archive, skills, ramble) are explicit-only (`disable-model-invocation: true`); they run when you type them. `tour` is the exception: it writes nothing, so Claude may start it on "show me around"-style requests
 - Your own domain skills (e.g. Compose patterns) live in `catalog/skills/<id>/`, not in `skills/`, so they don't load in every project. `/donatello:skills import` and onboard copy the chosen ones into the project's `.claude/skills/<id>/`, the same way preferences are copied
 - Third-party skills are referenced in `catalog/skills.yaml` (Android CLI skills, plugins, and GitHub skill folders pinned to a commit) and installed through their own channels; Donatello doesn't wrap or mirror them
 

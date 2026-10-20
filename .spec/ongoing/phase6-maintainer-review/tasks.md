@@ -48,11 +48,11 @@ Each task ends with a commit. As in phases 3–5, checks in Tasks 1–4 are revi
 **Serves:** R8
 **Files:** `docs/SPECIFICATION.md`, `docs/ARCHITECTURE.md`, `README.md`
 
-- [ ] SPECIFICATION: a workflow for `/donatello:phase-review` after the last workflow, without renumbering others; the archive workflow notes the soft gate; `skills/phase-review/` and `templates/review.md` in the directory tree
-- [ ] ARCHITECTURE: a `phase-review` component (frontmatter, reads, writes, guardrails); the archive entry updated with the gate; this phase's lasting decisions; the edge cases from R8; block copy synced with `templates/claude-block.md`
-- [ ] README: the command in Commands; `/donatello:phase-review` in the flow diagram between `phase-run` and `phase-archive`; the review step in "How a phase works"; `skills/phase-review/` in the layout; block copy synced
-- [ ] Check: `grep -n "phase-review" README.md docs/*.md` covers the command, the archive gate, and `review.md`; block copies match the template
-- [ ] Commit: `docs: document /donatello:phase-review`
+- [x] SPECIFICATION: a workflow for `/donatello:phase-review` after the last workflow, without renumbering others; the archive workflow notes the soft gate; `skills/phase-review/` and `templates/review.md` in the directory tree
+- [x] ARCHITECTURE: a `phase-review` component (frontmatter, reads, writes, guardrails); the archive entry updated with the gate; this phase's lasting decisions; the edge cases from R8; block copy synced with `templates/claude-block.md`
+- [x] README: the command in Commands; `/donatello:phase-review` in the flow diagram between `phase-run` and `phase-archive`; the review step in "How a phase works"; `skills/phase-review/` in the layout; block copy synced
+- [x] Check: `grep -n "phase-review" README.md docs/*.md` covers the command, the archive gate, and `review.md`; block copies match the template
+- [x] Commit: `docs: document /donatello:phase-review`
 
 ### Task 5: Fixture verification
 **Serves:** R1–R7

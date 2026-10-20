@@ -5,8 +5,8 @@
 It's a set of skills, agents, and templates, not a program. Claude does the reasoning; Donatello supplies the workflow, the file conventions, and the guardrails.
 
 ```
-/donatello:onboard  →  /donatello:phase-run  →  /donatello:phase-archive  →  /donatello:phase-new  →  …
-   set up once          build task by task         close the phase             plan the next one
+/donatello:onboard  →  /donatello:phase-run  →  /donatello:phase-review  →  /donatello:phase-archive  →  /donatello:phase-new  →  …
+   set up once          build task by task         record the review          close the phase             plan the next one
 ```
 
 > **Status:** v0.1.0. The four workflow commands and three agents work and have been tested on fixture projects. Trials on real projects are still in progress (see `.spec/ongoing/phase1-plugin-mvp/`), so expect rough edges. `/donatello:skills` and the skill import step in onboard are new in phase 2; their live checks are still pending.
@@ -195,14 +195,29 @@ implementer (Haiku) ──► reviewer (Sonnet) ──PASS──► tick task ·
 - The main session never reads source, diffs, or build logs. It works from short agent reports.
 - Stops and asks you when a task is blocked on a decision only you can make, or when the environment (not the code) is broken.
 
+### `/donatello:phase-review [phase]`
+
+Records a maintainer's review of a finished phase in `<phase>/review.md`. See [How a phase works](#how-a-phase-works).
+
+```
+/donatello:phase-review
+/donatello:phase-review 6
+```
+
+- Shows a brief in chat: the goal, how to verify, deviations, the commits by task, and the latest earlier round.
+- Asks for a verdict, **approved** or **changes requested**, then for comments, including none. Comments are recorded in your words; Claude adds none.
+- Appends one `## Review <n>` round after your approval. Earlier rounds are never edited.
+- Nothing is acted on: no tasks, plans, or code change. Only `review.md` changes, and it's committed only if you say so.
+
 ### `/donatello:phase-archive [phase]`
 
 Closes a phase.
 
 1. If any tasks are unticked, asks whether to archive anyway (recorded as dropped), carry them over to the next phase, or stop.
-2. Rewrites the walkthrough's "Current state" as a closing summary and makes sure "How to verify" covers the whole phase. If there's no walkthrough, it builds one from `tasks.md` and git history.
-3. Promotes **lasting decisions** to the architecture doc and **lasting behavior** to the requirements doc, replacing entries they supersede. You see one diff and approve it first.
-4. Moves the folder to `.spec/archive/<YYYY-MM-DD>-phase<N>-<slug>/` with `git mv`.
+2. Checks the latest review. A missing review, or changes requested, asks whether to archive anyway or stop. An approved review continues without asking.
+3. Rewrites the walkthrough's "Current state" as a closing summary and makes sure "How to verify" covers the whole phase. If there's no walkthrough, it builds one from `tasks.md` and git history.
+4. Promotes **lasting decisions** to the architecture doc and **lasting behavior** to the requirements doc, replacing entries they supersede. You see one diff and approve it first.
+5. Moves the folder to `.spec/archive/<YYYY-MM-DD>-phase<N>-<slug>/` with `git mv`. The archived folder keeps `review.md`.
 
 ### `/donatello:skills [list | add <ref> | remove <id> | import]`
 
@@ -288,7 +303,7 @@ Plans change. When `phase-run` stops and the task or spec looks wrong, it sugges
 
 ## How a phase works
 
-Each phase is one folder with five files, each with a single job:
+Each phase is one folder with five files, each with a single job, plus `review.md` once the phase is reviewed:
 
 | File | Answers | Written | Changes after planning? |
 |---|---|---|---|
@@ -297,6 +312,8 @@ Each phase is one folder with five files, each with a single job:
 | `design.md` | Why this way: Decision / Why / Tradeoff | `phase-new`, then as decisions are made | Yes |
 | `tasks.md` | What to do: checklist of self-contained tasks | `phase-new`, ticked by `phase-run` | Ticked |
 | `walkthrough.md` | What actually happened: Current state, How to verify, Changes by task, Deviations from spec | After the first finished task | Every task |
+
+Once every task is ticked, `/donatello:phase-review` records the maintainer's verdict and comments in `review.md`, one `## Review <n>` round per review, never rewritten. It's a record only: a comment doesn't create a task, and nothing else changes. `/donatello:phase-archive` checks the latest verdict before it moves the phase, but it asks rather than blocks.
 
 A task in `tasks.md` looks like this:
 
@@ -354,7 +371,7 @@ This is the entry point every session loads. It's wrapped in markers so Donatell
 - After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
 - End of session: rewrite walkthrough.md "Current state"
 - Rambles: on `ramble/*`, read only the frontmatter, Question and last 5 Log entries of that ramble's notes in `.spec/rambles/` (frontmatter `branch` matches); follow ramble mode; `/donatello:ramble` resumes
-- Commands: /donatello:phase-new · /donatello:phase-discuss · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble · /donatello:tour
+- Commands: /donatello:phase-new · /donatello:phase-discuss · /donatello:phase-run · /donatello:phase-review · /donatello:phase-archive · /donatello:ramble · /donatello:tour
 <!-- donatello:end -->
 ```
 
@@ -576,9 +593,10 @@ donatello/
 │   └── marketplace.json          # makes this repo its own marketplace
 ├── skills/
 │   ├── onboard/                  # /donatello:onboard
-│   ├── phase-new/                # /donatello:phase-new, plus the phase templates
+│   ├── phase-new/                # /donatello:phase-new, plus the phase templates (incl. review.md)
 │   ├── phase-discuss/            # /donatello:phase-discuss
 │   ├── phase-run/                # /donatello:phase-run
+│   ├── phase-review/             # /donatello:phase-review
 │   ├── phase-archive/            # /donatello:phase-archive
 │   ├── ramble/                   # /donatello:ramble, plus the notes template
 │   ├── tour/                     # /donatello:tour (read-only orientation)

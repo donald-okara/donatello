@@ -4,7 +4,7 @@
 
 Donatello is a Claude Code plugin with no runtime code. It has four parts:
 
-1. **Workflow skills**: instructions Claude follows (`onboard`, `phase-new`, `phase-discuss`, `phase-run`, `phase-archive`, `skills`, `ramble`, `tour`)
+1. **Workflow skills**: instructions Claude follows (`onboard`, `phase-new`, `phase-discuss`, `phase-run`, `phase-review`, `phase-archive`, `skills`, `ramble`, `tour`)
 2. **Agents**: subagents with fixed models for legwork and review (`implementer`, `reviewer`, `scout`)
 3. **Templates**: the shape of the files the skills write
 4. **Data**: your preferences, the skill catalog (`catalog/skills.yaml`), and your own skill folders (`catalog/skills/`)
@@ -22,9 +22,10 @@ Claude is the engine: it reads the target project, runs the interview, fills the
 skills/
   onboard/SKILL.md
   phase-new/SKILL.md
-  phase-new/templates/{overview,design,spec,tasks,walkthrough}.md
+  phase-new/templates/{overview,design,spec,tasks,walkthrough,review}.md
   phase-discuss/SKILL.md
   phase-run/SKILL.md
+  phase-review/SKILL.md
   phase-archive/SKILL.md
   ramble/SKILL.md
   ramble/templates/notes.md
@@ -51,6 +52,7 @@ Claude Code gives a skill its base directory, so skills reference supporting fil
 - `skills` → `../../catalog/skills.yaml` (the installed copy, when no clone is found) and `../../catalog/skills/<id>/`
 - `ramble` → `templates/notes.md`, and `../skills/SKILL.md` for the catalog adds at wrap-up
 - `phase-discuss` → `../phase-new/SKILL.md` for the "Writing tasks" rules, which it follows without restating
+- `phase-review` → `../phase-new/templates/review.md` for the file it creates when `review.md` is missing
 
 Templates live in `phase-new` because that is their only writer; `onboard` delegates to it, so there is one source of truth for phase files. The same holds for the import flow: it is defined once in `skills/skills/SKILL.md`, and onboard follows it.
 
@@ -95,9 +97,16 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 - **Stop step:** when a task or spec looks wrong, suggests `/donatello:phase-discuss`; reviewer `NOTE:` lines that imply a plan change go into its report
 - **Guardrails:** refuses on a `ramble/*` branch. Its clean-tree check and its commits both ignore `.spec/rambles/`, since worktree rambles write their notes into the main checkout. It never edits `tasks.md` or `spec.md` beyond ticking boxes
 
+### `phase-review` skill
+- **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[phase]"`; no `model` (it runs in the main session)
+- **Reads:** the phase's `tasks.md` (unticked check), `overview.md`, `walkthrough.md` (each only if present), `review.md` (latest `## Review` round), and git log and `--stat` output for the commit list. No source files, diffs, or agents
+- **Writes:** on approval only, one `## Review <n>` round appended to `<phase>/review.md`, created from `phase-new`'s template if missing. Then an optional commit `docs: review phase <N> (<verdict>)` with the phase directory as its pathspec
+- **Guardrails:** a record only: no task, spec, design, or walkthrough change, and no comment becomes a task; earlier rounds are never edited; the round number is one above the highest existing one; refuses on a `ramble/*` branch; a partial review (unticked tasks) is marked `(partial)`; the reviewer name comes from `git config user.name`, asked when unset; outside git, no commit offer and no brief commit list
+
 ### `phase-archive` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[phase]"`
-- **Reads:** the phase's `tasks.md`, `design.md`, `spec.md`, `overview.md` (for `Deferred:` lines), `walkthrough.md`
+- **Reads:** the phase's `tasks.md`, `review.md` (latest round's verdict), `design.md`, `spec.md`, `overview.md` (for `Deferred:` lines), `walkthrough.md`
+- **Gate:** soft. Missing review or changes requested asks "archive anyway / stop"; approved continues. It never blocks, and the wrap-up states the review outcome
 - **Writes:** final "Current state" summary in `walkthrough.md`, with `Carried over:` also listing the `Deferred:` items from `overview.md`; promoted decisions in `docs/architecture.md`; promoted requirements (adjusted for deviations) in `docs/requirements.md`; then moves the directory to `.spec/archive/<date>-phase<N>-<slug>/`
 
 ### `ramble` skill
@@ -157,7 +166,7 @@ Shared rules in each agent's prompt:
 - After each task: tick it in tasks.md and update the phase's walkthrough.md (create if missing, with sections: Current state, How to verify, Changes by task, Deviations from spec)
 - End of session: rewrite walkthrough.md "Current state"
 - Rambles: on `ramble/*`, read only the frontmatter, Question and last 5 Log entries of that ramble's notes in `.spec/rambles/` (frontmatter `branch` matches); follow ramble mode; `/donatello:ramble` resumes
-- Commands: /donatello:phase-new · /donatello:phase-discuss · /donatello:phase-run · /donatello:phase-archive · /donatello:ramble · /donatello:tour
+- Commands: /donatello:phase-new · /donatello:phase-discuss · /donatello:phase-run · /donatello:phase-review · /donatello:phase-archive · /donatello:ramble · /donatello:tour
 <!-- donatello:end -->
 ```
 
@@ -318,6 +327,26 @@ Shared rules in each agent's prompt:
 ### Commit only the phase files
 - **Why:** its main use is right after phase-run stops mid-task, when uncommitted changes are expected and belong to the user.
 
+### Review the phase, not each task
+- **Why:** a phase is the unit the maintainer cares about, and per-task sign-off would stall `phase-run --all`. Per-task checks stay with `donatello:reviewer`.
+- **Tradeoff:** problems in early tasks surface only at the end of the phase.
+
+### Record only (phase-review)
+- **Why:** the maintainer decides what a comment means; `phase-discuss` already handles plan changes.
+- **Tradeoff:** acting on comments is a separate, manual step.
+
+### Separate `review.md`, appended by round
+- **Why:** the walkthrough is Claude's record and gets rewritten in places; the maintainer's judgment stays separate and keeps its history.
+- **Tradeoff:** one more file per phase. A maintainer who prefers to write by hand can edit `review.md` directly.
+
+### Guided review in chat
+- **Why:** matches the other commands, and the brief saves the maintainer from assembling context across five files.
+- **Tradeoff:** Claude writes the file, so the verdict is typed in chat rather than edited in place.
+
+### Soft archive gate
+- **Why:** keeps the maintainer in control, consistent with archive's handling of unticked tasks.
+- **Tradeoff:** an unreviewed phase can still be archived after one answer.
+
 ### phase-run suggests, never edits the plan
 - **Why:** plan changes need the user's agreement and a recorded reason. Editing `tasks.md` and `spec.md` by hand mid-run is what phase-discuss replaces.
 
@@ -358,6 +387,13 @@ Shared rules in each agent's prompt:
 | Monorepo / ambiguous stack | Ask which part(s) to onboard |
 | Archiving with unchecked tasks | List them; archive anyway, carry over, or stop |
 | Archiving with no `walkthrough.md` | Build one from `tasks.md` and git history since the phase started; ask about "How to verify" |
+| Archiving with no `review.md`, or changes requested | Says so and asks: archive anyway or stop. Approved continues. Never blocks |
+| Review: not a git repo | No commit list in the brief and no commit offer; the round is still recorded |
+| Review: unticked tasks | Lists them; "review anyway" records a `(partial)` round, "stop" leaves the phase unreviewed |
+| Review: no `user.name` in git config | Asks for the reviewer's name before writing the round |
+| Review: several rounds | Round number is one above the highest; earlier rounds are never edited, and the brief shows the latest earlier round |
+| Review: on a `ramble/*` branch | Stops and points to `/donatello:ramble end` or switching to main |
+| Review: no ongoing phase, several ongoing | Says none and stops; asks which one when several |
 | No `docs/requirements.md` yet | Create it on this archive |
 | Not a git repo | Use plain moves; mention that history won't be tracked. `phase-run` skips commits, and the reviewer gets a list of changed files instead of `git diff` |
 | Implementer blocked or review fails twice | Re-dispatch the implementer on Sonnet; if it still fails, stop and present the issues in the main session |
