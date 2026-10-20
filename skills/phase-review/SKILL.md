@@ -29,3 +29,31 @@ Show this in chat before asking anything. About 15 lines, in this order:
 4. **Earlier round**, if `<phase>/review.md` exists with a `## Review` heading: the latest round's verdict and comments, so the maintainer can say which are resolved.
 
 Read only the phase files and git log/stat output. Don't read source files or diffs, and don't dispatch agents.
+
+## 3. Verdict and comments
+
+Ask for the verdict: **approved** or **changes requested**. Then ask for comments in one exchange: any number, including none.
+
+Record each comment as one bullet in the maintainer's words. Tidy grammar and length, but don't change the meaning. Claude adds no comments of its own, and nothing said here becomes a task or a plan change.
+
+## 4. Record
+
+1. **Create the file if missing:** if `<phase>/review.md` doesn't exist, build it from `../phase-new/templates/review.md` (relative to this skill's directory, HTML comments removed). Replace `<N>` in the heading with the phase number from the `phase<N>-` directory name.
+2. **Round number:** one above the highest `## Review <n>` heading already in the file, or 1 if there is none.
+3. **Date:** from `date +%F`.
+4. **Reviewer:** from `git config user.name`. If it's unset, or the phase isn't in a git repo, ask the maintainer for a name.
+5. **Build the round:**
+   ```
+   ## Review <n>: <verdict> (<YYYY-MM-DD>, <reviewer>)
+   - <comment>
+   ```
+   Add ` (partial)` after the verdict if the review was partial (section 1). With no comments, write `- No comments.`
+6. **Show and ask:** show the round in chat and ask whether to write it. Write only after the maintainer approves. Append the round to `review.md` and leave every earlier round as it is.
+
+## 5. Wrap up
+
+1. **Commit offer:** offer to commit the file with `docs: review phase <N> (<verdict>)`, where `<N>` is the same phase number used in the heading (from the `phase<N>-` directory name). Use `git add <phase dir>` and `git commit -m "docs: review phase <N> (<verdict>)" -- <phase dir>`. The pathspec makes the commit take only the phase directory, even if other changes are already staged; never use `git add -A`. Uncommitted changes elsewhere stay as they are. Outside git, skip this and say so.
+2. **Next step:**
+   - **approved:** `/donatello:phase-archive`
+   - **changes requested:** `/donatello:phase-discuss` to revise the plan, or `/donatello:phase-run` to work the open tasks
+3. **Say what didn't change:** no task, spec, design, or other plan file was touched. Only `review.md` changed.

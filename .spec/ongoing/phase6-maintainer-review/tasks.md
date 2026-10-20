@@ -26,12 +26,12 @@ Each task ends with a commit. As in phases 3–5, checks in Tasks 1–4 are revi
 **Serves:** R3, R4, R5, NF2
 **Files:** `skills/phase-review/SKILL.md`, `skills/phase-new/templates/review.md`
 
-- [ ] Template `skills/phase-new/templates/review.md`: `# Phase <N>: Review`, an HTML comment describing the round format from R4 and that rounds are appended, never edited
-- [ ] Section "3. Verdict and comments" per R3: the two verdicts, comments in one exchange, maintainer's words only
-- [ ] Section "4. Record" per R4: create from template if missing (path relative to this skill: `../phase-new/templates/review.md`), round number, `date +%F`, `git config user.name` (ask if unset), `(partial)`, `- No comments.`; show the round and write only after approval
-- [ ] Section "5. Wrap up" per R5: commit offer with pathspec limited to the phase dir; next-step suggestion by verdict; state that no tasks or plan files change
-- [ ] Check: the reviewer walks an approved round with no comments, a partial changes-requested round with three comments, and a second round, against R3–R5
-- [ ] Commit: `feat: record verdict and comments in /donatello:phase-review`
+- [x] Template `skills/phase-new/templates/review.md`: `# Phase <N>: Review`, an HTML comment describing the round format from R4 and that rounds are appended, never edited
+- [x] Section "3. Verdict and comments" per R3: the two verdicts, comments in one exchange, maintainer's words only
+- [x] Section "4. Record" per R4: create from template if missing (path relative to this skill: `../phase-new/templates/review.md`), round number, `date +%F`, `git config user.name` (ask if unset), `(partial)`, `- No comments.`; show the round and write only after approval
+- [x] Section "5. Wrap up" per R5: commit offer with pathspec limited to the phase dir; next-step suggestion by verdict; state that no tasks or plan files change
+- [x] Check: the reviewer walks an approved round with no comments, a partial changes-requested round with three comments, and a second round, against R3–R5
+- [x] Commit: `feat: record verdict and comments in /donatello:phase-review`
 
 ### Task 3: Integration
 **Serves:** R6, R7
