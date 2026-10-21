@@ -43,3 +43,9 @@
   ref: superpowers@claude-plugins-official
   marketplace: anthropics/claude-plugins-official
   summary: Core workflow skills for planning, TDD, debugging, code review and finishing branches.
+
+- id: figma-keyframes-to-compose-timeline
+  source: donatello
+  ref: catalog/skills/figma-keyframes-to-compose-timeline
+  summary: Turn Figma keyframe animations into a Compose single-timeline animation (windows, spring easings, draw-phase reads, reduce motion, scrubbable previews).
+  applies-to: [android]
