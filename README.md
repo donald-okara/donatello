@@ -162,7 +162,7 @@ Revises the ongoing phase's plan through a conversation. See [Revising a phase](
 /donatello:phase-discuss "split task 3 into a store and a screen"
 ```
 
-- Talks the change through in chat, then shows one diff across the phase files and applies it only after you approve.
+- Talks the change through in chat, then shows a summary table of the changes, with the detailed diff across the phase files below it, and applies it only after you approve.
 - Ticked tasks are never edited. Rework becomes a new task, `Task <N>: <title> (revises Task <M>)`.
 - Task and requirement numbers are never reused or renumbered. Removed tasks stay as `(removed: …)` stubs, deferred ones as `(deferred)`, and dropped requirements as `(dropped <date>)`.
 - Commits only the phase folder, as `docs: revise phase <N> plan (…)`. Your other uncommitted changes are left alone.

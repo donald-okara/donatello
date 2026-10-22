@@ -45,7 +45,17 @@ Build one proposal from the discussion. Ticked tasks are never edited, split, or
    - Every heading number in `tasks.md` is unique, and every `**Serves:**` ID has a heading in `spec.md`. A ticked task may still cite a dropped requirement; its stub heading satisfies this, and the citation is the "no change needed" case.
    - Every live requirement (not a dropped stub) is served by at least one live task (ticked or not). Stubs have no boxes and don't count as serving anything.
    - The dependency sketch lists exactly the live tasks: no stubs, and none missing.
-2. **Show** the whole change as one diff across the phase files, with a one-line summary of each change above it.
+2. **Show** the change for a person to read first, then the detail:
+   - **Summary table**, one row per change, in plain words a maintainer can approve without reading the diff:
+
+     | Change | What | Why | Affects |
+     |---|---|---|---|
+     | Added | Task 9: Retry failed sync | R4 now covers offline | Serves R4; after Task 6 |
+     | Removed | Task 7: Settings screen | Moved to a later phase | Deferred line in overview |
+     | Changed | R3. Login | Adds biometric option | Tasks 3, 8 |
+
+     Use `Added`, `Changed`, `Removed`, `Deferred`, or `Revises Task <M>` in the first column. Name tasks and requirements by number and title, never by line. Below the table, add one line each for anything the maintainer must decide or watch: ticked tasks that still cite a changed requirement, or tasks whose order or dependencies changed.
+   - **Detailed diff:** below that, the whole change as one diff across the phase files, under a `Detailed diff` heading, for anyone who wants to check the exact wording.
 3. **Ask** for approval. Write nothing until the user answers.
    - **Approved:** apply the diff, then run `git add <phase dir>` and `git commit -m "docs: revise phase <N> plan (<summary>)" -- <phase dir>`. The pathspec makes the commit take only the phase directory, even if other changes are already staged; never use `git add -A`. Uncommitted changes elsewhere stay as they are.
    - **Declined:** write nothing. Summarise the discussion in chat.

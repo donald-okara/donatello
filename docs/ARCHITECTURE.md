@@ -306,7 +306,7 @@ Shared rules in each agent's prompt:
 - **Tradeoff:** phase-run's clean-tree check excludes `.spec/rambles/`, so notes that worktree rambles write into the main checkout don't block phase work.
 
 ### Talk first, then one diff (phase-discuss)
-- **Why:** it matches onboard and phase-archive (propose, then write), and one diff shows spec, design, and task changes together.
+- **Why:** it matches onboard and phase-archive (propose, then write), and one diff shows spec, design, and task changes together. A summary table goes above the diff because a raw diff of task text is hard for a person to approve at a glance.
 - **Tradeoff:** more turns than editing by hand. A hand-edit made beforehand is still caught by the consistency checks.
 
 ### Ticked tasks are frozen
