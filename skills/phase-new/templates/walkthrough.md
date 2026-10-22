@@ -5,7 +5,8 @@
 ## Current state
 
 <!-- Up to 10 lines, rewritten (not appended) at the end of each session and after each task.
-     What's done, what's next, anything blocking. This is the only section read when resuming. -->
+     What's done, what's next, anything blocking. This is the only section read when resuming.
+     Keep a `Known issues:` line for pre-existing failures and environment workarounds; phase-run passes it to every agent. -->
 
 ## How to verify
 

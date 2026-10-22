@@ -19,20 +19,22 @@ You coordinate; the agents do the work. Arguments: `$ARGUMENTS` (a task number, 
 - **Ramble branch:** if the current branch is `ramble/*`, stop with "this is a ramble branch; end it with `/donatello:ramble end` or switch to main".
 - **Clean tree:** run `git status --porcelain -- . ':!.spec/rambles'`. If there are uncommitted changes, stop and ask the user to commit or stash them first; otherwise the review and commit would pick them up. Changes under `.spec/rambles/` are ignored, since worktree rambles append to their notes in the main checkout. If this isn't a git repo, skip commits throughout and give the reviewer the list of files the implementer reported instead.
 - **Task:** the one named, or else the first task in `tasks.md` with unticked boxes whose dependencies (see the sketch at the top) are done. Note its number and the requirement IDs in its `**Serves:**` line.
+- **Known issues:** the `Known issues:` line in the walkthrough's "Current state", if any (pre-existing failures, environment workarounds). Pass it to every agent you dispatch.
 
 ## 2. Implement
 
-Dispatch the `donatello:implementer` agent with a short prompt: the phase directory, the task number, and the requirement IDs. Pass paths and IDs only; the agent reads what it needs.
+Dispatch the `donatello:implementer` agent with a short prompt: the phase directory, the task number, the requirement IDs, and the known issues. Pass paths and IDs only; the agent reads what it needs. Always dispatch a fresh agent; never resume or message an earlier implementer, even for a follow-up change. Follow-ups go through a fix round (step 4).
 
 - `STATUS: DONE` → step 3.
 - `STATUS: BLOCKED` → if the blocker is a missing decision or something only the user can provide, stop and bring it to the user. Otherwise escalate (step 4).
 
 ## 3. Review
 
-Dispatch the `donatello:reviewer` agent with the phase directory, the task number, and the requirement IDs.
+Dispatch the `donatello:reviewer` agent with the phase directory, the task number, the requirement IDs, and the known issues. On a re-review after a fix round, also pass the previous issue list, so it checks only those.
 
 - `VERDICT: PASS` → step 5.
-- `VERDICT: ISSUES` caused by the environment (a broken tool or missing setup, not the change) → stop and bring it to the user. Don't loop on it.
+- `VERDICT: ISSUES` caused by the environment (a broken tool or missing setup, not the change) → add it to `Known issues:` in the walkthrough's "Current state" (creating the walkthrough if needed, see step 5), then stop and bring it to the user. Don't loop on it.
+- Any agent NOTE about a pre-existing failure or environment workaround → add it to `Known issues:` too, so later agents don't work it out again.
 - `VERDICT: ISSUES` → step 4.
 
 ## 4. Fix, then escalate
@@ -50,11 +52,11 @@ After a PASS:
    - **Changes by task:** append `### Task <n>: <title>` with the implementer's FILES and NOTES condensed to a few bullets, any reviewer `NOTE:` lines, and `Escalated to Sonnet` if that happened.
    - **How to verify:** add or update the task's Check.
    - **Deviations from spec:** add only results that differ from `spec.md`. Mismatches between the task text and the spec (where the code follows the spec) go in that task's Changes entry instead.
-   - **Current state:** rewrite it in 10 lines or fewer: what's done, what's next, anything open.
+   - **Current state:** rewrite it in 10 lines or fewer: what's done, what's next, anything open. Keep the `Known issues:` line, dropping entries that are now fixed.
 3. **Commit** everything except `.spec/rambles/` (`git add -A -- . ':!.spec/rambles'`; the tree was clean before the task) using the task's `Commit:` line as the message.
 
 ## 6. Continue or stop
 
 - Without `--all`: report in 3–4 lines (task done, review result, escalation if any, the next task) and stop.
-- With `--all`: go back to step 1 for the next task. Stop when the phase is done, or when any step needs the user.
+- With `--all`: go back to step 1 for the next task. Stop when the phase is done, when any step needs the user, or after every 3 committed tasks: then report briefly and tell the user to `/clear` and run `/donatello:phase-run --all` again, which resumes from the walkthrough.
 - When every task is ticked, suggest `/donatello:phase-review` for the maintainer's review, then `/donatello:phase-archive`.

@@ -16,4 +16,6 @@ summary: Opus plans and coordinates; Haiku implements; Sonnet reviews and takes 
 ## Keeping it cheap
 - Pass agents paths and requirement IDs, not file contents.
 - Agents report failures, not full logs.
+- Agents use the narrowest build or test command; a full build only when a task's Check asks for one.
+- Pre-existing failures and environment workarounds are written once, as `Known issues:` in the walkthrough's "Current state", and passed to every agent.
 - `/clear` between tasks; resume from the walkthrough's "Current state".

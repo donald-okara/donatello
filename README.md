@@ -97,7 +97,7 @@ In the project you want to work on:
    Donatello surveys the repo, asks about five questions, offers skills from the [catalog](#skill-catalog) that fit your stack, shows a proposal (docs, preferences, phase plan, files it will touch), and writes everything once you approve.
 2. **Run the first task:** `/donatello:phase-run`
    Haiku implements the next task, Sonnet reviews it, and the task gets ticked, recorded in the walkthrough, and committed.
-3. **Keep going:** `/donatello:phase-run` again, or `/donatello:phase-run --all` to run every remaining task, stopping only when something needs you.
+3. **Keep going:** `/donatello:phase-run` again, or `/donatello:phase-run --all` to run every remaining task, stopping when something needs you (and every 3 tasks, so you can `/clear`).
 4. **Review the phase:** `/donatello:phase-review`
    Briefs you on what the phase delivered, takes your verdict (approved or changes requested) and comments, and records them in the phase's `review.md`.
 5. **Close the phase:** `/donatello:phase-archive`
@@ -174,7 +174,7 @@ Runs tasks from the active phase.
 ```
 /donatello:phase-run          # the next task whose dependencies are done
 /donatello:phase-run 4        # a specific task
-/donatello:phase-run --all    # every remaining task, stopping when you're needed
+/donatello:phase-run --all    # every remaining task, stopping when you're needed or every 3 tasks
 ```
 
 For each task:

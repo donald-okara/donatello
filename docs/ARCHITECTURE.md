@@ -91,7 +91,7 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 ### `phase-run` skill
 - **Frontmatter:** `disable-model-invocation: true`, `argument-hint: "[task | --all]"`; no `model` (it runs on the session model, Opus)
 - **Reads:** the phase's `tasks.md` and the spec requirements the task references; agent reports. Never full diffs or build logs.
-- **Loop per task:** implementer → reviewer → (one fix round) → escalate the implementer to Sonnet via the Agent tool's per-call `model` → stop and ask
+- **Loop per task:** implementer → reviewer → (one fix round) → escalate the implementer to Sonnet via the Agent tool's per-call `model` → stop and ask. Each implementer dispatch is fresh; a re-review gets the previous issue list and checks only those. Every agent gets the walkthrough's `Known issues:` line. `--all` pauses for a `/clear` every 3 committed tasks
 - **Writes:** commit per task, tick in `tasks.md`, walkthrough "Changes by task" and "Current state"
 - **Handoff to agents:** passes paths, not content (phase directory, `docs/preferences.md`, requirement IDs), so each agent reads only what it needs
 - **Stop step:** when a task or spec looks wrong, suggests `/donatello:phase-discuss`; reviewer `NOTE:` lines that imply a plan change go into its report
