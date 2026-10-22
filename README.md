@@ -322,7 +322,8 @@ A task in `tasks.md` looks like this:
 ```markdown
 ### Task 3: Farewell greeting
 **Serves:** R2
-**Files:** app/src/main/kotlin/greeting/
+**Files:** app/src/main/kotlin/greeting/Greeting.kt (edit), app/src/test/kotlin/greeting/GreetingTest.kt (edit)
+**Pattern:** app/src/main/kotlin/greeting/Welcome.kt
 
 - [ ] Add `farewell(name)` returning `"Bye, <name>"`
 - [ ] Test: `farewell("Ada")` returns `"Bye, Ada"`

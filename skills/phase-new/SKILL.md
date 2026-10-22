@@ -44,7 +44,8 @@ Copy each template from `templates/` (relative to this skill's directory), fill 
 
 Tasks are carried out by a Haiku implementer agent working alone, then checked by a Sonnet reviewer, so each one must stand on its own:
 
-- **Header:** `**Serves:**` requirement IDs, `**Files:**` the paths or modules involved, `**Skill:**` only when a specific skill you can see applies. Otherwise delete the line entirely; never write "none".
+- **Header:** `**Serves:**` requirement IDs, `**Files:**` exact file paths, each marked `(new)` or `(edit)`, `**Pattern:**` one existing file the implementer should copy the structure of, `**Skill:**` only when a specific skill you can see applies. Delete the Pattern or Skill line when there's nothing to name; never write "none".
+- **Files and Pattern save the most.** The implementer starts from them instead of exploring the repo, which is where most of its tokens go. Look up real paths (list directories, `grep` for the class or module) rather than guessing; one quick lookup here saves a long search in every run.
 - **Size:** one task is one implementer run: a few files, about 3–6 steps. Split anything bigger.
 - **Concrete steps:** name the function, class, or composable and what it must return, emit, or show. "Add `farewell(name)` returning `"Bye, <name>"`", not "add farewell support".
 - **Tests are explicit steps.** Any task that adds behavior gets a step saying what to test and what result to assert, written the way the preferences doc asks (e.g. assert results, not implementation). Never leave the implementer to infer that tests are wanted.

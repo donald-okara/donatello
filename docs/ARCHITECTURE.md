@@ -132,7 +132,7 @@ Templates live in `phase-new` because that is their only writer; `onboard` deleg
 
 | Agent | Model | Tools | maxTurns | Returns |
 |---|---|---|---|---|
-| `implementer` | `haiku` | All except Agent | 40 | ≤ 15 lines: files changed, build/test result, blockers |
+| `implementer` | `haiku` | All except Agent | 25 | ≤ 15 lines: files changed, build/test result, blockers |
 | `reviewer` | `sonnet`, `effort: medium` | Read, Grep, Glob, Bash (git, tests) | 20 | `PASS`, or ≤ 10 issues as `file:line: problem` |
 | `scout` | `haiku` | Read, Grep, Glob, Bash (read-only commands) | 25 | ≤ 60 lines: stack, modules, build/test commands, observed conventions, existing docs |
 
