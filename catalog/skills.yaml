@@ -49,3 +49,9 @@
   ref: catalog/skills/figma-keyframes-to-compose-timeline
   summary: Turn Figma keyframe animations into a Compose single-timeline animation (windows, spring easings, draw-phase reads, reduce motion, scrubbable previews).
   applies-to: [android]
+
+- id: compose-transient-messages
+  source: donatello
+  ref: catalog/skills/compose-transient-messages
+  summary: Show toasts or snackbars in a Compose Multiplatform app so they survive navigation, with ViewModels sending plain events that the Route maps to a message and a navigation.
+  applies-to: [android]
